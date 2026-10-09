@@ -1,9 +1,7 @@
-# 课猫 Echo · Chinese practice
+# 课猫 Echo
 
-This is 课猫 Echo, not Talking Tat.
+Top toggle: practice English or Chinese. Each pack has 100 sentences.
 
-Chinese practice for everyday life: office, grocery, restaurant, and spending. 100 bilingual sentences. Chinese is shown large, with the English meaning underneath.
-
-Open `index.html` in Chrome. Hear it and Say it use zh-CN, with a preference for a sweet female Mandarin voice.
+Open `index.html` in Chrome. Hear it and Say it use the matching language, with a preference for a sweet female voice.
 
 Original pixel cat, not Talking Tom.
