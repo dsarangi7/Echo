@@ -1,7 +1,9 @@
-# 课猫 Echo · English practice
+# Talking Tat
 
-Open `index.html` in Chrome.
+Chinese practice for everyday life: office, grocery, restaurant, and spending.
 
-Hear it prefers a female English voice. Say it needs Chrome and a microphone.
+Open `index.html` in Chrome. Hear it and Say it use zh-CN, with a preference for a sweet female Mandarin voice.
 
-100 bilingual sentences. Original pixel cat (not Talking Tom).
+100 bilingual sentences. Chinese is shown large, with the English meaning underneath.
+
+Original pixel cat, not Talking Tom.

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>课猫 Echo · English practice</title>
+<title>Talking Tat · 中文口语练习</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23121212'/%3E%3Cpath d='M4 7 L6 3 L8 7 M8 7 L10 3 L12 7' fill='%239a9a9a'/%3E%3Ccircle cx='6.2' cy='9' r='1' fill='%23fff'/%3E%3Ccircle cx='9.8' cy='9' r='1' fill='%23fff'/%3E%3Crect x='5' y='12' width='6' height='1' fill='%23C8FF3D'/%3E%3C/svg%3E">
 <style>
   :root {
@@ -71,15 +71,15 @@
   #progress { margin: 0; color: var(--neon); font-weight: 750; font-size: 22px; font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
   .sentence {
     margin: 8px 0 0;
-    font-size: clamp(28px, 3vw, 40px);
-    line-height: 1.35;
+    font-size: clamp(28px, 3.2vw, 42px);
+    line-height: 1.4;
     font-weight: 650;
-    letter-spacing: -0.02em;
-    min-height: 2.7em;
+    letter-spacing: 0.02em;
+    min-height: 2.8em;
   }
-  .sentence .ok { background: var(--neon); color: #121212; border-radius: 6px; padding: 0 0.08em; }
-  .sentence .bad { background: var(--bad); color: #fff; border-radius: 6px; padding: 0 0.08em; }
-  .zh { margin: 12px 0 0; color: #d2d2d2; font-size: 18px; line-height: 1.45; min-height: 1.45em; }
+  .sentence .ok { background: var(--neon); color: #121212; border-radius: 6px; padding: 0 0.06em; }
+  .sentence .bad { background: var(--bad); color: #fff; border-radius: 6px; padding: 0 0.06em; }
+  .en { margin: 12px 0 0; color: #d2d2d2; font-size: 18px; line-height: 1.45; min-height: 1.45em; }
   .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
   button.act {
     appearance: none;
@@ -132,15 +132,15 @@
 <div class="wrap">
   <header class="top">
     <div>
-      <h1>课猫 Echo · English practice</h1>
-      <p class="tag">100 句口语 · 听一句，再说一遍</p>
+      <h1>Talking Tat</h1>
+      <p class="tag">课猫 Tat · 100 句日常中文 · 听一句，再说一遍</p>
     </div>
   </header>
   <div class="stage">
     <section class="card cat-card" id="cat-card">
-      <canvas id="cat" width="376" height="456" role="img" aria-label="课猫 Echo, an original pixel cat"></canvas>
+      <canvas id="cat" width="376" height="456" role="img" aria-label="Talking Tat, an original pixel cat"></canvas>
       <div class="nameplate">
-        <strong>课猫 Echo</strong>
+        <strong>Talking Tat</strong>
         <span id="mode">待命 · idle</span>
       </div>
     </section>
@@ -150,17 +150,17 @@
         <p id="setlabel"></p>
         <p id="progress">1 / 100</p>
       </div>
-      <p class="sentence" id="sentence" lang="en"></p>
-      <p class="zh" id="zh"></p>
+      <p class="sentence" id="sentence" lang="zh-CN"></p>
+      <p class="en" id="en"></p>
       <div class="actions">
         <button type="button" class="act ghost" id="prev"><b>Previous</b><small>上一句</small></button>
         <button type="button" class="act primary" id="hear"><b>Hear it</b><small>听一听</small></button>
         <button type="button" class="act primary" id="say"><b>Say it</b><small>说一说</small></button>
         <button type="button" class="act ghost" id="next"><b>Next</b><small>下一句</small></button>
       </div>
-      <p class="chrome-note" id="chrome-note" hidden>this listen button needs Chrome.</p>
-      <p class="legend"><span class="sw ok"></span>听到了这个词 heard<span class="sw bad"></span>没对上 missing</p>
-      <p class="legend">没有口音分数。浏览器若把 twenty 写成 20，也算这个词。</p>
+      <p class="chrome-note" id="chrome-note" hidden>说一说需要 Chrome。Say it needs Chrome.</p>
+      <p class="legend"><span class="sw ok"></span>对上了这个字 matched<span class="sw bad"></span>没对上 missing</p>
+      <p class="legend">按字比对，不是口音分数。It checks characters, not an accent score.</p>
       <div class="result" id="result" aria-live="polite">
         <p class="kicker" id="kicker">Practice</p>
         <p id="heard">点「听一听」，再点「说一说」。 Hear it, then say it.</p>
@@ -170,609 +170,609 @@
       <p id="err"></p>
     </section>
   </div>
-  <footer class="note">这是课堂演示，猫是原创像素画，不是 Talking Tom。听写对的是词，不是口音分数。 / Class demo. Original pixel cat, not Talking Tom. It checks words, not a mouth-sound score.</footer>
+  <footer class="note">这是课堂演示。猫是原创像素画，不是 Talking Tom。听写对的是字，不是口音分数。 / Class demo. Original pixel cat, not Talking Tom. It checks characters, not a mouth-sound score.</footer>
 </div>
 <script id="pack" type="application/json">
 [
   {
-    "set": "Meetings",
-    "zhSet": "开会",
-    "en": "Can we start in five minutes?",
-    "zh": "我们五分钟后开始，可以吗？"
+    "set": "Office",
+    "zhSet": "办公室",
+    "zh": "今天我加班到七点。",
+    "en": "I'm working late until seven today."
+  },
+  {
+    "set": "Office",
+    "zhSet": "办公室",
+    "zh": "打印机好像没纸了。",
+    "en": "The printer seems out of paper."
+  },
+  {
+    "set": "Office",
+    "zhSet": "办公室",
+    "zh": "这个表格你帮我改一下。",
+    "en": "Could you help me fix this sheet?"
+  },
+  {
+    "set": "Office",
+    "zhSet": "办公室",
+    "zh": "会议室今天下午有空吗？",
+    "en": "Is the meeting room free this afternoon?"
+  },
+  {
+    "set": "Office",
+    "zhSet": "办公室",
+    "zh": "我把文件放共享盘了。",
+    "en": "I put the file on the shared drive."
+  },
+  {
+    "set": "Office",
+    "zhSet": "办公室",
+    "zh": "请把电脑锁屏再离开。",
+    "en": "Please lock your computer before you leave."
+  },
+  {
+    "set": "Office",
+    "zhSet": "办公室",
+    "zh": "这个截止日期是周五。",
+    "en": "The deadline is Friday."
+  },
+  {
+    "set": "Office",
+    "zhSet": "办公室",
+    "zh": "我先去倒杯水。",
+    "en": "I'm going to grab a glass of water first."
+  },
+  {
+    "set": "Office",
+    "zhSet": "办公室",
+    "zh": "今天空调有点冷。",
+    "en": "The AC is a bit cold today."
+  },
+  {
+    "set": "Office",
+    "zhSet": "办公室",
+    "zh": "你看到我的工牌了吗？",
+    "en": "Have you seen my badge?"
   },
   {
     "set": "Meetings",
     "zhSet": "开会",
-    "en": "Please keep this meeting short.",
-    "zh": "这次会我们开短一点。"
+    "zh": "我们五分钟后开始，可以吗？",
+    "en": "Can we start in five minutes?"
   },
   {
     "set": "Meetings",
     "zhSet": "开会",
-    "en": "Could you walk us through the plan?",
-    "zh": "你能带我们过一遍这个计划吗？"
+    "zh": "这次会我们开短一点。",
+    "en": "Let's keep this meeting short."
   },
   {
     "set": "Meetings",
     "zhSet": "开会",
-    "en": "I have one question before we move on.",
-    "zh": "继续之前，我有一个问题。"
+    "zh": "你能带我们过一遍这个计划吗？",
+    "en": "Could you walk us through the plan?"
   },
   {
     "set": "Meetings",
     "zhSet": "开会",
-    "en": "We can park that and come back later.",
-    "zh": "这个先放一放，回头再说。"
+    "zh": "继续之前，我有一个问题。",
+    "en": "I have one question before we move on."
   },
   {
     "set": "Meetings",
     "zhSet": "开会",
-    "en": "Who is taking the notes today?",
-    "zh": "今天谁做记录？"
+    "zh": "这个先放一放，回头再说。",
+    "en": "We can park that and come back later."
   },
   {
     "set": "Meetings",
     "zhSet": "开会",
-    "en": "Can we confirm the action items?",
-    "zh": "我们确认一下待办，可以吗？"
+    "zh": "今天谁做会议记录？",
+    "en": "Who is taking notes today?"
   },
   {
     "set": "Meetings",
     "zhSet": "开会",
-    "en": "I will send the minutes after this.",
-    "zh": "会后我把纪要发出去。"
+    "zh": "我们确认一下待办事项。",
+    "en": "Let's confirm the action items."
   },
   {
     "set": "Meetings",
     "zhSet": "开会",
-    "en": "Does Thursday afternoon work for you?",
-    "zh": "周四下午你有空吗？"
+    "zh": "会后我把纪要发出去。",
+    "en": "I'll send the minutes after this."
   },
   {
     "set": "Meetings",
     "zhSet": "开会",
-    "en": "Thank you, that is all from my side.",
-    "zh": "谢谢，我这边就这些。"
+    "zh": "周四下午你有空吗？",
+    "en": "Does Thursday afternoon work for you?"
   },
   {
-    "set": "Email",
-    "zhSet": "邮件",
-    "en": "Please see the file I attached.",
-    "zh": "请看我附上的文件。"
+    "set": "Meetings",
+    "zhSet": "开会",
+    "zh": "谢谢，我这边就这些。",
+    "en": "Thank you, that's all from my side."
   },
   {
-    "set": "Email",
-    "zhSet": "邮件",
-    "en": "I am writing to follow up.",
-    "zh": "我来跟进一下。"
+    "set": "Email & messages",
+    "zhSet": "邮件消息",
+    "zh": "请看我附上的文件。",
+    "en": "Please see the file I attached."
   },
   {
-    "set": "Email",
-    "zhSet": "邮件",
-    "en": "Could you reply by Friday?",
-    "zh": "能在周五前回复吗？"
+    "set": "Email & messages",
+    "zhSet": "邮件消息",
+    "zh": "我来跟进一下这件事。",
+    "en": "I'm writing to follow up on this."
   },
   {
-    "set": "Email",
-    "zhSet": "邮件",
-    "en": "Please copy the team on this email.",
-    "zh": "请把这封邮件抄送给团队。"
+    "set": "Email & messages",
+    "zhSet": "邮件消息",
+    "zh": "能在周五前回复吗？",
+    "en": "Could you reply by Friday?"
   },
   {
-    "set": "Email",
-    "zhSet": "邮件",
-    "en": "Sorry for the late reply.",
-    "zh": "抱歉，回复晚了。"
+    "set": "Email & messages",
+    "zhSet": "邮件消息",
+    "zh": "请把这封邮件抄送给团队。",
+    "en": "Please copy the team on this email."
   },
   {
-    "set": "Email",
-    "zhSet": "邮件",
-    "en": "I updated the sheet. Please take a look.",
-    "zh": "表格我改好了，请看一下。"
+    "set": "Email & messages",
+    "zhSet": "邮件消息",
+    "zh": "抱歉，回复晚了。",
+    "en": "Sorry for the late reply."
   },
   {
-    "set": "Email",
-    "zhSet": "邮件",
-    "en": "Let me know if anything is unclear.",
-    "zh": "有不清楚的地方告诉我。"
+    "set": "Email & messages",
+    "zhSet": "邮件消息",
+    "zh": "表格我改好了，请看一下。",
+    "en": "I updated the sheet. Please take a look."
   },
   {
-    "set": "Email",
-    "zhSet": "邮件",
-    "en": "I will send a short summary today.",
-    "zh": "我今天发一份简短总结。"
+    "set": "Email & messages",
+    "zhSet": "邮件消息",
+    "zh": "有不清楚的地方告诉我。",
+    "en": "Let me know if anything is unclear."
   },
   {
-    "set": "Email",
-    "zhSet": "邮件",
-    "en": "Could you forward this to the warehouse?",
-    "zh": "你能把这个转给仓库吗？"
+    "set": "Email & messages",
+    "zhSet": "邮件消息",
+    "zh": "我今天发一份简短总结。",
+    "en": "I'll send a short summary today."
   },
   {
-    "set": "Email",
-    "zhSet": "邮件",
-    "en": "Thank you for your help on this.",
-    "zh": "谢谢你帮这个忙。"
+    "set": "Email & messages",
+    "zhSet": "邮件消息",
+    "zh": "你能把这个转给仓库吗？",
+    "en": "Could you forward this to the warehouse?"
   },
   {
-    "set": "Numbers",
-    "zhSet": "数字",
-    "en": "The meeting starts at nine thirty.",
-    "zh": "会议九点半开始。"
+    "set": "Email & messages",
+    "zhSet": "邮件消息",
+    "zh": "微信上跟我说一声就行。",
+    "en": "Just message me on WeChat."
   },
   {
-    "set": "Numbers",
-    "zhSet": "数字",
-    "en": "We need twenty cells for this sample.",
-    "zh": "这个样品要二十个电芯。"
+    "set": "Grocery",
+    "zhSet": "买菜购物",
+    "zh": "这些西红柿怎么卖？",
+    "en": "How much are these tomatoes?"
   },
   {
-    "set": "Numbers",
-    "zhSet": "数字",
-    "en": "Please book the room for one hour.",
-    "zh": "请把会议室订一个小时。"
+    "set": "Grocery",
+    "zhSet": "买菜购物",
+    "zh": "给我称一斤苹果。",
+    "en": "Please weigh one jin of apples for me."
   },
   {
-    "set": "Numbers",
-    "zhSet": "数字",
-    "en": "The report is due next Thursday.",
-    "zh": "报告下周四要交。"
+    "set": "Grocery",
+    "zhSet": "买菜购物",
+    "zh": "有没有更新鲜的？",
+    "en": "Do you have anything fresher?"
   },
   {
-    "set": "Numbers",
-    "zhSet": "数字",
-    "en": "We shipped three pallets last week.",
-    "zh": "上周我们发了三个托盘。"
+    "set": "Grocery",
+    "zhSet": "买菜购物",
+    "zh": "这个鸡蛋是几号的？",
+    "en": "What size are these eggs?"
   },
   {
-    "set": "Numbers",
-    "zhSet": "数字",
-    "en": "The test ran for forty eight hours.",
-    "zh": "这个测试跑了四十八个小时。"
+    "set": "Grocery",
+    "zhSet": "买菜购物",
+    "zh": "袋子可以多给我一个吗？",
+    "en": "Can I have one more bag?"
   },
   {
-    "set": "Numbers",
-    "zhSet": "数字",
-    "en": "Please check row fifteen on the sheet.",
-    "zh": "请看表格第十五行。"
+    "set": "Grocery",
+    "zhSet": "买菜购物",
+    "zh": "牛奶在哪一排？",
+    "en": "Which aisle is the milk on?"
   },
   {
-    "set": "Numbers",
-    "zhSet": "数字",
-    "en": "We are short two boxes.",
-    "zh": "我们少了两箱。"
+    "set": "Grocery",
+    "zhSet": "买菜购物",
+    "zh": "这个今天打折吗？",
+    "en": "Is this on sale today?"
   },
   {
-    "set": "Numbers",
-    "zhSet": "数字",
-    "en": "The call is at two fifteen.",
-    "zh": "电话是两点十五分。"
+    "set": "Grocery",
+    "zhSet": "买菜购物",
+    "zh": "我要这个，不要那个。",
+    "en": "I want this one, not that one."
   },
   {
-    "set": "Numbers",
-    "zhSet": "数字",
-    "en": "Please round it to one decimal place.",
-    "zh": "请保留一位小数。"
+    "set": "Grocery",
+    "zhSet": "买菜购物",
+    "zh": "还有没有小的？",
+    "en": "Do you have a smaller one?"
   },
   {
-    "set": "Factory",
-    "zhSet": "车间",
-    "en": "The line starts at eight.",
-    "zh": "产线八点开工。"
+    "set": "Grocery",
+    "zhSet": "买菜购物",
+    "zh": "结账在这边吗？",
+    "en": "Is checkout this way?"
   },
   {
-    "set": "Factory",
-    "zhSet": "车间",
-    "en": "Please wear your safety shoes.",
-    "zh": "请穿安全鞋。"
+    "set": "Restaurant ordering",
+    "zhSet": "点餐",
+    "zh": "有位子吗？两个人。",
+    "en": "Do you have a table? For two."
   },
   {
-    "set": "Factory",
-    "zhSet": "车间",
-    "en": "This cell is still in testing.",
-    "zh": "这个电芯还在测试。"
+    "set": "Restaurant ordering",
+    "zhSet": "点餐",
+    "zh": "请给我菜单。",
+    "en": "Please give me the menu."
   },
   {
-    "set": "Factory",
-    "zhSet": "车间",
-    "en": "We paused the line for a check.",
-    "zh": "我们停线做了个检查。"
+    "set": "Restaurant ordering",
+    "zhSet": "点餐",
+    "zh": "你们有什么推荐？",
+    "en": "What do you recommend?"
   },
   {
-    "set": "Factory",
-    "zhSet": "车间",
-    "en": "Please label the tray before you move it.",
-    "zh": "托盘搬走之前请先贴标签。"
+    "set": "Restaurant ordering",
+    "zhSet": "点餐",
+    "zh": "这个辣不辣？",
+    "en": "Is this spicy?"
   },
   {
-    "set": "Factory",
-    "zhSet": "车间",
-    "en": "The shift handoff is at six.",
-    "zh": "六点交接班。"
+    "set": "Restaurant ordering",
+    "zhSet": "点餐",
+    "zh": "我不要香菜。",
+    "en": "No cilantro for me, please."
   },
   {
-    "set": "Factory",
-    "zhSet": "车间",
-    "en": "Please keep the aisle clear.",
-    "zh": "过道请保持通畅。"
+    "set": "Restaurant ordering",
+    "zhSet": "点餐",
+    "zh": "米饭再来一碗。",
+    "en": "One more bowl of rice, please."
   },
   {
-    "set": "Factory",
-    "zhSet": "车间",
-    "en": "This batch is waiting for inspection.",
-    "zh": "这一批在等检验。"
+    "set": "Restaurant ordering",
+    "zhSet": "点餐",
+    "zh": "这个可以少放盐吗？",
+    "en": "Can you go easy on the salt?"
   },
   {
-    "set": "Factory",
-    "zhSet": "车间",
-    "en": "Please write the result on the sheet.",
-    "zh": "请把结果写在表上。"
+    "set": "Restaurant ordering",
+    "zhSet": "点餐",
+    "zh": "我们先点这些。",
+    "en": "We'll order these for now."
   },
   {
-    "set": "Factory",
-    "zhSet": "车间",
-    "en": "The tool is back on the bench.",
-    "zh": "工具已经放回工作台了。"
+    "set": "Restaurant ordering",
+    "zhSet": "点餐",
+    "zh": "还有多久能上菜？",
+    "en": "How long until the food comes?"
   },
   {
-    "set": "Shipping",
-    "zhSet": "出货",
-    "en": "The packing list is on the desk.",
-    "zh": "装箱单在桌上。"
+    "set": "Restaurant ordering",
+    "zhSet": "点餐",
+    "zh": "麻烦打包带走。",
+    "en": "Could we get this to go?"
   },
   {
-    "set": "Shipping",
-    "zhSet": "出货",
-    "en": "Please count the cartons again.",
-    "zh": "请再数一遍箱子。"
+    "set": "Paying & spending",
+    "zhSet": "付钱花钱",
+    "zh": "一共多少钱？",
+    "en": "How much is it altogether?"
   },
   {
-    "set": "Shipping",
-    "zhSet": "出货",
-    "en": "This pallet is ready to ship.",
-    "zh": "这个托盘可以发货了。"
+    "set": "Paying & spending",
+    "zhSet": "付钱花钱",
+    "zh": "我可以刷微信吗？",
+    "en": "Can I pay with WeChat?"
   },
   {
-    "set": "Shipping",
-    "zhSet": "出货",
-    "en": "The truck arrives at ten.",
-    "zh": "货车十点到。"
+    "set": "Paying & spending",
+    "zhSet": "付钱花钱",
+    "zh": "能开发票吗？",
+    "en": "Can I get a receipt / invoice?"
   },
   {
-    "set": "Shipping",
-    "zhSet": "出货",
-    "en": "Please seal the box before it leaves.",
-    "zh": "箱子出去之前请封好。"
+    "set": "Paying & spending",
+    "zhSet": "付钱花钱",
+    "zh": "这个太贵了，能便宜点吗？",
+    "en": "That's a bit expensive. Can you do better?"
   },
   {
-    "set": "Shipping",
-    "zhSet": "出货",
-    "en": "We need the booking number today.",
-    "zh": "订舱号今天要拿到。"
+    "set": "Paying & spending",
+    "zhSet": "付钱花钱",
+    "zh": "我没带现金。",
+    "en": "I didn't bring cash."
   },
   {
-    "set": "Shipping",
-    "zhSet": "出货",
-    "en": "The container is half full.",
-    "zh": "集装箱装了一半。"
+    "set": "Paying & spending",
+    "zhSet": "付钱花钱",
+    "zh": "请找零给我。",
+    "en": "Please give me the change."
   },
   {
-    "set": "Shipping",
-    "zhSet": "出货",
-    "en": "Please mark this box as fragile.",
-    "zh": "请在这个箱子上标明易碎。"
+    "set": "Paying & spending",
+    "zhSet": "付钱花钱",
+    "zh": "这个算错了吧？",
+    "en": "I think this total is wrong."
   },
   {
-    "set": "Shipping",
-    "zhSet": "出货",
-    "en": "The papers go with the shipment.",
-    "zh": "文件和货一起走。"
+    "set": "Paying & spending",
+    "zhSet": "付钱花钱",
+    "zh": "我们分开付可以吗？",
+    "en": "Can we split the bill?"
   },
   {
-    "set": "Shipping",
-    "zhSet": "出货",
-    "en": "Please confirm the delivery date.",
-    "zh": "请确认交货日期。"
+    "set": "Paying & spending",
+    "zhSet": "付钱花钱",
+    "zh": "押金什么时候退？",
+    "en": "When do I get the deposit back?"
   },
   {
-    "set": "Quality",
-    "zhSet": "质量",
-    "en": "This unit did not pass the check.",
-    "zh": "这个没通过检查。"
+    "set": "Paying & spending",
+    "zhSet": "付钱花钱",
+    "zh": "先付定金可以吗？",
+    "en": "Can I pay a deposit first?"
   },
   {
-    "set": "Quality",
-    "zhSet": "质量",
-    "en": "Please hold this batch for review.",
-    "zh": "请把这一批先扣下复查。"
+    "set": "Asking for help",
+    "zhSet": "求助",
+    "zh": "不好意思，能帮我一下吗？",
+    "en": "Excuse me, could you help me?"
   },
   {
-    "set": "Quality",
-    "zhSet": "质量",
-    "en": "We found a scratch on the case.",
-    "zh": "外壳上有一道划痕。"
+    "set": "Asking for help",
+    "zhSet": "求助",
+    "zh": "这个怎么用？",
+    "en": "How do I use this?"
   },
   {
-    "set": "Quality",
-    "zhSet": "质量",
-    "en": "This reading is outside the range.",
-    "zh": "这个读数超出范围了。"
+    "set": "Asking for help",
+    "zhSet": "求助",
+    "zh": "你能说慢一点吗？",
+    "en": "Could you say that more slowly?"
   },
   {
-    "set": "Quality",
-    "zhSet": "质量",
-    "en": "Please test this sample again.",
-    "zh": "请把这个样品再测一次。"
+    "set": "Asking for help",
+    "zhSet": "求助",
+    "zh": "我没听清，再说一遍好吗？",
+    "en": "I didn't catch that. Could you say it again?"
   },
   {
-    "set": "Quality",
-    "zhSet": "质量",
-    "en": "The label does not match the sheet.",
-    "zh": "标签和表格对不上。"
+    "set": "Asking for help",
+    "zhSet": "求助",
+    "zh": "这里有人会说英语吗？",
+    "en": "Does anyone here speak English?"
   },
   {
-    "set": "Quality",
-    "zhSet": "质量",
-    "en": "We need a clear photo of the mark.",
-    "zh": "这个痕迹需要一张清楚的照片。"
+    "set": "Asking for help",
+    "zhSet": "求助",
+    "zh": "这个词用中文怎么说？",
+    "en": "How do you say this word in Chinese?"
   },
   {
-    "set": "Quality",
-    "zhSet": "质量",
-    "en": "Please separate the failed units.",
-    "zh": "请把不合格的分开。"
+    "set": "Asking for help",
+    "zhSet": "求助",
+    "zh": "能帮我拍张照吗？",
+    "en": "Could you take a photo for me?"
   },
   {
-    "set": "Quality",
-    "zhSet": "质量",
-    "en": "The check is complete.",
-    "zh": "检查做完了。"
+    "set": "Asking for help",
+    "zhSet": "求助",
+    "zh": "我的手机没电了，能借充电宝吗？",
+    "en": "My phone is dead. Could I borrow a power bank?"
   },
   {
-    "set": "Quality",
-    "zhSet": "质量",
-    "en": "I will log this in the quality note.",
-    "zh": "我会记进质量记录里。"
+    "set": "Asking for help",
+    "zhSet": "求助",
+    "zh": "这里信号不好。",
+    "en": "The signal is bad here."
+  },
+  {
+    "set": "Asking for help",
+    "zhSet": "求助",
+    "zh": "谢谢你，帮大忙了。",
+    "en": "Thank you, that really helped."
+  },
+  {
+    "set": "Directions & transport",
+    "zhSet": "问路出行",
+    "zh": "请问地铁站怎么走？",
+    "en": "Excuse me, how do I get to the subway?"
+  },
+  {
+    "set": "Directions & transport",
+    "zhSet": "问路出行",
+    "zh": "离这里远吗？",
+    "en": "Is it far from here?"
+  },
+  {
+    "set": "Directions & transport",
+    "zhSet": "问路出行",
+    "zh": "坐几路公交车？",
+    "en": "Which bus should I take?"
+  },
+  {
+    "set": "Directions & transport",
+    "zhSet": "问路出行",
+    "zh": "下一站是哪里？",
+    "en": "What's the next stop?"
+  },
+  {
+    "set": "Directions & transport",
+    "zhSet": "问路出行",
+    "zh": "请在前面那个红绿灯停。",
+    "en": "Please stop at the traffic light ahead."
+  },
+  {
+    "set": "Directions & transport",
+    "zhSet": "问路出行",
+    "zh": "打车大概要多久？",
+    "en": "About how long is a taxi?"
+  },
+  {
+    "set": "Directions & transport",
+    "zhSet": "问路出行",
+    "zh": "这个出口对吗？",
+    "en": "Is this the right exit?"
+  },
+  {
+    "set": "Directions & transport",
+    "zhSet": "问路出行",
+    "zh": "有没有直达的？",
+    "en": "Is there a direct route?"
+  },
+  {
+    "set": "Directions & transport",
+    "zhSet": "问路出行",
+    "zh": "我要去机场，大概多少钱？",
+    "en": "I'm going to the airport. About how much?"
+  },
+  {
+    "set": "Directions & transport",
+    "zhSet": "问路出行",
+    "zh": "这里可以过马路吗？",
+    "en": "Can I cross the street here?"
   },
   {
     "set": "Polite pushback",
-    "zhSet": "委婉说不",
-    "en": "I see your point, but the date is tight.",
-    "zh": "我明白你的意思，但日期很紧。"
+    "zhSet": "礼貌拒绝",
+    "zh": "谢谢，这次就算了。",
+    "en": "Thanks, I'll pass this time."
   },
   {
     "set": "Polite pushback",
-    "zhSet": "委婉说不",
-    "en": "Could we look at another option?",
-    "zh": "我们能不能看另一个办法？"
+    "zhSet": "礼貌拒绝",
+    "zh": "我今天有点忙，下次吧。",
+    "en": "I'm a bit busy today. Maybe next time."
   },
   {
     "set": "Polite pushback",
-    "zhSet": "委婉说不",
-    "en": "I am not sure that will work.",
-    "zh": "我不确定那样行得通。"
+    "zhSet": "礼貌拒绝",
+    "zh": "这个我做不了主。",
+    "en": "That's not something I can decide."
   },
   {
     "set": "Polite pushback",
-    "zhSet": "委婉说不",
-    "en": "Let me check before I answer.",
-    "zh": "我先核对一下再答复。"
+    "zhSet": "礼貌拒绝",
+    "zh": "我先确认一下再回复你。",
+    "en": "Let me check first, then I'll get back to you."
   },
   {
     "set": "Polite pushback",
-    "zhSet": "委婉说不",
-    "en": "We may need more time for this.",
-    "zh": "这件事我们可能还要一点时间。"
+    "zhSet": "礼貌拒绝",
+    "zh": "日期有点紧，可能来不及。",
+    "en": "The timeline is tight. We might not make it."
   },
   {
     "set": "Polite pushback",
-    "zhSet": "委婉说不",
-    "en": "That is not what the sheet shows.",
-    "zh": "表格上不是这样的。"
+    "zhSet": "礼貌拒绝",
+    "zh": "我们能不能换个办法？",
+    "en": "Could we try another option?"
   },
   {
     "set": "Polite pushback",
-    "zhSet": "委婉说不",
-    "en": "Can we slow down for a minute?",
-    "zh": "我们能慢一点吗？"
+    "zhSet": "礼貌拒绝",
+    "zh": "我不太方便说这个。",
+    "en": "I'm not really in a position to talk about that."
   },
   {
     "set": "Polite pushback",
-    "zhSet": "委婉说不",
-    "en": "I want to confirm that with the team.",
-    "zh": "我想先跟团队确认一下。"
+    "zhSet": "礼貌拒绝",
+    "zh": "这个时间我不行。",
+    "en": "That time doesn't work for me."
   },
   {
     "set": "Polite pushback",
-    "zhSet": "委婉说不",
-    "en": "We can do it, but not by tomorrow.",
-    "zh": "能做，但明天来不及。"
+    "zhSet": "礼貌拒绝",
+    "zh": "能做，但明天来不及。",
+    "en": "We can do it, but not by tomorrow."
   },
   {
     "set": "Polite pushback",
-    "zhSet": "委婉说不",
-    "en": "Please give me a moment to look.",
-    "zh": "请给我一点时间看一下。"
+    "zhSet": "礼貌拒绝",
+    "zh": "请给我一点时间考虑。",
+    "en": "Please give me a moment to think."
   },
   {
     "set": "Small talk",
-    "zhSet": "寒暄",
-    "en": "Good morning. How are you today?",
-    "zh": "早上好，你今天怎么样？"
+    "zhSet": "闲聊",
+    "zh": "早上好，今天怎么样？",
+    "en": "Good morning. How are you today?"
   },
   {
     "set": "Small talk",
-    "zhSet": "寒暄",
-    "en": "Did you have a good weekend?",
-    "zh": "周末过得好吗？"
+    "zhSet": "闲聊",
+    "zh": "周末过得好吗？",
+    "en": "Did you have a good weekend?"
   },
   {
     "set": "Small talk",
-    "zhSet": "寒暄",
-    "en": "The office is quiet this morning.",
-    "zh": "今天早上办公室挺安静。"
+    "zhSet": "闲聊",
+    "zh": "今天外面好热。",
+    "en": "It's really hot outside today."
   },
   {
     "set": "Small talk",
-    "zhSet": "寒暄",
-    "en": "Would you like some tea?",
-    "zh": "要不要喝点茶？"
+    "zhSet": "闲聊",
+    "zh": "要不要一起去吃饭？",
+    "en": "Want to grab lunch together?"
   },
   {
     "set": "Small talk",
-    "zhSet": "寒暄",
-    "en": "I am heading to lunch. Want to join?",
-    "zh": "我去吃午饭，一起吗？"
+    "zhSet": "闲聊",
+    "zh": "你新剪头发了？好看。",
+    "en": "Did you get a haircut? Looks good."
   },
   {
     "set": "Small talk",
-    "zhSet": "寒暄",
-    "en": "It is hot outside today.",
-    "zh": "今天外面很热。"
+    "zhSet": "闲聊",
+    "zh": "最近工作忙不忙？",
+    "en": "Have you been busy at work lately?"
   },
   {
     "set": "Small talk",
-    "zhSet": "寒暄",
-    "en": "See you after the break.",
-    "zh": "休息后再见。"
+    "zhSet": "闲聊",
+    "zh": "恭喜你，太棒了。",
+    "en": "Congratulations, that's awesome."
   },
   {
     "set": "Small talk",
-    "zhSet": "寒暄",
-    "en": "Thank you for waiting.",
-    "zh": "谢谢你等我。"
+    "zhSet": "闲聊",
+    "zh": "路上小心，慢点开。",
+    "en": "Drive safe. Take it easy."
   },
   {
     "set": "Small talk",
-    "zhSet": "寒暄",
-    "en": "Have a good evening.",
-    "zh": "晚上愉快。"
+    "zhSet": "闲聊",
+    "zh": "明天见。",
+    "en": "See you tomorrow."
   },
   {
     "set": "Small talk",
-    "zhSet": "寒暄",
-    "en": "Nice to meet you.",
-    "zh": "很高兴见到你。"
-  },
-  {
-    "set": "Instructions",
-    "zhSet": "怎么做",
-    "en": "Please open the sheet on the shared drive.",
-    "zh": "请打开共享盘里的那张表。"
-  },
-  {
-    "set": "Instructions",
-    "zhSet": "怎么做",
-    "en": "Click the second tab, then filter by date.",
-    "zh": "点第二个工作表，再按日期筛选。"
-  },
-  {
-    "set": "Instructions",
-    "zhSet": "怎么做",
-    "en": "Please save a copy before you edit.",
-    "zh": "改之前请先另存一份。"
-  },
-  {
-    "set": "Instructions",
-    "zhSet": "怎么做",
-    "en": "Type the date in this column.",
-    "zh": "把日期填在这一列。"
-  },
-  {
-    "set": "Instructions",
-    "zhSet": "怎么做",
-    "en": "Please do not overwrite the old file.",
-    "zh": "请不要覆盖旧文件。"
-  },
-  {
-    "set": "Instructions",
-    "zhSet": "怎么做",
-    "en": "Please highlight the empty cells.",
-    "zh": "请把空格子标出来。"
-  },
-  {
-    "set": "Instructions",
-    "zhSet": "怎么做",
-    "en": "Sort the list from old to new.",
-    "zh": "把列表从旧到新排一下。"
-  },
-  {
-    "set": "Instructions",
-    "zhSet": "怎么做",
-    "en": "Leave the price cells blank.",
-    "zh": "价格那几格留空。"
-  },
-  {
-    "set": "Instructions",
-    "zhSet": "怎么做",
-    "en": "Please print one copy for the meeting.",
-    "zh": "开会用的请打一份。"
-  },
-  {
-    "set": "Instructions",
-    "zhSet": "怎么做",
-    "en": "Send me the file when you are done.",
-    "zh": "做完把文件发给我。"
-  },
-  {
-    "set": "Fixes",
-    "zhSet": "说错了改",
-    "en": "I think I said the wrong date.",
-    "zh": "我想我说错日期了。"
-  },
-  {
-    "set": "Fixes",
-    "zhSet": "说错了改",
-    "en": "Let me say that one more time.",
-    "zh": "我再说一遍。"
-  },
-  {
-    "set": "Fixes",
-    "zhSet": "说错了改",
-    "en": "Sorry, I meant next Monday, not this one.",
-    "zh": "抱歉，我说的是下周一，不是这周一。"
-  },
-  {
-    "set": "Fixes",
-    "zhSet": "说错了改",
-    "en": "Could you say that more slowly?",
-    "zh": "你能说慢一点吗？"
-  },
-  {
-    "set": "Fixes",
-    "zhSet": "说错了改",
-    "en": "I did not catch the last word.",
-    "zh": "最后一个词我没听清。"
-  },
-  {
-    "set": "Fixes",
-    "zhSet": "说错了改",
-    "en": "Did you say pallet or packet?",
-    "zh": "你说的是托盘，还是包裹？"
-  },
-  {
-    "set": "Fixes",
-    "zhSet": "说错了改",
-    "en": "Let me check my notes.",
-    "zh": "我看一下我的笔记。"
-  },
-  {
-    "set": "Fixes",
-    "zhSet": "说错了改",
-    "en": "You are right. I missed that row.",
-    "zh": "你说得对，我漏了那一行。"
-  },
-  {
-    "set": "Fixes",
-    "zhSet": "说错了改",
-    "en": "Can we go back one step?",
-    "zh": "我们能退回上一步吗？"
-  },
-  {
-    "set": "Fixes",
-    "zhSet": "说错了改",
-    "en": "I will correct it and send a new file.",
-    "zh": "我改好再发一个新文件。"
+    "zhSet": "闲聊",
+    "zh": "很高兴认识你。",
+    "en": "Nice to meet you."
   }
 ]
 </script>
@@ -1070,73 +1070,27 @@
     });
   }
 
-  /*__PURE_START__*/
-  function normalize(s) {
-    let t = String(s || "").toLowerCase().replace(/[’‘]/g, "'");
-    const contractions = [
-      [/i'm/g, "i am"],
-      [/i'll/g, "i will"],
-      [/i've/g, "i have"],
-      [/i'd/g, "i would"],
-      [/don't/g, "do not"],
-      [/didn't/g, "did not"],
-      [/that's/g, "that is"],
-      [/it's/g, "it is"],
-      [/we're/g, "we are"],
-      [/you're/g, "you are"],
-      [/they're/g, "they are"],
-      [/can't/g, "cannot"],
-      [/won't/g, "will not"],
-      [/isn't/g, "is not"],
-      [/aren't/g, "are not"],
-      [/what's/g, "what is"],
-      [/let's/g, "let us"],
-      [/we've/g, "we have"]
-    ];
-    contractions.forEach(function (pair) { t = t.replace(pair[0], pair[1]); });
-    t = t.replace(/[^a-z0-9'\s]/g, " ").replace(/'/g, "").replace(/\s+/g, " ").trim();
-    if (!t) return [];
-    const ones = ["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
-    const tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
-    function numToWords(n) {
-      if (n < 20) return [ones[n]];
-      if (n < 100) {
-        const ten = tens[Math.floor(n / 10)];
-        const one = n % 10;
-        return one ? [ten, ones[one]] : [ten];
-      }
-      if (n === 100) return ["one", "hundred"];
-      return [String(n)];
-    }
-    const out = [];
-    t.split(" ").forEach(function (raw) {
-      if (!raw) return;
-      if (/^\d+$/.test(raw)) {
-        const n = parseInt(raw, 10);
-        if (n <= 100) out.push.apply(out, numToWords(n));
-        else out.push(raw);
-        return;
-      }
-      out.push(raw);
-    });
-    return out;
+
+  function charsOf(s) {
+    return Array.from(String(s || "").replace(/\s+/g, "").replace(/[\u3000\u200b]/g, "")
+      .replace(/[\p{P}\p{S}]/gu, ""));
   }
-  function matchWords(targetWords, heardWords) {
-    const used = heardWords.map(function () { return false; });
-    const marks = targetWords.map(function () { return false; });
+  function matchChars(target, heard) {
+    const used = heard.map(function () { return false; });
+    const marks = target.map(function () { return false; });
     let h = 0;
-    for (let i = 0; i < targetWords.length; i++) {
+    for (let i = 0; i < target.length; i++) {
       let j = h;
-      while (j < heardWords.length && heardWords[j] !== targetWords[i]) j++;
-      if (j < heardWords.length) {
+      while (j < heard.length && heard[j] !== target[i]) j++;
+      if (j < heard.length) {
         marks[i] = true;
         used[j] = true;
         h = j + 1;
       }
     }
-    for (let i = 0; i < targetWords.length; i++) {
+    for (let i = 0; i < target.length; i++) {
       if (marks[i]) continue;
-      const j = heardWords.findIndex(function (w, idx) { return !used[idx] && w === targetWords[i]; });
+      const j = heard.findIndex(function (c, idx) { return !used[idx] && c === target[i]; });
       if (j >= 0) {
         marks[i] = true;
         used[j] = true;
@@ -1144,7 +1098,6 @@
     }
     return marks;
   }
-  /*__PURE_END__*/
 
   let index = 0;
   let catMode = "idle";
@@ -1153,7 +1106,7 @@
   let marks = null;
 
   const sentenceEl = document.getElementById("sentence");
-  const zhEl = document.getElementById("zh");
+  const enEl = document.getElementById("en");
   const progressEl = document.getElementById("progress");
   const setLabelEl = document.getElementById("setlabel");
   const heardEl = document.getElementById("heard");
@@ -1208,19 +1161,20 @@
   }
 
   function renderSentence() {
-    const s = current().en;
-    const parts = s.match(/[A-Za-z0-9']+|[^A-Za-z0-9'\s]|\s+/g) || [];
+    const s = current().zh;
+    const targetChars = charsOf(s);
     sentenceEl.replaceChildren();
-    let wi = 0;
-    parts.forEach(function (part) {
-      if (/^[A-Za-z0-9']+$/.test(part)) {
+    let ci = 0;
+    Array.from(s).forEach(function (ch) {
+      const isChar = /\S/.test(ch) && !/[\p{P}\p{S}]/u.test(ch);
+      if (isChar) {
         const span = document.createElement("span");
-        span.textContent = part;
-        if (marks) span.className = marks[wi] ? "ok" : "bad";
+        span.textContent = ch;
+        if (marks) span.className = marks[ci] ? "ok" : "bad";
         sentenceEl.appendChild(span);
-        wi++;
+        ci++;
       } else {
-        sentenceEl.appendChild(document.createTextNode(part));
+        sentenceEl.appendChild(document.createTextNode(ch));
       }
     });
   }
@@ -1228,7 +1182,7 @@
   function render() {
     const item = current();
     renderSentence();
-    zhEl.textContent = item.zh;
+    enEl.textContent = item.en;
     progressEl.textContent = (index + 1) + " / " + pack.length;
     setLabelEl.replaceChildren();
     const b = document.createElement("b");
@@ -1260,20 +1214,27 @@
 
   function pickVoice() {
     const voices = window.speechSynthesis.getVoices();
-    const en = voices.filter(function (v) { return /^en(-|$)/i.test(v.lang || ""); });
-    const pool = en.length ? en : voices;
+    const zh = voices.filter(function (v) {
+      const lang = (v.lang || "").toLowerCase();
+      return lang === "zh-cn" || lang === "zh_cn" || lang.indexOf("zh-cn") === 0 || lang === "cmn-hans" || lang.indexOf("cmn") === 0 || lang === "zh" || lang.indexOf("zh-hans") === 0;
+    });
+    const pool = zh.length ? zh : voices.filter(function (v) {
+      return /zh|chinese|mandarin|普通话|中文/i.test((v.lang || "") + " " + (v.name || ""));
+    });
+    const use = pool.length ? pool : voices;
     function score(v) {
-      const n = ((v.name || "") + " " + (v.voiceURI || "")).toLowerCase();
+      const n = ((v.name || "") + " " + (v.voiceURI || "") + " " + (v.lang || "")).toLowerCase();
       let s = 0;
-      if (/female|woman|girl|samantha|karen|moira|tessa|fiona|victoria|zira|susan|linda|hazel|serena|aria|jenny|michelle|google us english|salli|joanna|ivy|kimberly|kendra|nicole/.test(n)) s += 100;
-      if (/male|man|boy|david|mark|daniel|alex|fred|bruce|thomas|george|ravi|aaron|guy|matthew/.test(n)) s -= 80;
-      if (/en-us|en_us|united states|us english/.test(n) || (v.lang || "").toLowerCase() === "en-us") s += 20;
-      if (/en-gb|en_gb|british|uk english|en-au|australian/.test(n)) s += 8;
+      if (/tingting|xiao.?xiao|huihui|yaoyao|xiaoyi|xiaoxuan|xiaohan|xiaomeng|xiaomo|xiaorui|xiaoshuang|yunxia|zh-cn-xiaoxiao|google.*普通话|google.*中国|microsoft.*xiaoxiao|microsoft.*huihui|meijia|sinji|lili|yaoyao/.test(n)) s += 120;
+      if (/female|woman|girl|女/.test(n)) s += 40;
+      if (/male|man|boy|yunyang|yunjian|kangkang|男/.test(n)) s -= 90;
+      if (/zh-cn|cmn-hans|普通话|中国大陆|mainland/.test(n)) s += 25;
+      if (/zh-tw|zh-hk|cantonese|粤|台湾|香港/.test(n)) s -= 30;
       if (v.localService) s += 3;
       return s;
     }
-    pool.sort(function (a, b) { return score(b) - score(a); });
-    return pool[0] || null;
+    use.sort(function (a, b) { return score(b) - score(a); });
+    return use[0] || null;
   }
 
   function hear() {
@@ -1288,16 +1249,16 @@
       rec = null;
     }
     const token = ++talkToken;
-    const line = current().en;
+    const line = current().zh;
     window.speechSynthesis.cancel();
     setTimeout(function () {
       if (token !== talkToken) return;
       const u = new SpeechSynthesisUtterance(line);
-      u.lang = "en-US";
+      u.lang = "zh-CN";
       const v = pickVoice();
       if (v) u.voice = v;
-      u.rate = 0.9;
-      u.pitch = 1.12;
+      u.rate = 0.92;
+      u.pitch = 1.08;
       u.onstart = function () { if (token === talkToken) setCat("talk"); };
       u.onend = function () { if (token === talkToken) setCat("idle"); };
       u.onerror = function () { if (token === talkToken) setCat("idle"); };
@@ -1318,7 +1279,7 @@
     if (window.speechSynthesis) window.speechSynthesis.cancel();
     setCat("listen");
     rec = new SR();
-    rec.lang = "en-US";
+    rec.lang = "zh-CN";
     rec.interimResults = false;
     rec.continuous = false;
     rec.maxAlternatives = 1;
@@ -1357,15 +1318,14 @@
   }
 
   function grade(transcript) {
-    const target = normalize(current().en);
-    const heard = normalize(transcript);
-    marks = matchWords(target, heard);
+    const target = charsOf(current().zh);
+    const heard = charsOf(transcript);
+    marks = matchChars(target, heard);
     const good = marks.filter(Boolean).length;
     renderSentence();
     kickerEl.textContent = "Heard";
     heardEl.textContent = transcript || "（没听到）";
-    const noun = target.length === 1 ? "word" : "words";
-    scoreEl.textContent = good + " of " + target.length + " " + noun;
+    scoreEl.textContent = good + " of " + target.length + " 字";
   }
 
   document.getElementById("hear").addEventListener("click", hear);
