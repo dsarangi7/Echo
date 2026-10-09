@@ -3,6 +3,6 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  // Relative assets so GitHub project Pages can serve the build from /Echo/.
-  base: "./",
+  // Project site: https://dsarangi7.github.io/Echo/
+  base: "/Echo/",
 });
