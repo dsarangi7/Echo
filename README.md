@@ -14,13 +14,15 @@ Live site: https://dsarangi7.github.io/Echo/
 
 No paid API keys. Nothing is sent to Google Cloud, Azure, or OpenAI.
 
-**Say it** runs [Whisper tiny](https://huggingface.co/Xenova/whisper-tiny) in the browser with [`@xenova/transformers`](https://www.npmjs.com/package/@xenova/transformers) (ONNX, WebAssembly, one thread). The happy path does not call `webkitSpeechRecognition` or any other Google speech recognizer.
+**Say it** runs quantized Whisper tiny in the browser with [`@xenova/transformers`](https://www.npmjs.com/package/@xenova/transformers) (ONNX, WebAssembly, one thread). The happy path does not call `webkitSpeechRecognition` or any other Google speech recognizer. The weights ship with this site under `public/models/Xenova/whisper-tiny/`. Say it does not download them from Hugging Face or hf-mirror.
 
-- The quantized weights are **about 40 MB** (encoder ~10 MB, merged decoder ~30 MB).
-- The first visit shows **Downloading free voice model…** and a percent. Transformers.js stores the files in the **Cache API** (`transformers-cache`). Later visits use that cache, including after you install the app.
-- If huggingface.co does not answer, the loader tries `hf-mirror.com` once.
+- Vendored size is **about 44 MB**: quantized encoder `10,124,910` bytes, quantized merged decoder `30,727,765` bytes, plus tokenizer files (`tokenizer.json` is `2,480,466` bytes). That is the GitHub Pages payload for the model. The decoder stays under GitHub’s 50 MB file warning.
+- Hear it does not wait for that download. The status line starts with **Hear it is ready.** The model fetch begins when you tap **Say it**, then the line shows **Downloading Say it voice model…** and a percent.
+- Transformers.js loads those files from this origin (`/Echo/models/...` on GitHub Pages) and stores them in the **Cache API** (`transformers-cache`). The next Say it reuses that cache, including after you install the app. Remote model hosts are disabled (`allowRemoteModels` is false).
+- The service worker does not precache the ONNX files. The decoder is about 29 MB, above the 12 MB precache cap, so a phone is not forced to download the model just to install the app.
 - The ONNX runtime is a single WASM thread, so GitHub Pages does not need cross-origin isolation. That is what lets Safari load it. The build copies `ort-wasm-simd.wasm` and `ort-wasm.wasm` (about 10 MB together) into the site.
 - Whisper tiny is the small multilingual model, on purpose, so phones can hold it. It will miss words, especially in Chinese. Misses are missing words or 字, not a fake accent score.
+- If the copy on this site cannot be loaded, the status line says so in English and 中文 and says that Hear it still plays. Refresh and tap Say it to try again.
 
 **Hear it** plays a small pack of MP3s, about **2 MB for all 200 lines**. They were made with free [Piper](https://github.com/rhasspy/piper) voices:
 
@@ -29,7 +31,7 @@ No paid API keys. Nothing is sent to Google Cloud, Azure, or OpenAI.
 
 Any browser that can play MP3 can speak the lines, including Safari, Edge, Chrome, and Firefox, on desktop and on a phone. The clips are a little slower than conversation (`length_scale` 1.05) so a class can hear each word.
 
-If a clip is missing, Hear it falls back to the device `speechSynthesis` voice and prefers a sweet female voice when the system has one (Samantha, Aria, Jenny, Tingting, Xiaoxiao, and the other names in `src/practice/voices.ts`). That fallback is free and uses whatever the browser already has. It is not required for the 200 built-in sentences.
+The clip plays from the same tap that hit Hear it (`playsInline`, `preload="auto"`). On iOS the page asks for playback audio so the ringer switch does not mute it. If the clip does not start, Hear it tries the device `speechSynthesis` voice and prefers a sweet female voice when the system has one (Samantha, Aria, Jenny, Tingting, Xiaoxiao, and the other names in `src/practice/voices.ts`). That fallback is free and uses whatever the browser already has. It is not required for the 200 built-in sentences. If the clip and the device voice both fail, the page says so in English and 中文 instead of leaving the cat idle and silent. Hear it never needs the Whisper model.
 
 Piper is not run as WASM inside the page. A live Piper voice is about 60 MB per language, and it would be a second ONNX runtime next to Whisper. The same free voices, saved as 40 kbps MP3, stay small and play everywhere.
 
@@ -46,7 +48,7 @@ To rebuild the clips after a sentence edit, install Piper and ffmpeg, then run `
 
 Say it needs a microphone and a user gesture. Install the PWA or open the HTTPS site; a file:// page cannot use the mic.
 
-The first Say it needs a network once, for the 40 MB weights. After that, recognition is on the device. Hear it is offline as soon as the app shell and MP3s are cached.
+The first Say it needs a network once, for the 44 MB weights on this site. After that, recognition is on the device (Cache API). Hear it is offline as soon as the app shell and MP3s are cached, even if the voice model never loads.
 
 ## Install (PWA)
 

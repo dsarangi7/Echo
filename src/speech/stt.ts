@@ -1,7 +1,9 @@
 import type { Lang } from "../practice/types";
 import {
   DOWNLOAD_LABEL,
-  MODEL_HOSTS,
+  IDLE_MODEL_NOTE,
+  MODEL_LOAD_ERROR,
+  MODEL_UNSUPPORTED,
   READY_LABEL,
   formatDownloadProgress,
   whisperLanguage,
@@ -24,7 +26,7 @@ type OutMsg =
   | { type: "error"; id?: number; message: string };
 
 const listeners = new Set<(note: string) => void>();
-let note = DOWNLOAD_LABEL;
+let note = IDLE_MODEL_NOTE;
 let worker: Worker | null = null;
 let ready: Promise<void> | null = null;
 let seq = 0;
@@ -45,7 +47,7 @@ export function modelNote(): string {
   return note;
 }
 
-function spawn(host: string): Promise<void> {
+function spawn(): Promise<void> {
   return new Promise((resolve, reject) => {
     let settled = false;
     const fail = (err: Error) => {
@@ -94,37 +96,30 @@ function spawn(host: string): Promise<void> {
       }
     };
     next.onerror = () => fail(new Error("The on-device voice model could not start."));
-    next.postMessage({ type: "load", host });
+    next.postMessage({ type: "load" });
   });
 }
 
-async function loadWithFallback(): Promise<void> {
+async function loadLocal(): Promise<void> {
   if (typeof WebAssembly !== "object" || typeof Worker === "undefined") {
-    publish("This browser cannot run the on-device voice model. 这个浏览器跑不了本地语音模型。");
+    publish(MODEL_UNSUPPORTED);
     throw new Error("WebAssembly or Worker missing");
   }
   publish(DOWNLOAD_LABEL);
-  let last: unknown;
-  for (const host of MODEL_HOSTS) {
-    try {
-      await spawn(host);
-      return;
-    } catch (err) {
-      last = err;
-      worker?.terminate();
-      worker = null;
-    }
+  try {
+    await spawn();
+  } catch (err) {
+    worker?.terminate();
+    worker = null;
+    publish(MODEL_LOAD_ERROR);
+    throw err instanceof Error ? err : new Error("Voice model load failed");
   }
-  publish(
-    "Could not download the free voice model. Connect once, then it stays on this device. 免费语音模型没下完。连一次网，之后就留在这台设备上。",
-  );
-  throw last instanceof Error ? last : new Error("Voice model download failed");
 }
 
-/** Hypothesis H2: one shared load, cached by Transformers.js in the Cache API. */
+/** Hypothesis H2: one shared load. Transformers.js keeps the bytes in the Cache API after the first fetch from this site. */
 export function ensureModel(): Promise<void> {
   if (!ready) {
-    const attempt = loadWithFallback().catch((err: unknown) => {
+    const attempt = loadLocal().catch((err: unknown) => {
       if (ready === attempt) ready = null;
       throw err;
     });

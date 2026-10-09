@@ -5,8 +5,9 @@ import { loadIndexes, loadLang, saveIndexes, saveLang } from "./storage";
 import type { CaptureHandle } from "../speech/record";
 import { startCapture } from "../speech/record";
 import { resampleTo16k } from "../speech/resample";
+import { IDLE_MODEL_NOTE } from "../speech/model";
 import { ensureModel, subscribeModel, transcribe } from "../speech/stt";
-import { speakLine, stopSpeaking } from "../speech/tts";
+import { HEAR_FAIL, speakLine, stopSpeaking } from "../speech/tts";
 import type { CatMode, Lang, Sentence } from "./types";
 
 const PROMPT_EN = "Tap Hear it, then Say it. 先听一听，再说一说。";
@@ -25,7 +26,7 @@ export function usePractice() {
   const [kicker, setKicker] = useState("Practice");
   const [heard, setHeard] = useState(() => (loadLang() === "en" ? PROMPT_EN : PROMPT_ZH));
   const [score, setScore] = useState("");
-  const [modelNote, setModelNote] = useState("Downloading free voice model…");
+  const [modelNote, setModelNote] = useState(IDLE_MODEL_NOTE);
   const [listening, setListening] = useState(false);
   const [runtimeError, setRuntimeError] = useState("");
 
@@ -84,7 +85,6 @@ export function usePractice() {
     const onError = (event: ErrorEvent) => setRuntimeError(event.message || "error");
     window.addEventListener("error", onError);
     const unsubscribe = subscribeModel(setModelNote);
-    void ensureModel().catch(() => undefined);
     return () => {
       synth?.removeEventListener("voiceschanged", onVoices);
       window.removeEventListener("error", onError);
@@ -162,7 +162,7 @@ export function usePractice() {
       },
       onUnavailable: () => {
         if (token !== tokenRef.current) return;
-        noteFailure("This browser cannot play speech. 这个浏览器不能朗读。");
+        noteFailure(HEAR_FAIL);
       },
     });
   }, [clearTimers, noteFailure]);
@@ -172,6 +172,7 @@ export function usePractice() {
       captureRef.current.finish();
       return;
     }
+    void ensureModel().catch(() => undefined);
     let audioCtx: AudioContext;
     try {
       audioCtx = new AudioContext();

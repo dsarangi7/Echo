@@ -1,9 +1,9 @@
 /// <reference lib="webworker" />
 
 import { env, pipeline } from "@xenova/transformers";
-import { WHISPER_MODEL } from "./model";
+import { WHISPER_MODEL, configureLocalWhisper, type LocalTransformerEnv } from "./model";
 
-type LoadMsg = { type: "load"; host: string };
+type LoadMsg = { type: "load" };
 type TranscribeMsg = {
   type: "transcribe";
   id: number;
@@ -28,8 +28,7 @@ wasm.numThreads = 1;
 if ("proxy" in wasm) wasm.proxy = false;
 wasm.wasmPaths = new URL(`${import.meta.env.BASE_URL}onnx/`, self.location.origin).toString();
 
-env.allowLocalModels = false;
-env.useBrowserCache = true;
+configureLocalWhisper(env as unknown as LocalTransformerEnv, self.location.origin, import.meta.env.BASE_URL);
 
 type Runner = (
   audio: Float32Array,
@@ -50,7 +49,6 @@ function textOf(result: { text?: string } | Array<{ text?: string }>): string {
 self.onmessage = (event: MessageEvent<InMsg>) => {
   const data = event.data;
   if (data.type === "load") {
-    env.remoteHost = data.host;
     void pipeline("automatic-speech-recognition", WHISPER_MODEL, {
       quantized: true,
       progress_callback: (update: ProgressEvent) => {

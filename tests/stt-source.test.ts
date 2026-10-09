@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { WHISPER_MODEL } from "../src/speech/model";
+import { VENDORED_WHISPER_FILES, WHISPER_MODEL } from "../src/speech/model";
 
 function filesUnder(dir: string): string[] {
   const out: string[] = [];
@@ -26,6 +26,46 @@ describe("Say it does not use Google speech recognition", () => {
 
   it("names the on-device Whisper tiny model", () => {
     expect(WHISPER_MODEL).toBe("Xenova/whisper-tiny");
+  });
+
+  it("does not fetch the voice model from a remote hub", () => {
+    const sources = filesUnder("src/speech").filter((path) => /\.ts$/.test(path));
+    expect(sources.length).toBeGreaterThan(3);
+    for (const path of sources) {
+      const text = readFileSync(path, "utf8");
+      expect(text, path).not.toMatch(/huggingface\.co/);
+      expect(text, path).not.toMatch(/hf-mirror\.com/);
+    }
+    const worker = readFileSync("src/speech/whisper.worker.ts", "utf8");
+    expect(worker).toContain("configureLocalWhisper");
+    expect(worker).not.toContain("allowLocalModels = false");
+    const practice = readFileSync("src/practice/usePractice.ts", "utf8");
+    const hear = practice.slice(practice.indexOf("const hear"), practice.indexOf("const sayIt"));
+    expect(hear).not.toContain("ensureModel");
+    expect(practice.slice(practice.indexOf("const sayIt"))).toContain("ensureModel()");
+    expect(practice.slice(practice.indexOf("useEffect(() => {\n    const synth"), practice.indexOf("const jump"))).not.toContain(
+      "ensureModel",
+    );
+  });
+});
+
+describe("vendored whisper tiny", () => {
+  const root = `public/models/${WHISPER_MODEL}`;
+
+  it("ships the quantized files Transformers.js requests", () => {
+    for (const file of VENDORED_WHISPER_FILES) {
+      const path = join(root, file);
+      const size = statSync(path).size;
+      const head = readFileSync(path).subarray(0, 48).toString("utf8");
+      expect(head, path).not.toContain("git-lfs");
+      expect(head.startsWith("<"), path).toBe(false);
+      if (file.endsWith(".onnx")) expect(size, path).toBeGreaterThan(1_000_000);
+      else expect(size, path).toBeGreaterThan(100);
+    }
+    expect(statSync(join(root, "onnx/encoder_model_quantized.onnx")).size).toBe(10_124_910);
+    expect(statSync(join(root, "onnx/decoder_model_merged_quantized.onnx")).size).toBe(30_727_765);
+    const config = JSON.parse(readFileSync(join(root, "config.json"), "utf8")) as { model_type?: string };
+    expect(config.model_type).toBe("whisper");
   });
 });
 
