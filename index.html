@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>课猫 Echo · English practice</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23121212'/%3E%3Cpath d='M4 7 L6 3 L8 7 M8 7 L10 3 L12 7' fill='%239a9a9a'/%3E%3Ccircle cx='6.2' cy='9' r='1' fill='%23fff'/%3E%3Ccircle cx='9.8' cy='9' r='1' fill='%23fff'/%3E%3Crect x='5' y='12' width='6' height='1' fill='%23C8FF3D'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #121212;
+    --card: #181818;
+    --line: #2c2c2c;
+    --text: #f5f5f5;
+    --muted: #b5b5b5;
+    --neon: #C8FF3D;
+    --bad: #ff5a4f;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 28px 28px 40px; }
+  header.top { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: 22px; }
+  h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin: 0; }
+  .tag { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+  .stage { display: grid; grid-template-columns: 430px 1fr; gap: 18px; align-items: stretch; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px 18px 20px; }
+  .cat-card { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .cat-card.listen, .cat-card.talk { box-shadow: inset 0 0 0 2px var(--neon); }
+  canvas { display: block; width: 376px; height: 456px; max-width: 100%; }
+  .nameplate {
+    width: 100%;
+    margin-top: 4px;
+    background: var(--neon);
+    color: #121212;
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .nameplate strong { font-size: 18px; }
+  .nameplate span { font-size: 13px; font-weight: 700; }
+  .sets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .set {
+    appearance: none;
+    border: 1px solid #3a3a3a;
+    background: transparent;
+    color: var(--text);
+    border-radius: 999px;
+    padding: 6px 12px 5px;
+    cursor: pointer;
+    font: inherit;
+    line-height: 1.15;
+    text-align: left;
+  }
+  .set b { display: block; font-size: 13px; font-weight: 700; }
+  .set small { display: block; font-size: 11px; color: var(--muted); font-weight: 500; }
+  .set.on { background: var(--neon); border-color: var(--neon); color: #121212; }
+  .set.on small { color: #243000; }
+  .set:hover { border-color: var(--neon); }
+  .topline { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+  #setlabel { margin: 0; font-size: 15px; color: var(--muted); }
+  #setlabel b { color: var(--text); font-size: 16px; margin-right: 6px; }
+  #progress { margin: 0; color: var(--neon); font-weight: 750; font-size: 22px; font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+  .sentence {
+    margin: 8px 0 0;
+    font-size: clamp(28px, 3vw, 40px);
+    line-height: 1.35;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    min-height: 2.7em;
+  }
+  .sentence .ok { background: var(--neon); color: #121212; border-radius: 6px; padding: 0 0.08em; }
+  .sentence .bad { background: var(--bad); color: #fff; border-radius: 6px; padding: 0 0.08em; }
+  .zh { margin: 12px 0 0; color: #d2d2d2; font-size: 18px; line-height: 1.45; min-height: 1.45em; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+  button.act {
+    appearance: none;
+    border-radius: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    font: inherit;
+    line-height: 1.15;
+    text-align: center;
+    min-width: 92px;
+  }
+  button.act b { display: block; font-size: 16px; font-weight: 750; }
+  button.act small { display: block; margin-top: 3px; font-size: 12px; font-weight: 600; opacity: 0.8; }
+  button.primary { background: var(--neon); color: #121212; border: 1px solid var(--neon); flex: 1 1 140px; }
+  button.primary:hover { filter: brightness(1.06); }
+  button.ghost { background: transparent; color: var(--text); border: 1px solid #3a3a3a; }
+  button.ghost:hover { border-color: var(--neon); color: var(--neon); }
+  button.act:focus-visible, .set:focus-visible { outline: 2px solid var(--neon); outline-offset: 2px; }
+  .chrome-note { margin: 14px 0 0; color: var(--neon); font-size: 14px; }
+  .chrome-note[hidden] { display: none; }
+  .legend { margin: 14px 0 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
+  .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 4px 0 8px; vertical-align: -1px; }
+  .sw.ok { background: var(--neon); margin-left: 0; }
+  .sw.bad { background: var(--bad); }
+  .result {
+    margin-top: 16px;
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+    min-height: 92px;
+  }
+  .kicker { margin: 0; color: var(--muted); font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
+  #heard { margin: 6px 0 0; font-size: 18px; line-height: 1.4; }
+  #score { margin: 8px 0 0; font-size: 20px; font-weight: 750; font-variant-numeric: tabular-nums; }
+  .keys { margin: 14px 0 0; color: #8d8d8d; font-size: 12px; }
+  footer.note { margin-top: 18px; color: #9a9a9a; font-size: 13px; line-height: 1.55; }
+  #err { color: var(--bad); margin: 8px 0 0; }
+  #err:empty { display: none; }
+  @media (max-width: 900px) {
+    .stage { grid-template-columns: 1fr; }
+    canvas { width: min(376px, 100%); height: auto; }
+    .wrap { padding: 18px 14px 32px; }
+    h1 { font-size: 22px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>课猫 Echo · English practice</h1>
+      <p class="tag">100 句口语 · 听一句，再说一遍</p>
+    </div>
+  </header>
+  <div class="stage">
+    <section class="card cat-card" id="cat-card">
+      <canvas id="cat" width="376" height="456" role="img" aria-label="课猫 Echo, an original pixel cat"></canvas>
+      <div class="nameplate">
+        <strong>课猫 Echo</strong>
+        <span id="mode">待命 · idle</span>
+      </div>
+    </section>
+    <section class="card">
+      <div class="sets" id="sets"></div>
+      <div class="topline">
+        <p id="setlabel"></p>
+        <p id="progress">1 / 100</p>
+      </div>
+      <p class="sentence" id="sentence" lang="en"></p>
+      <p class="zh" id="zh"></p>
+      <div class="actions">
+        <button type="button" class="act ghost" id="prev"><b>Previous</b><small>上一句</small></button>
+        <button type="button" class="act primary" id="hear"><b>Hear it</b><small>听一听</small></button>
+        <button type="button" class="act primary" id="say"><b>Say it</b><small>说一说</small></button>
+        <button type="button" class="act ghost" id="next"><b>Next</b><small>下一句</small></button>
+      </div>
+      <p class="chrome-note" id="chrome-note" hidden>this listen button needs Chrome.</p>
+      <p class="legend"><span class="sw ok"></span>听到了这个词 heard<span class="sw bad"></span>没对上 missing</p>
+      <p class="legend">没有口音分数。浏览器若把 twenty 写成 20，也算这个词。</p>
+      <div class="result" id="result" aria-live="polite">
+        <p class="kicker" id="kicker">Practice</p>
+        <p id="heard">点「听一听」，再点「说一说」。 Hear it, then say it.</p>
+        <p id="score"></p>
+      </div>
+      <p class="keys">← → 换句子 · arrow keys change the sentence</p>
+      <p id="err"></p>
+    </section>
+  </div>
+  <footer class="note">这是课堂演示，猫是原创像素画，不是 Talking Tom。听写对的是词，不是口音分数。 / Class demo. Original pixel cat, not Talking Tom. It checks words, not a mouth-sound score.</footer>
+</div>
+<script id="pack" type="application/json">
+[
+  {
+    "set": "Meetings",
+    "zhSet": "开会",
+    "en": "Can we start in five minutes?",
+    "zh": "我们五分钟后开始，可以吗？"
+  },
+  {
+    "set": "Meetings",
+    "zhSet": "开会",
+    "en": "Please keep this meeting short.",
+    "zh": "这次会我们开短一点。"
+  },
+  {
+    "set": "Meetings",
+    "zhSet": "开会",
+    "en": "Could you walk us through the plan?",
+    "zh": "你能带我们过一遍这个计划吗？"
+  },
+  {
+    "set": "Meetings",
+    "zhSet": "开会",
+    "en": "I have one question before we move on.",
+    "zh": "继续之前，我有一个问题。"
+  },
+  {
+    "set": "Meetings",
+    "zhSet": "开会",
+    "en": "We can park that and come back later.",
+    "zh": "这个先放一放，回头再说。"
+  },
+  {
+    "set": "Meetings",
+    "zhSet": "开会",
+    "en": "Who is taking the notes today?",
+    "zh": "今天谁做记录？"
+  },
+  {
+    "set": "Meetings",
+    "zhSet": "开会",
+    "en": "Can we confirm the action items?",
+    "zh": "我们确认一下待办，可以吗？"
+  },
+  {
+    "set": "Meetings",
+    "zhSet": "开会",
+    "en": "I will send the minutes after this.",
+    "zh": "会后我把纪要发出去。"
+  },
+  {
+    "set": "Meetings",
+    "zhSet": "开会",
+    "en": "Does Thursday afternoon work for you?",
+    "zh": "周四下午你有空吗？"
+  },
+  {
+    "set": "Meetings",
+    "zhSet": "开会",
+    "en": "Thank you, that is all from my side.",
+    "zh": "谢谢，我这边就这些。"
+  },
+  {
+    "set": "Email",
+    "zhSet": "邮件",
+    "en": "Please see the file I attached.",
+    "zh": "请看我附上的文件。"
+  },
+  {
+    "set": "Email",
+    "zhSet": "邮件",
+    "en": "I am writing to follow up.",
+    "zh": "我来跟进一下。"
+  },
+  {
+    "set": "Email",
+    "zhSet": "邮件",
+    "en": "Could you reply by Friday?",
+    "zh": "能在周五前回复吗？"
+  },
+  {
+    "set": "Email",
+    "zhSet": "邮件",
+    "en": "Please copy the team on this email.",
+    "zh": "请把这封邮件抄送给团队。"
+  },
+  {
+    "set": "Email",
+    "zhSet": "邮件",
+    "en": "Sorry for the late reply.",
+    "zh": "抱歉，回复晚了。"
+  },
+  {
+    "set": "Email",
+    "zhSet": "邮件",
+    "en": "I updated the sheet. Please take a look.",
+    "zh": "表格我改好了，请看一下。"
+  },
+  {
+    "set": "Email",
+    "zhSet": "邮件",
+    "en": "Let me know if anything is unclear.",
+    "zh": "有不清楚的地方告诉我。"
+  },
+  {
+    "set": "Email",
+    "zhSet": "邮件",
+    "en": "I will send a short summary today.",
+    "zh": "我今天发一份简短总结。"
+  },
+  {
+    "set": "Email",
+    "zhSet": "邮件",
+    "en": "Could you forward this to the warehouse?",
+    "zh": "你能把这个转给仓库吗？"
+  },
+  {
+    "set": "Email",
+    "zhSet": "邮件",
+    "en": "Thank you for your help on this.",
+    "zh": "谢谢你帮这个忙。"
+  },
+  {
+    "set": "Numbers",
+    "zhSet": "数字",
+    "en": "The meeting starts at nine thirty.",
+    "zh": "会议九点半开始。"
+  },
+  {
+    "set": "Numbers",
+    "zhSet": "数字",
+    "en": "We need twenty cells for this sample.",
+    "zh": "这个样品要二十个电芯。"
+  },
+  {
+    "set": "Numbers",
+    "zhSet": "数字",
+    "en": "Please book the room for one hour.",
+    "zh": "请把会议室订一个小时。"
+  },
+  {
+    "set": "Numbers",
+    "zhSet": "数字",
+    "en": "The report is due next Thursday.",
+    "zh": "报告下周四要交。"
+  },
+  {
+    "set": "Numbers",
+    "zhSet": "数字",
+    "en": "We shipped three pallets last week.",
+    "zh": "上周我们发了三个托盘。"
+  },
+  {
+    "set": "Numbers",
+    "zhSet": "数字",
+    "en": "The test ran for forty eight hours.",
+    "zh": "这个测试跑了四十八个小时。"
+  },
+  {
+    "set": "Numbers",
+    "zhSet": "数字",
+    "en": "Please check row fifteen on the sheet.",
+    "zh": "请看表格第十五行。"
+  },
+  {
+    "set": "Numbers",
+    "zhSet": "数字",
+    "en": "We are short two boxes.",
+    "zh": "我们少了两箱。"
+  },
+  {
+    "set": "Numbers",
+    "zhSet": "数字",
+    "en": "The call is at two fifteen.",
+    "zh": "电话是两点十五分。"
+  },
+  {
+    "set": "Numbers",
+    "zhSet": "数字",
+    "en": "Please round it to one decimal place.",
+    "zh": "请保留一位小数。"
+  },
+  {
+    "set": "Factory",
+    "zhSet": "车间",
+    "en": "The line starts at eight.",
+    "zh": "产线八点开工。"
+  },
+  {
+    "set": "Factory",
+    "zhSet": "车间",
+    "en": "Please wear your safety shoes.",
+    "zh": "请穿安全鞋。"
+  },
+  {
+    "set": "Factory",
+    "zhSet": "车间",
+    "en": "This cell is still in testing.",
+    "zh": "这个电芯还在测试。"
+  },
+  {
+    "set": "Factory",
+    "zhSet": "车间",
+    "en": "We paused the line for a check.",
+    "zh": "我们停线做了个检查。"
+  },
+  {
+    "set": "Factory",
+    "zhSet": "车间",
+    "en": "Please label the tray before you move it.",
+    "zh": "托盘搬走之前请先贴标签。"
+  },
+  {
+    "set": "Factory",
+    "zhSet": "车间",
+    "en": "The shift handoff is at six.",
+    "zh": "六点交接班。"
+  },
+  {
+    "set": "Factory",
+    "zhSet": "车间",
+    "en": "Please keep the aisle clear.",
+    "zh": "过道请保持通畅。"
+  },
+  {
+    "set": "Factory",
+    "zhSet": "车间",
+    "en": "This batch is waiting for inspection.",
+    "zh": "这一批在等检验。"
+  },
+  {
+    "set": "Factory",
+    "zhSet": "车间",
+    "en": "Please write the result on the sheet.",
+    "zh": "请把结果写在表上。"
+  },
+  {
+    "set": "Factory",
+    "zhSet": "车间",
+    "en": "The tool is back on the bench.",
+    "zh": "工具已经放回工作台了。"
+  },
+  {
+    "set": "Shipping",
+    "zhSet": "出货",
+    "en": "The packing list is on the desk.",
+    "zh": "装箱单在桌上。"
+  },
+  {
+    "set": "Shipping",
+    "zhSet": "出货",
+    "en": "Please count the cartons again.",
+    "zh": "请再数一遍箱子。"
+  },
+  {
+    "set": "Shipping",
+    "zhSet": "出货",
+    "en": "This pallet is ready to ship.",
+    "zh": "这个托盘可以发货了。"
+  },
+  {
+    "set": "Shipping",
+    "zhSet": "出货",
+    "en": "The truck arrives at ten.",
+    "zh": "货车十点到。"
+  },
+  {
+    "set": "Shipping",
+    "zhSet": "出货",
+    "en": "Please seal the box before it leaves.",
+    "zh": "箱子出去之前请封好。"
+  },
+  {
+    "set": "Shipping",
+    "zhSet": "出货",
+    "en": "We need the booking number today.",
+    "zh": "订舱号今天要拿到。"
+  },
+  {
+    "set": "Shipping",
+    "zhSet": "出货",
+    "en": "The container is half full.",
+    "zh": "集装箱装了一半。"
+  },
+  {
+    "set": "Shipping",
+    "zhSet": "出货",
+    "en": "Please mark this box as fragile.",
+    "zh": "请在这个箱子上标明易碎。"
+  },
+  {
+    "set": "Shipping",
+    "zhSet": "出货",
+    "en": "The papers go with the shipment.",
+    "zh": "文件和货一起走。"
+  },
+  {
+    "set": "Shipping",
+    "zhSet": "出货",
+    "en": "Please confirm the delivery date.",
+    "zh": "请确认交货日期。"
+  },
+  {
+    "set": "Quality",
+    "zhSet": "质量",
+    "en": "This unit did not pass the check.",
+    "zh": "这个没通过检查。"
+  },
+  {
+    "set": "Quality",
+    "zhSet": "质量",
+    "en": "Please hold this batch for review.",
+    "zh": "请把这一批先扣下复查。"
+  },
+  {
+    "set": "Quality",
+    "zhSet": "质量",
+    "en": "We found a scratch on the case.",
+    "zh": "外壳上有一道划痕。"
+  },
+  {
+    "set": "Quality",
+    "zhSet": "质量",
+    "en": "This reading is outside the range.",
+    "zh": "这个读数超出范围了。"
+  },
+  {
+    "set": "Quality",
+    "zhSet": "质量",
+    "en": "Please test this sample again.",
+    "zh": "请把这个样品再测一次。"
+  },
+  {
+    "set": "Quality",
+    "zhSet": "质量",
+    "en": "The label does not match the sheet.",
+    "zh": "标签和表格对不上。"
+  },
+  {
+    "set": "Quality",
+    "zhSet": "质量",
+    "en": "We need a clear photo of the mark.",
+    "zh": "这个痕迹需要一张清楚的照片。"
+  },
+  {
+    "set": "Quality",
+    "zhSet": "质量",
+    "en": "Please separate the failed units.",
+    "zh": "请把不合格的分开。"
+  },
+  {
+    "set": "Quality",
+    "zhSet": "质量",
+    "en": "The check is complete.",
+    "zh": "检查做完了。"
+  },
+  {
+    "set": "Quality",
+    "zhSet": "质量",
+    "en": "I will log this in the quality note.",
+    "zh": "我会记进质量记录里。"
+  },
+  {
+    "set": "Polite pushback",
+    "zhSet": "委婉说不",
+    "en": "I see your point, but the date is tight.",
+    "zh": "我明白你的意思，但日期很紧。"
+  },
+  {
+    "set": "Polite pushback",
+    "zhSet": "委婉说不",
+    "en": "Could we look at another option?",
+    "zh": "我们能不能看另一个办法？"
+  },
+  {
+    "set": "Polite pushback",
+    "zhSet": "委婉说不",
+    "en": "I am not sure that will work.",
+    "zh": "我不确定那样行得通。"
+  },
+  {
+    "set": "Polite pushback",
+    "zhSet": "委婉说不",
+    "en": "Let me check before I answer.",
+    "zh": "我先核对一下再答复。"
+  },
+  {
+    "set": "Polite pushback",
+    "zhSet": "委婉说不",
+    "en": "We may need more time for this.",
+    "zh": "这件事我们可能还要一点时间。"
+  },
+  {
+    "set": "Polite pushback",
+    "zhSet": "委婉说不",
+    "en": "That is not what the sheet shows.",
+    "zh": "表格上不是这样的。"
+  },
+  {
+    "set": "Polite pushback",
+    "zhSet": "委婉说不",
+    "en": "Can we slow down for a minute?",
+    "zh": "我们能慢一点吗？"
+  },
+  {
+    "set": "Polite pushback",
+    "zhSet": "委婉说不",
+    "en": "I want to confirm that with the team.",
+    "zh": "我想先跟团队确认一下。"
+  },
+  {
+    "set": "Polite pushback",
+    "zhSet": "委婉说不",
+    "en": "We can do it, but not by tomorrow.",
+    "zh": "能做，但明天来不及。"
+  },
+  {
+    "set": "Polite pushback",
+    "zhSet": "委婉说不",
+    "en": "Please give me a moment to look.",
+    "zh": "请给我一点时间看一下。"
+  },
+  {
+    "set": "Small talk",
+    "zhSet": "寒暄",
+    "en": "Good morning. How are you today?",
+    "zh": "早上好，你今天怎么样？"
+  },
+  {
+    "set": "Small talk",
+    "zhSet": "寒暄",
+    "en": "Did you have a good weekend?",
+    "zh": "周末过得好吗？"
+  },
+  {
+    "set": "Small talk",
+    "zhSet": "寒暄",
+    "en": "The office is quiet this morning.",
+    "zh": "今天早上办公室挺安静。"
+  },
+  {
+    "set": "Small talk",
+    "zhSet": "寒暄",
+    "en": "Would you like some tea?",
+    "zh": "要不要喝点茶？"
+  },
+  {
+    "set": "Small talk",
+    "zhSet": "寒暄",
+    "en": "I am heading to lunch. Want to join?",
+    "zh": "我去吃午饭，一起吗？"
+  },
+  {
+    "set": "Small talk",
+    "zhSet": "寒暄",
+    "en": "It is hot outside today.",
+    "zh": "今天外面很热。"
+  },
+  {
+    "set": "Small talk",
+    "zhSet": "寒暄",
+    "en": "See you after the break.",
+    "zh": "休息后再见。"
+  },
+  {
+    "set": "Small talk",
+    "zhSet": "寒暄",
+    "en": "Thank you for waiting.",
+    "zh": "谢谢你等我。"
+  },
+  {
+    "set": "Small talk",
+    "zhSet": "寒暄",
+    "en": "Have a good evening.",
+    "zh": "晚上愉快。"
+  },
+  {
+    "set": "Small talk",
+    "zhSet": "寒暄",
+    "en": "Nice to meet you.",
+    "zh": "很高兴见到你。"
+  },
+  {
+    "set": "Instructions",
+    "zhSet": "怎么做",
+    "en": "Please open the sheet on the shared drive.",
+    "zh": "请打开共享盘里的那张表。"
+  },
+  {
+    "set": "Instructions",
+    "zhSet": "怎么做",
+    "en": "Click the second tab, then filter by date.",
+    "zh": "点第二个工作表，再按日期筛选。"
+  },
+  {
+    "set": "Instructions",
+    "zhSet": "怎么做",
+    "en": "Please save a copy before you edit.",
+    "zh": "改之前请先另存一份。"
+  },
+  {
+    "set": "Instructions",
+    "zhSet": "怎么做",
+    "en": "Type the date in this column.",
+    "zh": "把日期填在这一列。"
+  },
+  {
+    "set": "Instructions",
+    "zhSet": "怎么做",
+    "en": "Please do not overwrite the old file.",
+    "zh": "请不要覆盖旧文件。"
+  },
+  {
+    "set": "Instructions",
+    "zhSet": "怎么做",
+    "en": "Please highlight the empty cells.",
+    "zh": "请把空格子标出来。"
+  },
+  {
+    "set": "Instructions",
+    "zhSet": "怎么做",
+    "en": "Sort the list from old to new.",
+    "zh": "把列表从旧到新排一下。"
+  },
+  {
+    "set": "Instructions",
+    "zhSet": "怎么做",
+    "en": "Leave the price cells blank.",
+    "zh": "价格那几格留空。"
+  },
+  {
+    "set": "Instructions",
+    "zhSet": "怎么做",
+    "en": "Please print one copy for the meeting.",
+    "zh": "开会用的请打一份。"
+  },
+  {
+    "set": "Instructions",
+    "zhSet": "怎么做",
+    "en": "Send me the file when you are done.",
+    "zh": "做完把文件发给我。"
+  },
+  {
+    "set": "Fixes",
+    "zhSet": "说错了改",
+    "en": "I think I said the wrong date.",
+    "zh": "我想我说错日期了。"
+  },
+  {
+    "set": "Fixes",
+    "zhSet": "说错了改",
+    "en": "Let me say that one more time.",
+    "zh": "我再说一遍。"
+  },
+  {
+    "set": "Fixes",
+    "zhSet": "说错了改",
+    "en": "Sorry, I meant next Monday, not this one.",
+    "zh": "抱歉，我说的是下周一，不是这周一。"
+  },
+  {
+    "set": "Fixes",
+    "zhSet": "说错了改",
+    "en": "Could you say that more slowly?",
+    "zh": "你能说慢一点吗？"
+  },
+  {
+    "set": "Fixes",
+    "zhSet": "说错了改",
+    "en": "I did not catch the last word.",
+    "zh": "最后一个词我没听清。"
+  },
+  {
+    "set": "Fixes",
+    "zhSet": "说错了改",
+    "en": "Did you say pallet or packet?",
+    "zh": "你说的是托盘，还是包裹？"
+  },
+  {
+    "set": "Fixes",
+    "zhSet": "说错了改",
+    "en": "Let me check my notes.",
+    "zh": "我看一下我的笔记。"
+  },
+  {
+    "set": "Fixes",
+    "zhSet": "说错了改",
+    "en": "You are right. I missed that row.",
+    "zh": "你说得对，我漏了那一行。"
+  },
+  {
+    "set": "Fixes",
+    "zhSet": "说错了改",
+    "en": "Can we go back one step?",
+    "zh": "我们能退回上一步吗？"
+  },
+  {
+    "set": "Fixes",
+    "zhSet": "说错了改",
+    "en": "I will correct it and send a new file.",
+    "zh": "我改好再发一个新文件。"
+  }
+]
+</script>
+<script>
+(function () {
+  const pack = JSON.parse(document.getElementById("pack").textContent);
+  const canvas = document.getElementById("cat");
+  const ctx = canvas.getContext("2d");
+  const card = document.getElementById("cat-card");
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const OUT = "#101010";
+  const GRAY = "#b3b3b3";
+  const LGRAY = "#cfcfcf";
+  const DGRAY = "#6a6a6a";
+  const WHITE = "#f7f7f7";
+  const PINK = "#ffb0be";
+  const NOSE = "#ff7a96";
+  const NOSED = "#c44d6c";
+  const IRIS = "#7ED957";
+  const RING = "#C8FF3D";
+  const PUPIL = "#101010";
+  const HILITE = "#ffffff";
+  const MOUTH = "#1a1516";
+  const TONGUE = "#ec6684";
+  const NEON = "#C8FF3D";
+  const BELL = "#2a2a2a";
+  const CHEEK = "#e89aa6";
+
+  const SCALE = 8;
+  const MINX = 0;
+  const MINY = 0;
+  const CAM_W = 47;
+  const CAM_H = 57;
+  const DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+  canvas.width = CAM_W * SCALE * DPR;
+  canvas.height = CAM_H * SCALE * DPR;
+
+  const PAL = {
+    "#": OUT,
+    "g": GRAY,
+    "l": LGRAY,
+    "d": DGRAY,
+    "w": WHITE,
+    "p": PINK,
+    "n": NOSE,
+    "r": NOSED,
+    "i": IRIS,
+    "y": RING,
+    "k": PUPIL,
+    "h": HILITE,
+    "m": MOUTH,
+    "t": TONGUE,
+    "o": NEON,
+    "b": BELL,
+    "c": CHEEK,
+    ".": null
+  };
+
+  function Pix() { this.m = Object.create(null); }
+  Pix.prototype.set = function (x, y, c) { if (c) this.m[x + "," + y] = c; };
+  Pix.prototype.has = function (x, y) { return (x + "," + y) in this.m; };
+  Pix.prototype.get = function (x, y) { return this.m[x + "," + y]; };
+
+  function stamp(pix, ox, oy, rows) {
+    for (let y = 0; y < rows.length; y++) {
+      const row = rows[y];
+      for (let x = 0; x < row.length; x++) {
+        const c = PAL[row[x]];
+        if (c) pix.set(ox + x, oy + y, c);
+      }
+    }
+  }
+
+  /* Hand-authored sitting mascot: head, ears, torso, haunches, front paws. */
+  const TORSO = [
+    ".........##..........##.............",
+    "........#pp#........#pp#............",
+    ".......#pppg#......#gppp#...........",
+    "......#ggggg##....##ggggg#..........",
+    ".....#lgggggg######ggggggl#.........",
+    "....#ggddggggggggggggggddgg#........",
+    "...#gggggggggggggggggggggggg#.......",
+    "...#ggggggllllllllllgggggggg#.......",
+    "...#gggllwwwwwwwwwwwwllggggg#.......",
+    "...#ggglwwwwwwwwwwwwwwlggggg#.......",
+    "...#ggglwwcwwwwwwwwcwwlggggg#.......",
+    "...#ggglwwwwwwwwwwwwwwlggggg#.......",
+    "...#gggllwwwwwwwwwwwwllggggg#.......",
+    "....#gggllwwwwwwwwwlllggggg#........",
+    ".....#gggllllllllllllggggg#.........",
+    "......#gggggggggggggggggg#..........",
+    ".......##oooooooooooooo##...........",
+    ".........#oooooooooooo#.............",
+    "..........###bbbb###................",
+    ".........#gggggggggg#...............",
+    "........#lggggggggggl#..............",
+    ".......#ggggwwwwwwgggg#.............",
+    "......#ggggwwwwwwwwgggg#............",
+    ".....#ggddgwwwwwwwwgddgg#...........",
+    "....#ggggggwwwwwwwwgggggg#..........",
+    "...#gggggggwwwwwwgggggggg#..........",
+    "..#ggggggggggggggggggggggg#.........",
+    "..#ggggggggggggggggggggggg#.........",
+    "..#lgg##gggggggggggg##gggl#.........",
+    "..#gg#ww#gggggggggg#ww#ggg#.........",
+    "..#gg#ww#gggggggggg#ww#ggg#.........",
+    "...##wwww##########wwww##...........",
+    "....#wwww#........#wwww#............",
+    "....#wwww#........#wwww#............",
+    ".....#ww#..........#ww#.............",
+    "......##............##.............."
+  ];
+
+  function drawEyes(pix, ox, oy, mode, blink) {
+    const eyes = [[12, 9], [23, 9]];
+    eyes.forEach(function (e) {
+      const cx = ox + e[0];
+      const cy = oy + e[1];
+      if (blink && mode !== "talk") {
+        for (let x = -3; x <= 3; x++) {
+          pix.set(cx + x, cy, DGRAY);
+          pix.set(cx + x, cy + 1, WHITE);
+        }
+        pix.set(cx - 3, cy + 1, DGRAY);
+        pix.set(cx + 3, cy + 1, DGRAY);
+        return;
+      }
+      stamp(pix, cx - 3, cy - 2, [
+        ".wwwww.",
+        "wwwwwww",
+        "wwwwwww",
+        "wwwwwww",
+        ".wwwww."
+      ]);
+      if (mode === "listen") {
+        stamp(pix, cx - 2, cy - 1, [
+          ".iyi.",
+          "iykyi",
+          "iykyi",
+          ".iyi."
+        ]);
+        pix.set(cx - 1, cy - 1, HILITE);
+        pix.set(cx - 2, cy - 2, HILITE);
+      } else {
+        stamp(pix, cx - 2, cy - 1, [
+          ".iii.",
+          "iykyi",
+          "iykyi",
+          ".iii."
+        ]);
+        pix.set(cx - 1, cy - 1, HILITE);
+      }
+    });
+  }
+
+  function drawNose(pix, ox, oy) {
+    stamp(pix, ox + 15, oy + 11, [
+      ".nn.",
+      "nrrn",
+      ".rr."
+    ]);
+    pix.set(ox + 16, oy + 11, HILITE);
+  }
+
+  function drawMouth(pix, ox, oy, openMouth) {
+    if (!openMouth) {
+      stamp(pix, ox + 14, oy + 14, [
+        "m....m",
+        ".mmmm."
+      ]);
+      return;
+    }
+    stamp(pix, ox + 13, oy + 13, [
+      ".mmmmmm.",
+      "mmttttmm",
+      "mmttttmm",
+      ".mmmmmm."
+    ]);
+    pix.set(ox + 15, oy + 13, WHITE);
+    pix.set(ox + 18, oy + 13, WHITE);
+  }
+
+  function drawWhiskers(pix, ox, oy) {
+    [[-1, -1], [0, 0], [1, 1]].forEach(function (pair) {
+      const y = oy + 12 + pair[0];
+      const tip = pair[1];
+      for (let n = 1; n <= 5; n++) {
+        const dy = n >= 4 ? tip : 0;
+        pix.set(ox + 7 - n, y + dy, DGRAY);
+        pix.set(ox + 26 + n, y + dy, DGRAY);
+      }
+    });
+  }
+
+  function drawTail(pix, ox, oy, phase) {
+    const frames = [
+      [[29, 24], [30, 23], [31, 22], [32, 21], [33, 20], [34, 19], [34, 18], [33, 17], [32, 17], [31, 18]],
+      [[29, 24], [30, 23], [31, 22], [32, 20], [33, 19], [34, 18], [35, 17], [34, 16], [33, 16], [32, 17]],
+      [[29, 24], [30, 24], [31, 23], [32, 23], [33, 22], [34, 21], [35, 20], [35, 19], [34, 18], [33, 18]]
+    ];
+    const idx = phase === -1 ? 0 : (phase === 1 ? 2 : 1);
+    frames[idx].forEach(function (p, i) {
+      const col = i >= 8 ? WHITE : (i % 3 === 0 ? DGRAY : GRAY);
+      pix.set(ox + p[0], oy + p[1], col);
+      pix.set(ox + p[0], oy + p[1] + 1, col);
+      pix.set(ox + p[0] + 1, oy + p[1], col);
+    });
+  }
+
+  function drawListenExtras(pix, ox, oy) {
+    /* Neon ear-tip highlights + tiny mic glow */
+    pix.set(ox + 10, oy - 1, NEON);
+    pix.set(ox + 11, oy - 1, NEON);
+    pix.set(ox + 10, oy, NEON);
+    pix.set(ox + 24, oy - 1, NEON);
+    pix.set(ox + 25, oy - 1, NEON);
+    pix.set(ox + 25, oy, NEON);
+    pix.set(ox + 10, oy - 2, OUT);
+    pix.set(ox + 11, oy - 2, PINK);
+    pix.set(ox + 12, oy - 2, OUT);
+    pix.set(ox + 23, oy - 2, OUT);
+    pix.set(ox + 24, oy - 2, PINK);
+    pix.set(ox + 25, oy - 2, OUT);
+    stamp(pix, ox + 0, oy + 12, [
+      ".o.",
+      "ooo",
+      ".o.",
+      ".d.",
+      ".d."
+    ]);
+  }
+
+  function addOutline(pix) {
+    const extra = [];
+    Object.keys(pix.m).forEach(function (k) {
+      const parts = k.split(",");
+      const x = +parts[0], y = +parts[1];
+      if (pix.get(x, y) === OUT) return;
+      [[-1, 0], [1, 0], [0, -1], [0, 1]].forEach(function (d) {
+        if (!pix.has(x + d[0], y + d[1])) extra.push([x + d[0], y + d[1]]);
+      });
+    });
+    extra.forEach(function (p) {
+      if (!pix.has(p[0], p[1])) pix.set(p[0], p[1], OUT);
+    });
+  }
+
+  function buildCat(mode, blink, talkOpen, phase) {
+    const pix = new Pix();
+    const ox = 5;
+    const oy = 12;
+    stamp(pix, ox, oy, TORSO);
+    if (mode === "listen") drawListenExtras(pix, ox, oy);
+    drawEyes(pix, ox, oy, mode, blink);
+    drawNose(pix, ox, oy);
+    drawMouth(pix, ox, oy, talkOpen);
+    drawTail(pix, ox, oy, phase);
+    addOutline(pix);
+    drawWhiskers(pix, ox, oy);
+    if (!(blink && mode !== "talk")) {
+      [[12, 9], [23, 9]].forEach(function (e) {
+        pix.set(ox + e[0] - 1, oy + e[1] - 1, HILITE);
+      });
+    }
+    return pix;
+  }
+
+  function drawCat(t) {
+    const mode = catMode;
+    const blink = mode === "idle" && !reduced && (t % 4200) > 4060;
+    const talkOpen = mode === "talk" && (reduced || Math.floor(t / 160) % 2 === 0);
+    const phase = reduced ? 0 : (Math.floor(t / 650) % 3) - 1;
+    let up = 0;
+    if (!reduced) {
+      if (mode === "talk") up = Math.floor(t / 160) % 2 === 0 ? 1 : 0;
+      else if (mode === "idle" && Math.sin(t / 700) > 0.92) up = 1;
+    }
+    const pix = buildCat(mode, blink, talkOpen, phase);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    ctx.imageSmoothingEnabled = false;
+    ctx.fillStyle = "#181818";
+    ctx.fillRect(0, 0, CAM_W * SCALE, CAM_H * SCALE);
+    ctx.fillStyle = "rgba(0,0,0,0.45)";
+    ctx.beginPath();
+    ctx.ellipse((CAM_W * SCALE) / 2, CAM_H * SCALE - 28, 100, 11, 0, 0, Math.PI * 2);
+    ctx.fill();
+    Object.keys(pix.m).forEach(function (k) {
+      const parts = k.split(",");
+      const x = +parts[0], y = +parts[1];
+      const sx = (x - MINX) * SCALE;
+      const sy = (y - MINY) * SCALE - up * SCALE;
+      ctx.fillStyle = pix.m[k];
+      ctx.fillRect(sx, sy, SCALE, SCALE);
+    });
+  }
+
+  /*__PURE_START__*/
+  function normalize(s) {
+    let t = String(s || "").toLowerCase().replace(/[’‘]/g, "'");
+    const contractions = [
+      [/i'm/g, "i am"],
+      [/i'll/g, "i will"],
+      [/i've/g, "i have"],
+      [/i'd/g, "i would"],
+      [/don't/g, "do not"],
+      [/didn't/g, "did not"],
+      [/that's/g, "that is"],
+      [/it's/g, "it is"],
+      [/we're/g, "we are"],
+      [/you're/g, "you are"],
+      [/they're/g, "they are"],
+      [/can't/g, "cannot"],
+      [/won't/g, "will not"],
+      [/isn't/g, "is not"],
+      [/aren't/g, "are not"],
+      [/what's/g, "what is"],
+      [/let's/g, "let us"],
+      [/we've/g, "we have"]
+    ];
+    contractions.forEach(function (pair) { t = t.replace(pair[0], pair[1]); });
+    t = t.replace(/[^a-z0-9'\s]/g, " ").replace(/'/g, "").replace(/\s+/g, " ").trim();
+    if (!t) return [];
+    const ones = ["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
+    const tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+    function numToWords(n) {
+      if (n < 20) return [ones[n]];
+      if (n < 100) {
+        const ten = tens[Math.floor(n / 10)];
+        const one = n % 10;
+        return one ? [ten, ones[one]] : [ten];
+      }
+      if (n === 100) return ["one", "hundred"];
+      return [String(n)];
+    }
+    const out = [];
+    t.split(" ").forEach(function (raw) {
+      if (!raw) return;
+      if (/^\d+$/.test(raw)) {
+        const n = parseInt(raw, 10);
+        if (n <= 100) out.push.apply(out, numToWords(n));
+        else out.push(raw);
+        return;
+      }
+      out.push(raw);
+    });
+    return out;
+  }
+  function matchWords(targetWords, heardWords) {
+    const used = heardWords.map(function () { return false; });
+    const marks = targetWords.map(function () { return false; });
+    let h = 0;
+    for (let i = 0; i < targetWords.length; i++) {
+      let j = h;
+      while (j < heardWords.length && heardWords[j] !== targetWords[i]) j++;
+      if (j < heardWords.length) {
+        marks[i] = true;
+        used[j] = true;
+        h = j + 1;
+      }
+    }
+    for (let i = 0; i < targetWords.length; i++) {
+      if (marks[i]) continue;
+      const j = heardWords.findIndex(function (w, idx) { return !used[idx] && w === targetWords[i]; });
+      if (j >= 0) {
+        marks[i] = true;
+        used[j] = true;
+      }
+    }
+    return marks;
+  }
+  /*__PURE_END__*/
+
+  let index = 0;
+  let catMode = "idle";
+  let talkToken = 0;
+  let rec = null;
+  let marks = null;
+
+  const sentenceEl = document.getElementById("sentence");
+  const zhEl = document.getElementById("zh");
+  const progressEl = document.getElementById("progress");
+  const setLabelEl = document.getElementById("setlabel");
+  const heardEl = document.getElementById("heard");
+  const scoreEl = document.getElementById("score");
+  const kickerEl = document.getElementById("kicker");
+  const setsEl = document.getElementById("sets");
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SR) document.getElementById("chrome-note").hidden = false;
+  if (pack.length !== 100) document.getElementById("err").textContent = "Sentence pack is not 100.";
+
+  const setNames = [];
+  pack.forEach(function (item) {
+    if (setNames.indexOf(item.set) === -1) setNames.push(item.set);
+  });
+  setNames.forEach(function (name) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "set";
+    const first = pack.filter(function (p) { return p.set === name; })[0];
+    const b = document.createElement("b");
+    b.textContent = name;
+    const sm = document.createElement("small");
+    sm.textContent = first.zhSet;
+    btn.appendChild(b);
+    btn.appendChild(sm);
+    btn.addEventListener("click", function () {
+      const at = pack.findIndex(function (p) { return p.set === name; });
+      jump(at);
+    });
+    setsEl.appendChild(btn);
+  });
+
+  function current() { return pack[index]; }
+
+  function setCat(mode) {
+    catMode = mode;
+    const map = { idle: "待命 · idle", listen: "在听 · listening", talk: "在说 · speaking" };
+    document.getElementById("mode").textContent = map[mode] || mode;
+    card.classList.toggle("listen", mode === "listen");
+    card.classList.toggle("talk", mode === "talk");
+  }
+
+  function stopAudio() {
+    talkToken++;
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    if (rec) {
+      try { rec.onend = null; rec.abort(); } catch (e) {}
+      rec = null;
+    }
+    setCat("idle");
+  }
+
+  function renderSentence() {
+    const s = current().en;
+    const parts = s.match(/[A-Za-z0-9']+|[^A-Za-z0-9'\s]|\s+/g) || [];
+    sentenceEl.replaceChildren();
+    let wi = 0;
+    parts.forEach(function (part) {
+      if (/^[A-Za-z0-9']+$/.test(part)) {
+        const span = document.createElement("span");
+        span.textContent = part;
+        if (marks) span.className = marks[wi] ? "ok" : "bad";
+        sentenceEl.appendChild(span);
+        wi++;
+      } else {
+        sentenceEl.appendChild(document.createTextNode(part));
+      }
+    });
+  }
+
+  function render() {
+    const item = current();
+    renderSentence();
+    zhEl.textContent = item.zh;
+    progressEl.textContent = (index + 1) + " / " + pack.length;
+    setLabelEl.replaceChildren();
+    const b = document.createElement("b");
+    b.textContent = item.set;
+    setLabelEl.appendChild(b);
+    setLabelEl.appendChild(document.createTextNode(item.zhSet + " · " + (((index % 10) + 1)) + " / 10"));
+    const buttons = setsEl.querySelectorAll(".set");
+    buttons.forEach(function (btn) {
+      const on = btn.querySelector("b").textContent === item.set;
+      btn.classList.toggle("on", on);
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+  }
+
+  function resetPractice() {
+    marks = null;
+    kickerEl.textContent = "Practice";
+    heardEl.textContent = "点「听一听」，再点「说一说」。 Hear it, then say it.";
+    scoreEl.textContent = "";
+  }
+
+  function jump(nextIndex) {
+    stopAudio();
+    const n = pack.length;
+    index = ((nextIndex % n) + n) % n;
+    resetPractice();
+    render();
+  }
+
+  function pickVoice() {
+    const voices = window.speechSynthesis.getVoices();
+    const en = voices.filter(function (v) { return /^en(-|$)/i.test(v.lang || ""); });
+    const pool = en.length ? en : voices;
+    function score(v) {
+      const n = ((v.name || "") + " " + (v.voiceURI || "")).toLowerCase();
+      let s = 0;
+      if (/female|woman|girl|samantha|karen|moira|tessa|fiona|victoria|zira|susan|linda|hazel|serena|aria|jenny|michelle|google us english|salli|joanna|ivy|kimberly|kendra|nicole/.test(n)) s += 100;
+      if (/male|man|boy|david|mark|daniel|alex|fred|bruce|thomas|george|ravi|aaron|guy|matthew/.test(n)) s -= 80;
+      if (/en-us|en_us|united states|us english/.test(n) || (v.lang || "").toLowerCase() === "en-us") s += 20;
+      if (/en-gb|en_gb|british|uk english|en-au|australian/.test(n)) s += 8;
+      if (v.localService) s += 3;
+      return s;
+    }
+    pool.sort(function (a, b) { return score(b) - score(a); });
+    return pool[0] || null;
+  }
+
+  function hear() {
+    if (!window.speechSynthesis) {
+      kickerEl.textContent = "Note";
+      heardEl.textContent = "This browser cannot play speech. 这个浏览器不能朗读。";
+      scoreEl.textContent = "";
+      return;
+    }
+    if (rec) {
+      try { rec.onend = null; rec.abort(); } catch (e) {}
+      rec = null;
+    }
+    const token = ++talkToken;
+    const line = current().en;
+    window.speechSynthesis.cancel();
+    setTimeout(function () {
+      if (token !== talkToken) return;
+      const u = new SpeechSynthesisUtterance(line);
+      u.lang = "en-US";
+      const v = pickVoice();
+      if (v) u.voice = v;
+      u.rate = 0.9;
+      u.pitch = 1.12;
+      u.onstart = function () { if (token === talkToken) setCat("talk"); };
+      u.onend = function () { if (token === talkToken) setCat("idle"); };
+      u.onerror = function () { if (token === talkToken) setCat("idle"); };
+      window.speechSynthesis.speak(u);
+    }, 80);
+  }
+
+  function sayIt() {
+    if (!SR) {
+      document.getElementById("chrome-note").hidden = false;
+      return;
+    }
+    if (catMode === "listen" && rec) {
+      try { rec.abort(); } catch (e) {}
+      return;
+    }
+    talkToken++;
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    setCat("listen");
+    rec = new SR();
+    rec.lang = "en-US";
+    rec.interimResults = false;
+    rec.continuous = false;
+    rec.maxAlternatives = 1;
+    rec.onstart = function () { setCat("listen"); };
+    rec.onresult = function (ev) {
+      let text = "";
+      for (let i = ev.resultIndex; i < ev.results.length; i++) {
+        text += ev.results[i][0].transcript;
+      }
+      grade(text.trim());
+    };
+    rec.onerror = function (ev) {
+      if (!ev || ev.error === "aborted") return;
+      kickerEl.textContent = "Note";
+      scoreEl.textContent = "";
+      if (ev.error === "not-allowed" || ev.error === "service-not-allowed") {
+        heardEl.textContent = "Microphone is blocked. Allow the mic in Chrome, then try again. 麦克风被拦住了，请在 Chrome 里允许。";
+      } else if (ev.error === "no-speech") {
+        heardEl.textContent = "No speech heard. Try again. 没听到，再说一次。";
+      } else if (ev.error === "network") {
+        heardEl.textContent = "Chrome could not reach its speech service. Check the network and try again. 语音服务连不上，请检查网络。";
+      } else {
+        heardEl.textContent = "Could not hear that. Try again. 没听成，再试一次。";
+      }
+    };
+    rec.onend = function () {
+      if (catMode === "listen") setCat("idle");
+    };
+    try { rec.start(); }
+    catch (e) {
+      setCat("idle");
+      kickerEl.textContent = "Note";
+      heardEl.textContent = "Could not start listening. Try again. 听写没开始，再试一次。";
+      scoreEl.textContent = "";
+    }
+  }
+
+  function grade(transcript) {
+    const target = normalize(current().en);
+    const heard = normalize(transcript);
+    marks = matchWords(target, heard);
+    const good = marks.filter(Boolean).length;
+    renderSentence();
+    kickerEl.textContent = "Heard";
+    heardEl.textContent = transcript || "（没听到）";
+    const noun = target.length === 1 ? "word" : "words";
+    scoreEl.textContent = good + " of " + target.length + " " + noun;
+  }
+
+  document.getElementById("hear").addEventListener("click", hear);
+  document.getElementById("say").addEventListener("click", sayIt);
+  document.getElementById("prev").addEventListener("click", function () { jump(index - 1); });
+  document.getElementById("next").addEventListener("click", function () { jump(index + 1); });
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    const tag = e.target && e.target.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA") return;
+    if (e.key === "ArrowRight") { e.preventDefault(); jump(index + 1); }
+    else if (e.key === "ArrowLeft") { e.preventDefault(); jump(index - 1); }
+  });
+  if (window.speechSynthesis) {
+    window.speechSynthesis.onvoiceschanged = function () { pickVoice(); };
+    pickVoice();
+  }
+  window.addEventListener("error", function (e) {
+    document.getElementById("err").textContent = e.message || "error";
+  });
+
+  resetPractice();
+  render();
+  function loop(t) {
+    drawCat(t || 0);
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
