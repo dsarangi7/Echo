@@ -1,0 +1,602 @@
+[
+  {
+    "set": "Office",
+    "zhSet": "办公室",
+    "zh": "今天我加班到七点。",
+    "en": "I'm working late until seven today."
+  },
+  {
+    "set": "Office",
+    "zhSet": "办公室",
+    "zh": "打印机好像没纸了。",
+    "en": "The printer seems out of paper."
+  },
+  {
+    "set": "Office",
+    "zhSet": "办公室",
+    "zh": "这个表格你帮我改一下。",
+    "en": "Could you help me fix this sheet?"
+  },
+  {
+    "set": "Office",
+    "zhSet": "办公室",
+    "zh": "会议室今天下午有空吗？",
+    "en": "Is the meeting room free this afternoon?"
+  },
+  {
+    "set": "Office",
+    "zhSet": "办公室",
+    "zh": "我把文件放共享盘了。",
+    "en": "I put the file on the shared drive."
+  },
+  {
+    "set": "Office",
+    "zhSet": "办公室",
+    "zh": "请把电脑锁屏再离开。",
+    "en": "Please lock your computer before you leave."
+  },
+  {
+    "set": "Office",
+    "zhSet": "办公室",
+    "zh": "这个截止日期是周五。",
+    "en": "The deadline is Friday."
+  },
+  {
+    "set": "Office",
+    "zhSet": "办公室",
+    "zh": "我先去倒杯水。",
+    "en": "I'm going to grab a glass of water first."
+  },
+  {
+    "set": "Office",
+    "zhSet": "办公室",
+    "zh": "今天空调有点冷。",
+    "en": "The AC is a bit cold today."
+  },
+  {
+    "set": "Office",
+    "zhSet": "办公室",
+    "zh": "你看到我的工牌了吗？",
+    "en": "Have you seen my badge?"
+  },
+  {
+    "set": "Meetings",
+    "zhSet": "开会",
+    "zh": "我们五分钟后开始，可以吗？",
+    "en": "Can we start in five minutes?"
+  },
+  {
+    "set": "Meetings",
+    "zhSet": "开会",
+    "zh": "这次会我们开短一点。",
+    "en": "Let's keep this meeting short."
+  },
+  {
+    "set": "Meetings",
+    "zhSet": "开会",
+    "zh": "你能带我们过一遍这个计划吗？",
+    "en": "Could you walk us through the plan?"
+  },
+  {
+    "set": "Meetings",
+    "zhSet": "开会",
+    "zh": "继续之前，我有一个问题。",
+    "en": "I have one question before we move on."
+  },
+  {
+    "set": "Meetings",
+    "zhSet": "开会",
+    "zh": "这个先放一放，回头再说。",
+    "en": "We can park that and come back later."
+  },
+  {
+    "set": "Meetings",
+    "zhSet": "开会",
+    "zh": "今天谁做会议记录？",
+    "en": "Who is taking notes today?"
+  },
+  {
+    "set": "Meetings",
+    "zhSet": "开会",
+    "zh": "我们确认一下待办事项。",
+    "en": "Let's confirm the action items."
+  },
+  {
+    "set": "Meetings",
+    "zhSet": "开会",
+    "zh": "会后我把纪要发出去。",
+    "en": "I'll send the minutes after this."
+  },
+  {
+    "set": "Meetings",
+    "zhSet": "开会",
+    "zh": "周四下午你有空吗？",
+    "en": "Does Thursday afternoon work for you?"
+  },
+  {
+    "set": "Meetings",
+    "zhSet": "开会",
+    "zh": "谢谢，我这边就这些。",
+    "en": "Thank you, that's all from my side."
+  },
+  {
+    "set": "Email & messages",
+    "zhSet": "邮件消息",
+    "zh": "请看我附上的文件。",
+    "en": "Please see the file I attached."
+  },
+  {
+    "set": "Email & messages",
+    "zhSet": "邮件消息",
+    "zh": "我来跟进一下这件事。",
+    "en": "I'm writing to follow up on this."
+  },
+  {
+    "set": "Email & messages",
+    "zhSet": "邮件消息",
+    "zh": "能在周五前回复吗？",
+    "en": "Could you reply by Friday?"
+  },
+  {
+    "set": "Email & messages",
+    "zhSet": "邮件消息",
+    "zh": "请把这封邮件抄送给团队。",
+    "en": "Please copy the team on this email."
+  },
+  {
+    "set": "Email & messages",
+    "zhSet": "邮件消息",
+    "zh": "抱歉，回复晚了。",
+    "en": "Sorry for the late reply."
+  },
+  {
+    "set": "Email & messages",
+    "zhSet": "邮件消息",
+    "zh": "表格我改好了，请看一下。",
+    "en": "I updated the sheet. Please take a look."
+  },
+  {
+    "set": "Email & messages",
+    "zhSet": "邮件消息",
+    "zh": "有不清楚的地方告诉我。",
+    "en": "Let me know if anything is unclear."
+  },
+  {
+    "set": "Email & messages",
+    "zhSet": "邮件消息",
+    "zh": "我今天发一份简短总结。",
+    "en": "I'll send a short summary today."
+  },
+  {
+    "set": "Email & messages",
+    "zhSet": "邮件消息",
+    "zh": "你能把这个转给仓库吗？",
+    "en": "Could you forward this to the warehouse?"
+  },
+  {
+    "set": "Email & messages",
+    "zhSet": "邮件消息",
+    "zh": "微信上跟我说一声就行。",
+    "en": "Just message me on WeChat."
+  },
+  {
+    "set": "Grocery",
+    "zhSet": "买菜购物",
+    "zh": "这些西红柿怎么卖？",
+    "en": "How much are these tomatoes?"
+  },
+  {
+    "set": "Grocery",
+    "zhSet": "买菜购物",
+    "zh": "给我称一斤苹果。",
+    "en": "Please weigh one jin of apples for me."
+  },
+  {
+    "set": "Grocery",
+    "zhSet": "买菜购物",
+    "zh": "有没有更新鲜的？",
+    "en": "Do you have anything fresher?"
+  },
+  {
+    "set": "Grocery",
+    "zhSet": "买菜购物",
+    "zh": "这个鸡蛋是几号的？",
+    "en": "What size are these eggs?"
+  },
+  {
+    "set": "Grocery",
+    "zhSet": "买菜购物",
+    "zh": "袋子可以多给我一个吗？",
+    "en": "Can I have one more bag?"
+  },
+  {
+    "set": "Grocery",
+    "zhSet": "买菜购物",
+    "zh": "牛奶在哪一排？",
+    "en": "Which aisle is the milk on?"
+  },
+  {
+    "set": "Grocery",
+    "zhSet": "买菜购物",
+    "zh": "这个今天打折吗？",
+    "en": "Is this on sale today?"
+  },
+  {
+    "set": "Grocery",
+    "zhSet": "买菜购物",
+    "zh": "我要这个，不要那个。",
+    "en": "I want this one, not that one."
+  },
+  {
+    "set": "Grocery",
+    "zhSet": "买菜购物",
+    "zh": "还有没有小的？",
+    "en": "Do you have a smaller one?"
+  },
+  {
+    "set": "Grocery",
+    "zhSet": "买菜购物",
+    "zh": "结账在这边吗？",
+    "en": "Is checkout this way?"
+  },
+  {
+    "set": "Restaurant ordering",
+    "zhSet": "点餐",
+    "zh": "有位子吗？两个人。",
+    "en": "Do you have a table? For two."
+  },
+  {
+    "set": "Restaurant ordering",
+    "zhSet": "点餐",
+    "zh": "请给我菜单。",
+    "en": "Please give me the menu."
+  },
+  {
+    "set": "Restaurant ordering",
+    "zhSet": "点餐",
+    "zh": "你们有什么推荐？",
+    "en": "What do you recommend?"
+  },
+  {
+    "set": "Restaurant ordering",
+    "zhSet": "点餐",
+    "zh": "这个辣不辣？",
+    "en": "Is this spicy?"
+  },
+  {
+    "set": "Restaurant ordering",
+    "zhSet": "点餐",
+    "zh": "我不要香菜。",
+    "en": "No cilantro for me, please."
+  },
+  {
+    "set": "Restaurant ordering",
+    "zhSet": "点餐",
+    "zh": "米饭再来一碗。",
+    "en": "One more bowl of rice, please."
+  },
+  {
+    "set": "Restaurant ordering",
+    "zhSet": "点餐",
+    "zh": "这个可以少放盐吗？",
+    "en": "Can you go easy on the salt?"
+  },
+  {
+    "set": "Restaurant ordering",
+    "zhSet": "点餐",
+    "zh": "我们先点这些。",
+    "en": "We'll order these for now."
+  },
+  {
+    "set": "Restaurant ordering",
+    "zhSet": "点餐",
+    "zh": "还有多久能上菜？",
+    "en": "How long until the food comes?"
+  },
+  {
+    "set": "Restaurant ordering",
+    "zhSet": "点餐",
+    "zh": "麻烦打包带走。",
+    "en": "Could we get this to go?"
+  },
+  {
+    "set": "Paying & spending",
+    "zhSet": "付钱花钱",
+    "zh": "一共多少钱？",
+    "en": "How much is it altogether?"
+  },
+  {
+    "set": "Paying & spending",
+    "zhSet": "付钱花钱",
+    "zh": "我可以刷微信吗？",
+    "en": "Can I pay with WeChat?"
+  },
+  {
+    "set": "Paying & spending",
+    "zhSet": "付钱花钱",
+    "zh": "能开发票吗？",
+    "en": "Can I get a receipt / invoice?"
+  },
+  {
+    "set": "Paying & spending",
+    "zhSet": "付钱花钱",
+    "zh": "这个太贵了，能便宜点吗？",
+    "en": "That's a bit expensive. Can you do better?"
+  },
+  {
+    "set": "Paying & spending",
+    "zhSet": "付钱花钱",
+    "zh": "我没带现金。",
+    "en": "I didn't bring cash."
+  },
+  {
+    "set": "Paying & spending",
+    "zhSet": "付钱花钱",
+    "zh": "请找零给我。",
+    "en": "Please give me the change."
+  },
+  {
+    "set": "Paying & spending",
+    "zhSet": "付钱花钱",
+    "zh": "这个算错了吧？",
+    "en": "I think this total is wrong."
+  },
+  {
+    "set": "Paying & spending",
+    "zhSet": "付钱花钱",
+    "zh": "我们分开付可以吗？",
+    "en": "Can we split the bill?"
+  },
+  {
+    "set": "Paying & spending",
+    "zhSet": "付钱花钱",
+    "zh": "押金什么时候退？",
+    "en": "When do I get the deposit back?"
+  },
+  {
+    "set": "Paying & spending",
+    "zhSet": "付钱花钱",
+    "zh": "先付定金可以吗？",
+    "en": "Can I pay a deposit first?"
+  },
+  {
+    "set": "Asking for help",
+    "zhSet": "求助",
+    "zh": "不好意思，能帮我一下吗？",
+    "en": "Excuse me, could you help me?"
+  },
+  {
+    "set": "Asking for help",
+    "zhSet": "求助",
+    "zh": "这个怎么用？",
+    "en": "How do I use this?"
+  },
+  {
+    "set": "Asking for help",
+    "zhSet": "求助",
+    "zh": "你能说慢一点吗？",
+    "en": "Could you say that more slowly?"
+  },
+  {
+    "set": "Asking for help",
+    "zhSet": "求助",
+    "zh": "我没听清，再说一遍好吗？",
+    "en": "I didn't catch that. Could you say it again?"
+  },
+  {
+    "set": "Asking for help",
+    "zhSet": "求助",
+    "zh": "这里有人会说英语吗？",
+    "en": "Does anyone here speak English?"
+  },
+  {
+    "set": "Asking for help",
+    "zhSet": "求助",
+    "zh": "这个词用中文怎么说？",
+    "en": "How do you say this word in Chinese?"
+  },
+  {
+    "set": "Asking for help",
+    "zhSet": "求助",
+    "zh": "能帮我拍张照吗？",
+    "en": "Could you take a photo for me?"
+  },
+  {
+    "set": "Asking for help",
+    "zhSet": "求助",
+    "zh": "我的手机没电了，能借充电宝吗？",
+    "en": "My phone is dead. Could I borrow a power bank?"
+  },
+  {
+    "set": "Asking for help",
+    "zhSet": "求助",
+    "zh": "这里信号不好。",
+    "en": "The signal is bad here."
+  },
+  {
+    "set": "Asking for help",
+    "zhSet": "求助",
+    "zh": "谢谢你，帮大忙了。",
+    "en": "Thank you, that really helped."
+  },
+  {
+    "set": "Directions & transport",
+    "zhSet": "问路出行",
+    "zh": "请问地铁站怎么走？",
+    "en": "Excuse me, how do I get to the subway?"
+  },
+  {
+    "set": "Directions & transport",
+    "zhSet": "问路出行",
+    "zh": "离这里远吗？",
+    "en": "Is it far from here?"
+  },
+  {
+    "set": "Directions & transport",
+    "zhSet": "问路出行",
+    "zh": "坐几路公交车？",
+    "en": "Which bus should I take?"
+  },
+  {
+    "set": "Directions & transport",
+    "zhSet": "问路出行",
+    "zh": "下一站是哪里？",
+    "en": "What's the next stop?"
+  },
+  {
+    "set": "Directions & transport",
+    "zhSet": "问路出行",
+    "zh": "请在前面那个红绿灯停。",
+    "en": "Please stop at the traffic light ahead."
+  },
+  {
+    "set": "Directions & transport",
+    "zhSet": "问路出行",
+    "zh": "打车大概要多久？",
+    "en": "About how long is a taxi?"
+  },
+  {
+    "set": "Directions & transport",
+    "zhSet": "问路出行",
+    "zh": "这个出口对吗？",
+    "en": "Is this the right exit?"
+  },
+  {
+    "set": "Directions & transport",
+    "zhSet": "问路出行",
+    "zh": "有没有直达的？",
+    "en": "Is there a direct route?"
+  },
+  {
+    "set": "Directions & transport",
+    "zhSet": "问路出行",
+    "zh": "我要去机场，大概多少钱？",
+    "en": "I'm going to the airport. About how much?"
+  },
+  {
+    "set": "Directions & transport",
+    "zhSet": "问路出行",
+    "zh": "这里可以过马路吗？",
+    "en": "Can I cross the street here?"
+  },
+  {
+    "set": "Polite pushback",
+    "zhSet": "礼貌拒绝",
+    "zh": "谢谢，这次就算了。",
+    "en": "Thanks, I'll pass this time."
+  },
+  {
+    "set": "Polite pushback",
+    "zhSet": "礼貌拒绝",
+    "zh": "我今天有点忙，下次吧。",
+    "en": "I'm a bit busy today. Maybe next time."
+  },
+  {
+    "set": "Polite pushback",
+    "zhSet": "礼貌拒绝",
+    "zh": "这个我做不了主。",
+    "en": "That's not something I can decide."
+  },
+  {
+    "set": "Polite pushback",
+    "zhSet": "礼貌拒绝",
+    "zh": "我先确认一下再回复你。",
+    "en": "Let me check first, then I'll get back to you."
+  },
+  {
+    "set": "Polite pushback",
+    "zhSet": "礼貌拒绝",
+    "zh": "日期有点紧，可能来不及。",
+    "en": "The timeline is tight. We might not make it."
+  },
+  {
+    "set": "Polite pushback",
+    "zhSet": "礼貌拒绝",
+    "zh": "我们能不能换个办法？",
+    "en": "Could we try another option?"
+  },
+  {
+    "set": "Polite pushback",
+    "zhSet": "礼貌拒绝",
+    "zh": "我不太方便说这个。",
+    "en": "I'm not really in a position to talk about that."
+  },
+  {
+    "set": "Polite pushback",
+    "zhSet": "礼貌拒绝",
+    "zh": "这个时间我不行。",
+    "en": "That time doesn't work for me."
+  },
+  {
+    "set": "Polite pushback",
+    "zhSet": "礼貌拒绝",
+    "zh": "能做，但明天来不及。",
+    "en": "We can do it, but not by tomorrow."
+  },
+  {
+    "set": "Polite pushback",
+    "zhSet": "礼貌拒绝",
+    "zh": "请给我一点时间考虑。",
+    "en": "Please give me a moment to think."
+  },
+  {
+    "set": "Small talk",
+    "zhSet": "闲聊",
+    "zh": "早上好，今天怎么样？",
+    "en": "Good morning. How are you today?"
+  },
+  {
+    "set": "Small talk",
+    "zhSet": "闲聊",
+    "zh": "周末过得好吗？",
+    "en": "Did you have a good weekend?"
+  },
+  {
+    "set": "Small talk",
+    "zhSet": "闲聊",
+    "zh": "今天外面好热。",
+    "en": "It's really hot outside today."
+  },
+  {
+    "set": "Small talk",
+    "zhSet": "闲聊",
+    "zh": "要不要一起去吃饭？",
+    "en": "Want to grab lunch together?"
+  },
+  {
+    "set": "Small talk",
+    "zhSet": "闲聊",
+    "zh": "你新剪头发了？好看。",
+    "en": "Did you get a haircut? Looks good."
+  },
+  {
+    "set": "Small talk",
+    "zhSet": "闲聊",
+    "zh": "最近工作忙不忙？",
+    "en": "Have you been busy at work lately?"
+  },
+  {
+    "set": "Small talk",
+    "zhSet": "闲聊",
+    "zh": "恭喜你，太棒了。",
+    "en": "Congratulations, that's awesome."
+  },
+  {
+    "set": "Small talk",
+    "zhSet": "闲聊",
+    "zh": "路上小心，慢点开。",
+    "en": "Drive safe. Take it easy."
+  },
+  {
+    "set": "Small talk",
+    "zhSet": "闲聊",
+    "zh": "明天见。",
+    "en": "See you tomorrow."
+  },
+  {
+    "set": "Small talk",
+    "zhSet": "闲聊",
+    "zh": "很高兴认识你。",
+    "en": "Nice to meet you."
+  }
+]
