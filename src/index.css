@@ -256,6 +256,7 @@ button.act b { display: block; font-size: 16px; font-weight: 750; }
 button.act small { display: block; margin-top: 3px; font-size: 12px; font-weight: 600; opacity: 0.8; }
 button.primary { background: var(--neon); color: var(--ink); border: 1px solid var(--neon); flex: 1 1 140px; }
 button.primary:hover { filter: brightness(1.06); }
+button.primary.live { box-shadow: inset 0 0 0 2px #243000; }
 button.ghost { background: transparent; color: var(--text); border: 1px solid #3a3a3a; }
 button.ghost:hover { border-color: var(--neon); color: var(--neon); }
 
@@ -266,8 +267,7 @@ button.act:focus-visible,
   outline-offset: 2px;
 }
 
-.chrome-note { margin: 14px 0 0; color: var(--neon); font-size: 14px; }
-.chrome-note[hidden] { display: none; }
+.status-note { margin: 14px 0 0; color: var(--neon); font-size: 14px; line-height: 1.45; }
 
 .legend { margin: 14px 0 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
 
