@@ -194,8 +194,8 @@
   {
     "set": "Factory & shipping",
     "zhSet": "工厂出货",
-    "en": "The carton label looks wrong.",
-    "zh": "纸箱标签好像不对。"
+    "en": "The carton label doesn't match the packing list.",
+    "zh": "纸箱标签和装箱单对不上。"
   },
   {
     "set": "Factory & shipping",
@@ -236,8 +236,8 @@
   {
     "set": "Factory & shipping",
     "zhSet": "工厂出货",
-    "en": "Confirm the delivery address with me.",
-    "zh": "跟我确认一下收货地址。"
+    "en": "Please confirm the ship-to address.",
+    "zh": "请跟我确认收货地址。"
   },
   {
     "set": "Quality",
@@ -540,63 +540,63 @@
     "zh": "现在修好了，谢谢你等。"
   },
   {
-    "set": "Everyday life",
-    "zhSet": "日常",
-    "en": "How much is this altogether?",
-    "zh": "一共多少钱？"
+    "set": "Orders & documents",
+    "zhSet": "订单单据",
+    "en": "Please send the purchase order today.",
+    "zh": "请今天把采购订单发过来。"
   },
   {
-    "set": "Everyday life",
-    "zhSet": "日常",
-    "en": "Can I pay with WeChat?",
-    "zh": "我可以刷微信吗？"
+    "set": "Orders & documents",
+    "zhSet": "订单单据",
+    "en": "Does this unit price include tax?",
+    "zh": "这个单价含税吗？"
   },
   {
-    "set": "Everyday life",
-    "zhSet": "日常",
-    "en": "Do you have a table for two?",
-    "zh": "有两个人的位子吗？"
+    "set": "Orders & documents",
+    "zhSet": "订单单据",
+    "en": "This quote is good until the end of the month.",
+    "zh": "这份报价到月底都有效。"
   },
   {
-    "set": "Everyday life",
-    "zhSet": "日常",
-    "en": "What do you recommend?",
-    "zh": "你们有什么推荐？"
+    "set": "Orders & documents",
+    "zhSet": "订单单据",
+    "en": "What is the lead time on this order?",
+    "zh": "这张订单的交期是多久？"
   },
   {
-    "set": "Everyday life",
-    "zhSet": "日常",
-    "en": "No cilantro for me, please.",
-    "zh": "我不要香菜。"
+    "set": "Orders & documents",
+    "zhSet": "订单单据",
+    "en": "Please issue the commercial invoice.",
+    "zh": "请开商业发票。"
   },
   {
-    "set": "Everyday life",
-    "zhSet": "日常",
-    "en": "Where is the milk aisle?",
-    "zh": "牛奶在哪一排？"
+    "set": "Orders & documents",
+    "zhSet": "订单单据",
+    "en": "The packing list quantity doesn't match.",
+    "zh": "装箱单上的数量对不上。"
   },
   {
-    "set": "Everyday life",
-    "zhSet": "日常",
-    "en": "Is this on sale today?",
-    "zh": "这个今天打折吗？"
+    "set": "Orders & documents",
+    "zhSet": "订单单据",
+    "en": "We still need the bill of lading number.",
+    "zh": "我们还需要提单号。"
   },
   {
-    "set": "Everyday life",
-    "zhSet": "日常",
-    "en": "Could we get this to go?",
-    "zh": "麻烦打包带走。"
+    "set": "Orders & documents",
+    "zhSet": "订单单据",
+    "en": "Please check the part number on the drawing.",
+    "zh": "请核对图纸上的零件号。"
   },
   {
-    "set": "Everyday life",
-    "zhSet": "日常",
-    "en": "Excuse me, where is the restroom?",
-    "zh": "不好意思，洗手间在哪？"
+    "set": "Orders & documents",
+    "zhSet": "订单单据",
+    "en": "This dimension is out of tolerance.",
+    "zh": "这个尺寸超差了。"
   },
   {
-    "set": "Everyday life",
-    "zhSet": "日常",
-    "en": "Have a nice day.",
-    "zh": "祝你今天愉快。"
+    "set": "Orders & documents",
+    "zhSet": "订单单据",
+    "en": "Please follow the latest revision.",
+    "zh": "请按最新版本来做。"
   }
 ]

@@ -2,6 +2,8 @@
 
 Practice English or Chinese. The top toggle switches language and is remembered in this browser. Each pack has 100 sentences: the line you say is large, and the meaning sits underneath.
 
+English practice stays in the office: meetings, email, the factory, quality, and order documents. Chinese practice is for AYK work — orders, invoices, shipping documents, minutes, HR notices, drawings — plus Meituan delivery, with a short everyday slice at the end.
+
 Hear it speaks the sentence. Say it listens, then marks the words you matched in English or the 字 you matched in Chinese. The score is a count, not an accent percentage.
 
 The cat is an original mascot. Not Talking Tom, and not Talking Tat.
@@ -72,7 +74,7 @@ npm run build
 npm run preview
 ```
 
-`npm test` checks scoring, the Hear it order, the voice-model wording, and that the source does not call Web Speech Recognition.
+`npm test` checks scoring, the Hear it order, the sentence packs, the voice-model wording, and that the source does not call Web Speech Recognition.
 
 `npm run build` copies the wasm, typechecks, and writes a static site to `dist/`. `npm run preview` serves that build.
 

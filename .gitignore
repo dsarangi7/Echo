@@ -5,3 +5,5 @@ dist
 .vite
 .cache
 public/onnx/
+.piper-voices
+.venv
