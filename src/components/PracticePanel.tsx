@@ -22,6 +22,11 @@ export function PracticePanel(practice: Practice) {
   const meaning = lang === "en" ? item.zh : item.en;
   const setTitle = lang === "zh" ? item.zhSet : item.set;
   const setSub = lang === "zh" ? item.set : item.zhSet;
+  const setStart = pack.findIndex((row) => row.set === item.set);
+  let setEnd = setStart + 1;
+  while (setEnd < pack.length && pack[setEnd].set === item.set) setEnd += 1;
+  const setPos = index - setStart + 1;
+  const setCount = setEnd - setStart;
 
   return (
     <section className="card practice-card">
@@ -47,7 +52,7 @@ export function PracticePanel(practice: Practice) {
         <p id="setlabel">
           <b>{setTitle}</b>
           <span>
-            {setSub} · {((index % 10) + 1)} / 10
+            {setSub} · {setPos} / {setCount}
           </span>
         </p>
         <p id="progress">

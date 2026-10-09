@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { clipSrc } from "./clips";
 import { packError, packs } from "./packs";
 import { gradeTranscript } from "./score";
 import { loadIndexes, loadLang, saveIndexes, saveLang } from "./storage";
@@ -30,6 +31,7 @@ export function usePractice() {
   const [runtimeError, setRuntimeError] = useState("");
 
   const tokenRef = useRef(0);
+  const clipRef = useRef<HTMLAudioElement | null>(null);
   const recRef = useRef<SpeechRecognitionLike | null>(null);
   const modeRef = useRef<CatMode>("idle");
   const langRef = useRef<Lang>(lang);
@@ -62,9 +64,21 @@ export function usePractice() {
     setHeard(langRef.current === "en" ? PROMPT_EN : PROMPT_ZH);
   }, []);
 
+  const stopClip = useCallback(() => {
+    const clip = clipRef.current;
+    if (!clip) return;
+    clipRef.current = null;
+    clip.onplaying = null;
+    clip.onended = null;
+    clip.onerror = null;
+    clip.pause();
+    clip.src = "";
+  }, []);
+
   const stopAudio = useCallback(() => {
     tokenRef.current += 1;
     window.speechSynthesis?.cancel();
+    stopClip();
     const rec = recRef.current;
     recRef.current = null;
     if (rec) {
@@ -80,7 +94,7 @@ export function usePractice() {
     clearTimers();
     setMouth(0);
     setCatMode("idle");
-  }, [clearTimers]);
+  }, [clearTimers, stopClip]);
 
   useEffect(() => {
     saveIndexes(indexes);
@@ -136,13 +150,6 @@ export function usePractice() {
   );
 
   const hear = useCallback(() => {
-    const synth = window.speechSynthesis;
-    if (!synth) {
-      setKicker("Note");
-      setHeard("This browser cannot play speech. 这个浏览器不能朗读。");
-      setScore("");
-      return;
-    }
     if (recRef.current) {
       try {
         recRef.current.onend = null;
@@ -154,60 +161,106 @@ export function usePractice() {
     }
     const token = ++tokenRef.current;
     clearTimers();
-    const line = primaryText(langRef.current, packs[langRef.current][indexRef.current]);
-    synth.cancel();
-    const startId = window.setTimeout(() => {
-      if (token !== tokenRef.current) return;
-      const utterance = new SpeechSynthesisUtterance(line);
-      const speaking = langRef.current;
-      if (speaking === "en") {
-        utterance.lang = "en-US";
-        const voice = pickVoiceEn();
-        if (voice) utterance.voice = voice;
-        utterance.rate = 0.92;
-        utterance.pitch = 1.12;
-      } else {
-        utterance.lang = "zh-CN";
-        const voice = pickVoiceZh();
-        if (voice) utterance.voice = voice;
-        utterance.rate = 0.92;
-        utterance.pitch = 1.08;
-      }
+    window.speechSynthesis?.cancel();
+    stopClip();
+    setMouth(0);
 
-      let sawBoundary = false;
-      utterance.onboundary = () => {
-        if (token !== tokenRef.current) return;
-        sawBoundary = true;
-        setMouth(1);
-        const closeId = window.setTimeout(() => {
-          if (token === tokenRef.current) setMouth(0.12);
-        }, 110);
-        remember(closeId);
-      };
-      utterance.onstart = () => {
-        if (token !== tokenRef.current) return;
-        setCatMode("talk");
-        const fallbackId = window.setTimeout(() => {
-          if (token !== tokenRef.current || sawBoundary) return;
-          const pulse = window.setInterval(() => {
-            setMouth((open) => (open > 0.5 ? 0.12 : 1));
-          }, 160);
-          remember(pulse);
-        }, 320);
-        remember(fallbackId);
-      };
-      const finish = () => {
-        if (token !== tokenRef.current) return;
-        clearTimers();
-        setMouth(0);
+    const speaking = langRef.current;
+    const at = indexRef.current;
+    const line = primaryText(speaking, packs[speaking][at]);
+
+    const finish = () => {
+      if (token !== tokenRef.current) return;
+      clearTimers();
+      setMouth(0);
+      setCatMode("idle");
+    };
+
+    const pulseMouth = () => {
+      if (token !== tokenRef.current) return;
+      setCatMode("talk");
+      const pulse = window.setInterval(() => {
+        setMouth((open) => (open > 0.5 ? 0.12 : 1));
+      }, 160);
+      remember(pulse);
+    };
+
+    const speakFallback = () => {
+      const synth = window.speechSynthesis;
+      if (!synth) {
+        setKicker("Note");
+        setHeard("This browser cannot play speech. 这个浏览器不能朗读。");
+        setScore("");
         setCatMode("idle");
-      };
-      utterance.onend = finish;
-      utterance.onerror = finish;
-      synth.speak(utterance);
-    }, 80);
-    remember(startId);
-  }, [clearTimers, remember]);
+        return;
+      }
+      const startId = window.setTimeout(() => {
+        if (token !== tokenRef.current) return;
+        const utterance = new SpeechSynthesisUtterance(line);
+        if (speaking === "en") {
+          utterance.lang = "en-US";
+          const voice = pickVoiceEn();
+          if (voice) utterance.voice = voice;
+          utterance.rate = 0.92;
+          utterance.pitch = 1.12;
+        } else {
+          utterance.lang = "zh-CN";
+          const voice = pickVoiceZh();
+          if (voice) utterance.voice = voice;
+          utterance.rate = 0.92;
+          utterance.pitch = 1.08;
+        }
+
+        let sawBoundary = false;
+        utterance.onboundary = () => {
+          if (token !== tokenRef.current) return;
+          sawBoundary = true;
+          setMouth(1);
+          const closeId = window.setTimeout(() => {
+            if (token === tokenRef.current) setMouth(0.12);
+          }, 110);
+          remember(closeId);
+        };
+        utterance.onstart = () => {
+          if (token !== tokenRef.current) return;
+          setCatMode("talk");
+          const fallbackId = window.setTimeout(() => {
+            if (token !== tokenRef.current || sawBoundary) return;
+            pulseMouth();
+          }, 320);
+          remember(fallbackId);
+        };
+        utterance.onend = finish;
+        utterance.onerror = finish;
+        synth.speak(utterance);
+      }, 80);
+      remember(startId);
+    };
+
+    const audio = new Audio(clipSrc(import.meta.env.BASE_URL, speaking, at));
+    clipRef.current = audio;
+    let usedFallback = false;
+    const fallback = () => {
+      if (usedFallback || token !== tokenRef.current) return;
+      usedFallback = true;
+      if (clipRef.current === audio) {
+        clipRef.current = null;
+        audio.onplaying = null;
+        audio.onended = null;
+        audio.onerror = null;
+        audio.pause();
+      }
+      clearTimers();
+      speakFallback();
+    };
+    audio.onplaying = () => pulseMouth();
+    audio.onended = () => {
+      if (clipRef.current === audio) clipRef.current = null;
+      finish();
+    };
+    audio.onerror = () => fallback();
+    void audio.play().catch(() => fallback());
+  }, [clearTimers, remember, stopClip]);
 
   const sayIt = useCallback(() => {
     const Ctor = recognitionCtor();
@@ -225,6 +278,7 @@ export function usePractice() {
     }
     tokenRef.current += 1;
     window.speechSynthesis?.cancel();
+    stopClip();
     clearTimers();
     setMouth(0);
     setCatMode("listen");
@@ -275,7 +329,7 @@ export function usePractice() {
       setHeard("Could not start listening. Try again. 听写没开始，再试一次。");
       setScore("");
     }
-  }, [clearTimers]);
+  }, [clearTimers, stopClip]);
 
   return {
     lang,
