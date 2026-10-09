@@ -1,18 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { clipSrc } from "./clips";
 import { packError, packs } from "./packs";
 import { gradeTranscript } from "./score";
 import { loadIndexes, loadLang, saveIndexes, saveLang } from "./storage";
+import type { CaptureHandle } from "../speech/record";
+import { startCapture } from "../speech/record";
+import { resampleTo16k } from "../speech/resample";
+import { ensureModel, subscribeModel, transcribe } from "../speech/stt";
+import { speakLine, stopSpeaking } from "../speech/tts";
 import type { CatMode, Lang, Sentence } from "./types";
-import { pickVoiceEn, pickVoiceZh } from "./voices";
 
 const PROMPT_EN = "Tap Hear it, then Say it. 先听一听，再说一说。";
 const PROMPT_ZH = "点「听一听」，再点「说一说」。 Hear it, then say it.";
-
-function recognitionCtor(): (new () => SpeechRecognitionLike) | null {
-  if (typeof window === "undefined") return null;
-  return window.SpeechRecognition ?? window.webkitSpeechRecognition ?? null;
-}
 
 function primaryText(lang: Lang, item: Sentence): string {
   return lang === "en" ? item.en : item.zh;
@@ -27,13 +25,12 @@ export function usePractice() {
   const [kicker, setKicker] = useState("Practice");
   const [heard, setHeard] = useState(() => (loadLang() === "en" ? PROMPT_EN : PROMPT_ZH));
   const [score, setScore] = useState("");
-  const [showChromeNote, setShowChromeNote] = useState(() => recognitionCtor() === null);
+  const [modelNote, setModelNote] = useState("Downloading free voice model…");
+  const [listening, setListening] = useState(false);
   const [runtimeError, setRuntimeError] = useState("");
 
   const tokenRef = useRef(0);
-  const clipRef = useRef<HTMLAudioElement | null>(null);
-  const recRef = useRef<SpeechRecognitionLike | null>(null);
-  const modeRef = useRef<CatMode>("idle");
+  const captureRef = useRef<CaptureHandle | null>(null);
   const langRef = useRef<Lang>(lang);
   const indexRef = useRef(0);
   const timersRef = useRef<number[]>([]);
@@ -43,7 +40,6 @@ export function usePractice() {
   const item = pack[index];
   langRef.current = lang;
   indexRef.current = index;
-  modeRef.current = catMode;
 
   const clearTimers = useCallback(() => {
     timersRef.current.forEach((id) => {
@@ -53,10 +49,6 @@ export function usePractice() {
     timersRef.current = [];
   }, []);
 
-  const remember = useCallback((id: number) => {
-    timersRef.current.push(id);
-  }, []);
-
   const resetPractice = useCallback(() => {
     setMarks(null);
     setKicker("Practice");
@@ -64,37 +56,16 @@ export function usePractice() {
     setHeard(langRef.current === "en" ? PROMPT_EN : PROMPT_ZH);
   }, []);
 
-  const stopClip = useCallback(() => {
-    const clip = clipRef.current;
-    if (!clip) return;
-    clipRef.current = null;
-    clip.onplaying = null;
-    clip.onended = null;
-    clip.onerror = null;
-    clip.pause();
-    clip.src = "";
-  }, []);
-
   const stopAudio = useCallback(() => {
     tokenRef.current += 1;
-    window.speechSynthesis?.cancel();
-    stopClip();
-    const rec = recRef.current;
-    recRef.current = null;
-    if (rec) {
-      rec.onend = null;
-      rec.onerror = null;
-      rec.onresult = null;
-      try {
-        rec.abort();
-      } catch {
-        /* already stopped */
-      }
-    }
+    stopSpeaking();
+    captureRef.current?.cancel();
+    captureRef.current = null;
+    setListening(false);
     clearTimers();
     setMouth(0);
     setCatMode("idle");
-  }, [clearTimers, stopClip]);
+  }, [clearTimers]);
 
   useEffect(() => {
     saveIndexes(indexes);
@@ -106,10 +77,19 @@ export function usePractice() {
   }, [lang]);
 
   useEffect(() => {
-    window.speechSynthesis?.getVoices();
+    const synth = window.speechSynthesis;
+    synth?.getVoices();
+    const onVoices = () => synth?.getVoices();
+    synth?.addEventListener("voiceschanged", onVoices);
     const onError = (event: ErrorEvent) => setRuntimeError(event.message || "error");
     window.addEventListener("error", onError);
-    return () => window.removeEventListener("error", onError);
+    const unsubscribe = subscribeModel(setModelNote);
+    void ensureModel().catch(() => undefined);
+    return () => {
+      synth?.removeEventListener("voiceschanged", onVoices);
+      window.removeEventListener("error", onError);
+      unsubscribe();
+    };
   }, []);
 
   const jump = useCallback(
@@ -149,187 +129,120 @@ export function usePractice() {
     [resetPractice, stopAudio],
   );
 
-  const hear = useCallback(() => {
-    if (recRef.current) {
-      try {
-        recRef.current.onend = null;
-        recRef.current.abort();
-      } catch {
-        /* ignore */
-      }
-      recRef.current = null;
-    }
-    const token = ++tokenRef.current;
-    clearTimers();
-    window.speechSynthesis?.cancel();
-    stopClip();
+  const noteFailure = useCallback((message: string) => {
+    setCatMode("idle");
+    setListening(false);
     setMouth(0);
+    setKicker("Note");
+    setScore("");
+    setHeard(message);
+  }, []);
 
-    const speaking = langRef.current;
-    const at = indexRef.current;
-    const line = primaryText(speaking, packs[speaking][at]);
-
-    const finish = () => {
-      if (token !== tokenRef.current) return;
-      clearTimers();
-      setMouth(0);
-      setCatMode("idle");
-    };
-
-    const pulseMouth = () => {
-      if (token !== tokenRef.current) return;
-      setCatMode("talk");
-      const pulse = window.setInterval(() => {
-        setMouth((open) => (open > 0.5 ? 0.12 : 1));
-      }, 160);
-      remember(pulse);
-    };
-
-    const speakFallback = () => {
-      const synth = window.speechSynthesis;
-      if (!synth) {
-        setKicker("Note");
-        setHeard("This browser cannot play speech. 这个浏览器不能朗读。");
-        setScore("");
-        setCatMode("idle");
-        return;
-      }
-      const startId = window.setTimeout(() => {
+  const hear = useCallback(() => {
+    const token = ++tokenRef.current;
+    captureRef.current?.cancel();
+    captureRef.current = null;
+    setListening(false);
+    clearTimers();
+    const line = primaryText(langRef.current, packs[langRef.current][indexRef.current]);
+    speakLine(langRef.current, indexRef.current, line, {
+      onStart: () => {
         if (token !== tokenRef.current) return;
-        const utterance = new SpeechSynthesisUtterance(line);
-        if (speaking === "en") {
-          utterance.lang = "en-US";
-          const voice = pickVoiceEn();
-          if (voice) utterance.voice = voice;
-          utterance.rate = 0.92;
-          utterance.pitch = 1.12;
-        } else {
-          utterance.lang = "zh-CN";
-          const voice = pickVoiceZh();
-          if (voice) utterance.voice = voice;
-          utterance.rate = 0.92;
-          utterance.pitch = 1.08;
-        }
-
-        let sawBoundary = false;
-        utterance.onboundary = () => {
-          if (token !== tokenRef.current) return;
-          sawBoundary = true;
-          setMouth(1);
-          const closeId = window.setTimeout(() => {
-            if (token === tokenRef.current) setMouth(0.12);
-          }, 110);
-          remember(closeId);
-        };
-        utterance.onstart = () => {
-          if (token !== tokenRef.current) return;
-          setCatMode("talk");
-          const fallbackId = window.setTimeout(() => {
-            if (token !== tokenRef.current || sawBoundary) return;
-            pulseMouth();
-          }, 320);
-          remember(fallbackId);
-        };
-        utterance.onend = finish;
-        utterance.onerror = finish;
-        synth.speak(utterance);
-      }, 80);
-      remember(startId);
-    };
-
-    const audio = new Audio(clipSrc(import.meta.env.BASE_URL, speaking, at));
-    clipRef.current = audio;
-    let usedFallback = false;
-    const fallback = () => {
-      if (usedFallback || token !== tokenRef.current) return;
-      usedFallback = true;
-      if (clipRef.current === audio) {
-        clipRef.current = null;
-        audio.onplaying = null;
-        audio.onended = null;
-        audio.onerror = null;
-        audio.pause();
-      }
-      clearTimers();
-      speakFallback();
-    };
-    audio.onplaying = () => pulseMouth();
-    audio.onended = () => {
-      if (clipRef.current === audio) clipRef.current = null;
-      finish();
-    };
-    audio.onerror = () => fallback();
-    void audio.play().catch(() => fallback());
-  }, [clearTimers, remember, stopClip]);
+        setCatMode("talk");
+      },
+      onMouth: (open) => {
+        if (token !== tokenRef.current) return;
+        setMouth(open);
+      },
+      onEnd: () => {
+        if (token !== tokenRef.current) return;
+        clearTimers();
+        setMouth(0);
+        setCatMode("idle");
+      },
+      onUnavailable: () => {
+        if (token !== tokenRef.current) return;
+        noteFailure("This browser cannot play speech. 这个浏览器不能朗读。");
+      },
+    });
+  }, [clearTimers, noteFailure]);
 
   const sayIt = useCallback(() => {
-    const Ctor = recognitionCtor();
-    if (!Ctor) {
-      setShowChromeNote(true);
+    if (captureRef.current) {
+      captureRef.current.finish();
       return;
     }
-    if (modeRef.current === "listen" && recRef.current) {
-      try {
-        recRef.current.abort();
-      } catch {
-        /* ignore */
-      }
+    let audioCtx: AudioContext;
+    try {
+      audioCtx = new AudioContext();
+    } catch {
+      noteFailure("This browser cannot open the microphone. 这个浏览器开不了麦克风。");
       return;
     }
-    tokenRef.current += 1;
-    window.speechSynthesis?.cancel();
-    stopClip();
+    void audioCtx.resume();
+    const token = ++tokenRef.current;
+    stopSpeaking();
     clearTimers();
     setMouth(0);
+    setMarks(null);
+    setScore("");
     setCatMode("listen");
-    const rec = new Ctor();
-    recRef.current = rec;
-    rec.lang = langRef.current === "en" ? "en-US" : "zh-CN";
-    rec.interimResults = false;
-    rec.continuous = false;
-    rec.maxAlternatives = 1;
-    rec.onstart = () => setCatMode("listen");
-    rec.onresult = (event) => {
-      let text = "";
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        text += event.results[i][0].transcript;
+    setListening(true);
+    setKicker("Listening");
+    setHeard(
+      langRef.current === "en"
+        ? "Listening… tap Say it again to finish."
+        : "在听…再点一次「说一说」。",
+    );
+
+    const capture = startCapture(audioCtx, {
+      maxMs: 15000,
+      silenceMs: 900,
+      onLevel: (rms) => {
+        if (token !== tokenRef.current) return;
+        setMouth(Math.min(1, rms * 8));
+      },
+    });
+    captureRef.current = capture;
+
+    void (async () => {
+      const recorded = await capture.done;
+      if (captureRef.current === capture) captureRef.current = null;
+      if (token !== tokenRef.current || recorded === "cancelled") return;
+      setListening(false);
+      setMouth(0);
+      if (recorded === "denied") {
+        noteFailure("Microphone is blocked. Allow the mic, then try again. 麦克风被拦住了，请允许后再试。");
+        return;
       }
-      const spoken = text.trim();
-      const currentLang = langRef.current;
-      const current = packs[currentLang][indexRef.current];
-      const graded = gradeTranscript(currentLang, primaryText(currentLang, current), spoken);
-      setMarks(graded.marks);
-      setKicker("Heard");
-      setHeard(spoken || (currentLang === "en" ? "(nothing heard)" : "（没听到）"));
-      setScore(graded.label);
-    };
-    rec.onerror = (event) => {
-      if (!event || event.error === "aborted") return;
-      setKicker("Note");
-      setScore("");
-      if (event.error === "not-allowed" || event.error === "service-not-allowed") {
-        setHeard("Microphone is blocked. Allow the mic in Chrome, then try again. 麦克风被拦住了，请在 Chrome 里允许。");
-      } else if (event.error === "no-speech") {
-        setHeard("No speech heard. Try again. 没听到，再说一次。");
-      } else if (event.error === "network") {
-        setHeard("Chrome could not reach its speech service. Check the network and try again. 语音服务连不上，请检查网络。");
-      } else {
-        setHeard("Could not hear that. Try again. 没听成，再试一次。");
+      if (recorded === "no-mic") {
+        noteFailure("No microphone on this device. 这台设备没有麦克风。");
+        return;
       }
-    };
-    rec.onend = () => {
-      if (modeRef.current === "listen") setCatMode("idle");
-      if (recRef.current === rec) recRef.current = null;
-    };
-    try {
-      rec.start();
-    } catch {
-      setCatMode("idle");
-      setKicker("Note");
-      setHeard("Could not start listening. Try again. 听写没开始，再试一次。");
-      setScore("");
-    }
-  }, [clearTimers, stopClip]);
+      if (recorded === "no-speech") {
+        noteFailure("No speech heard. Try again. 没听到，再说一次。");
+        return;
+      }
+      setKicker("Transcribing");
+      setHeard(langRef.current === "en" ? "Transcribing on this device…" : "正在这台设备上识别…");
+      try {
+        const pcm = resampleTo16k(recorded.samples, recorded.sampleRate);
+        const spoken = (await transcribe(pcm, langRef.current)).trim();
+        if (token !== tokenRef.current) return;
+        const currentLang = langRef.current;
+        const current = packs[currentLang][indexRef.current];
+        const graded = gradeTranscript(currentLang, primaryText(currentLang, current), spoken);
+        setMarks(graded.marks);
+        setKicker("Heard");
+        setHeard(spoken || (currentLang === "en" ? "(nothing heard)" : "（没听到）"));
+        setScore(graded.label);
+        setCatMode("idle");
+      } catch {
+        if (token !== tokenRef.current) return;
+        noteFailure("Could not transcribe on this device. Try again. 这台设备上没识别成，再试一次。");
+      }
+    })();
+  }, [clearTimers, noteFailure]);
 
   return {
     lang,
@@ -342,7 +255,8 @@ export function usePractice() {
     kicker,
     heard,
     score,
-    showChromeNote,
+    modelNote,
+    listening,
     error: runtimeError || packError(),
     setLanguage,
     jump,

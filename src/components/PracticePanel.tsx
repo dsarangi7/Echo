@@ -5,7 +5,8 @@ import { TargetSentence } from "./TargetSentence";
 type Practice = ReturnType<typeof usePractice>;
 
 export function PracticePanel(practice: Practice) {
-  const { lang, index, item, pack, marks, kicker, heard, score, showChromeNote, error, jump, jumpTo, hear, sayIt } = practice;
+  const { lang, index, item, pack, marks, kicker, heard, score, modelNote, listening, error, jump, jumpTo, hear, sayIt } =
+    practice;
 
   const sets = useMemo(() => {
     const names: string[] = [];
@@ -74,9 +75,9 @@ export function PracticePanel(practice: Practice) {
           <b>Hear it</b>
           <small>听一听</small>
         </button>
-        <button type="button" className="act primary" id="say" onClick={sayIt}>
-          <b>Say it</b>
-          <small>说一说</small>
+        <button type="button" className={listening ? "act primary live" : "act primary"} id="say" aria-pressed={listening} onClick={sayIt}>
+          <b>{listening ? "Stop" : "Say it"}</b>
+          <small>{listening ? "点此结束" : "说一说"}</small>
         </button>
         <button type="button" className="act ghost" id="next" onClick={() => jump(1)}>
           <b>Next</b>
@@ -84,8 +85,8 @@ export function PracticePanel(practice: Practice) {
         </button>
       </div>
 
-      <p className="chrome-note" id="chrome-note" hidden={!showChromeNote}>
-        说一说需要 Chrome。Say it needs Chrome.
+      <p className="status-note" id="model-note" aria-live="polite">
+        {modelNote}
       </p>
 
       {lang === "en" ? (
