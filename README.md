@@ -13,7 +13,7 @@ npm install
 npm run dev
 ```
 
-Then open the local URL Vite prints. `npm run dev` starts the app with hot reload.
+Then open the local URL Vite prints (the dev server includes the `/Echo/` base). `npm run dev` starts the app with hot reload.
 
 ```bash
 npm run build
@@ -26,6 +26,12 @@ Say it needs Chrome and a microphone. Other browsers can still show the sentence
 
 ## GitHub Pages
 
-`.github/workflows/pages.yml` publishes `dist/` from `main`. Vite uses a relative asset base, so the site can live at `https://<user>.github.io/Echo/` without a hardcoded path.
+Live site: https://dsarangi7.github.io/Echo/
 
-In the repository settings, set Pages to GitHub Actions.
+`.github/workflows/pages.yml` runs on every push to `main`. It installs with `npm ci`, builds with `npm run build`, and deploys `dist/` with GitHub Pages from Actions. Vite `base` is `/Echo/`, so JS, CSS, and the favicon load under that path.
+
+One-time repository setting (required before the first deploy succeeds):
+
+**Settings → Pages → Build and deployment → Source: GitHub Actions**
+
+After that, the workflow on `main` publishes the site. Re-run **Deploy GitHub Pages** from the Actions tab if a deploy failed before Pages was switched to GitHub Actions.
