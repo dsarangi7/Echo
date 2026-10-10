@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { isAndroidShell } from "../native/syncReminders";
 import { disableDailyReminder, enableDailyReminder } from "../practice/reminder-runtime";
 import { reminderSlotPassed, saveReminderSettings } from "../practice/reminder";
 import { localDateKey } from "../practice/shanghai";
@@ -33,6 +34,7 @@ export function StreakChrome({ lang }: Props) {
     handledToday: reminder.lastDailyDay === localDateKey(new Date()),
     problem,
   });
+  const androidReminder = isAndroidShell();
 
   useEffect(() => {
     const onStreak = (event: Event) => {
@@ -68,7 +70,9 @@ export function StreakChrome({ lang }: Props) {
   return (
     <section className="streak-chrome" id="streak-chrome" aria-label="Practice streak and daily reminder. 连续练习和每天提醒">
       <StreakFlame current={streak.current} best={streak.best} />
-      <ReminderControl enabled={reminder.enabled} time={time} note={note} onChange={(next) => void change(next)} />
+      {androidReminder ? null : (
+        <ReminderControl enabled={reminder.enabled} time={time} note={note} onChange={(next) => void change(next)} />
+      )}
       {toast ? <MilestoneToast day={toast} lang={lang} onDismiss={() => setToast(null)} /> : null}
     </section>
   );

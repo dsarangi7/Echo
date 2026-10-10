@@ -12,6 +12,7 @@ public/onnx/
 android/keystore/*.keystore
 android/keystore/*.jks
 android/keystore/keystore.properties
+android/keystore/KEYSTORE-VAULT.txt
 android/local.properties
 android/.gradle/
 android/**/build/

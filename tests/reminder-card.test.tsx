@@ -21,11 +21,12 @@ describe("reminder card", () => {
     expect(html).toContain("A Shanghai day counts");
   });
 
-  it("leaves the Android shell on syncNativeReminders", () => {
+  it("arms the Android shell only after permission, and keeps the website on enableDailyReminder", () => {
     const src = readFileSync(new URL("../src/components/ReminderCard.tsx", import.meta.url), "utf8");
     expect(src).toContain("isAndroidShell()");
-    expect(src).toContain("syncNativeReminders()");
+    expect(src).toContain("armNativeReminder(");
     expect(src).toContain("enableDailyReminder");
+    expect(src).not.toContain("syncNativeReminders()");
     expect(src).not.toContain("The time is Shanghai time");
   });
 });
