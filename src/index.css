@@ -511,12 +511,216 @@ button.act:focus-visible,
 
 .model-actions { margin-top: 12px; }
 
+.streak-chrome {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0 8px;
+}
+
+.streak-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  padding: 10px 12px;
+  border: 1px solid #3a3428;
+  border-radius: 14px;
+  background: #16140f;
+}
+
+.streak-flame {
+  width: 22px;
+  height: 30px;
+  color: var(--amber);
+  flex: 0 0 auto;
+  filter: drop-shadow(0 0 6px rgba(228, 177, 90, 0.4));
+}
+
+.streak-flame.is-dim {
+  color: #8a7044;
+  filter: none;
+  opacity: 0.72;
+}
+
+.streak-count {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.streak-count b {
+  font-variant-numeric: tabular-nums;
+  font-size: 22px;
+  font-weight: 750;
+  color: var(--amber);
+  letter-spacing: -0.02em;
+}
+
+.streak-strip.is-quiet .streak-count b { color: var(--muted); }
+
+.streak-count span { font-weight: 700; }
+
+.streak-count small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.streak-best { margin-left: auto; }
+
+.streak-best b {
+  color: var(--text);
+  font-size: 18px;
+}
+
+.streak-strip.is-quiet .streak-best b { color: var(--text); }
+
+.reminder-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #141414;
+}
+
+.reminder-toggle {
+  appearance: none;
+  width: 42px;
+  height: 24px;
+  border-radius: 999px;
+  border: 1px solid #3a3a3a;
+  background: #1c1c1c;
+  position: relative;
+  padding: 0;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.reminder-toggle span {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #8d8d8d;
+}
+
+.reminder-toggle.on {
+  background: #3a3420;
+  border-color: var(--amber);
+}
+
+.reminder-toggle.on span {
+  left: 20px;
+  background: var(--amber);
+}
+
+.reminder-label {
+  margin: 0;
+  flex: 1 1 140px;
+  line-height: 1.2;
+}
+
+.reminder-label b {
+  display: block;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.reminder-label small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.reminder-time {
+  appearance: none;
+  width: 7.5rem;
+  background: #101010;
+  color: var(--text);
+  border: 1px solid #3a3a3a;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font: inherit;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color-scheme: dark;
+}
+
+.reminder-note {
+  flex: 1 0 100%;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.reminder-note .saved,
+.reminder-note .hint,
+.reminder-note small { display: block; }
+
+.reminder-note .saved {
+  color: #f6ead4;
+  font-weight: 650;
+}
+
+.reminder-note small { margin-top: 2px; }
+
+.reminder-note .saved + small + .hint { margin-top: 8px; }
+
+.milestone-toast {
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: #241e14;
+  border: 1px solid #6a5430;
+  color: #f6ead4;
+}
+
+.milestone-toast .primary {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.milestone-toast .secondary {
+  margin: 4px 0 0;
+  color: #c9a36a;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.milestone-dismiss {
+  appearance: none;
+  margin-top: 10px;
+  background: transparent;
+  color: #f6ead4;
+  border: 1px solid #6a5430;
+  border-radius: 999px;
+  padding: 6px 12px 5px;
+  cursor: pointer;
+  line-height: 1.15;
+  text-align: left;
+}
+
+.milestone-dismiss b { display: block; font-size: 13px; font-weight: 750; }
+.milestone-dismiss small { display: block; margin-top: 2px; color: #c9a36a; font-size: 11px; font-weight: 600; }
+
 .session-strip {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
   gap: 8px 12px;
-  margin: 12px 0 14px;
+  margin: 0 0 14px;
   padding: 10px 12px;
   border: 1px solid #3a3428;
   border-radius: 14px;
@@ -602,7 +806,10 @@ button.session-count.unsure small { color: #c9a36a; }
 button.session-count.unsure:focus-visible,
 .session-reset:focus-visible,
 .model-actions .act:focus-visible,
-.browser-stack .act:focus-visible {
+.browser-stack .act:focus-visible,
+.reminder-toggle:focus-visible,
+.reminder-time:focus-visible,
+.milestone-dismiss:focus-visible {
   outline: 2px solid var(--neon);
   outline-offset: 2px;
 }
