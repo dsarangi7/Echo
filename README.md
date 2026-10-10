@@ -8,7 +8,10 @@ Hear it speaks the sentence. Say it listens, then marks the words you matched in
 
 The cat is an original mascot. Not Talking Tom, and not Talking Tat.
 
-Live site: https://dsarangi7.github.io/Echo/
+Live sites:
+
+- GitHub Pages: https://dsarangi7.github.io/Echo/ (base `/Echo/`)
+- Vercel: https://echo-psi-ashen.vercel.app and other `*.vercel.app` hosts (base `/`)
 
 ## How speech works
 
@@ -18,7 +21,7 @@ No paid API keys. Nothing is sent to Google Cloud, Azure, or OpenAI.
 
 - Vendored size is **about 44 MB**: quantized encoder `10,124,910` bytes, quantized merged decoder `30,727,765` bytes, plus tokenizer files (`tokenizer.json` is `2,480,466` bytes). That is the GitHub Pages payload for the model. The decoder stays under GitHub’s 50 MB file warning.
 - Hear it does not wait for that download. The status line starts with **Hear it is ready.** The model fetch begins when you tap **Say it**, then the line shows **Downloading Say it voice model…** and a percent.
-- Transformers.js loads those files from this origin (`/Echo/models/...` on GitHub Pages) and stores them in the **Cache API** (`transformers-cache`). The next Say it reuses that cache, including after you install the app. Remote model hosts are disabled (`allowRemoteModels` is false).
+- Transformers.js loads those files from this origin (`/Echo/models/...` on GitHub Pages, `/models/...` on Vercel) and stores them in the **Cache API** (`transformers-cache`). The next Say it reuses that cache, including after you install the app. Remote model hosts are disabled (`allowRemoteModels` is false).
 - The service worker does not precache the ONNX files. The decoder is about 29 MB, above the 12 MB precache cap, so a phone is not forced to download the model just to install the app.
 - The ONNX runtime is a single WASM thread, so GitHub Pages does not need cross-origin isolation. That is what lets Safari load it. The build copies `ort-wasm-simd.wasm` and `ort-wasm.wasm` (about 10 MB together) into the site.
 - Whisper tiny is the small multilingual model, on purpose, so phones can hold it. It will miss words, especially in Chinese. Misses are missing words or 字, not a fake accent score.
@@ -59,7 +62,7 @@ The built site includes a web manifest and a service worker. On GitHub Pages (HT
 - iPhone or iPad Safari: Share → Add to Home Screen.
 - Mac Safari: File → Add to Dock, or Share → Add to Dock.
 
-`start_url` and `scope` are `/Echo/`. Theme color is the same dark background as the page.
+`start_url` and `scope` follow the Vite base (`/Echo/` on GitHub Pages, `/` on Vercel). Theme color is the same dark background as the page.
 
 ## Run
 
@@ -68,7 +71,7 @@ npm install
 npm run dev
 ```
 
-Then open the local URL Vite prints (the dev server includes the `/Echo/` base). `npm run dev` copies the ONNX wasm into `public/onnx/` and starts the app with hot reload.
+Then open the local URL Vite prints. The dev server uses the `/Echo/` base unless `VITE_BASE`, `BASE_PATH`, or `VERCEL` is set. `npm run dev` copies the ONNX wasm into `public/onnx/` and starts the app with hot reload.
 
 ```bash
 npm test
@@ -76,16 +79,38 @@ npm run build
 npm run preview
 ```
 
-`npm test` checks scoring, the Hear it order, the sentence packs, the voice-model wording, and that the source does not call Web Speech Recognition.
+`npm test` checks scoring, the Hear it order, the sentence packs, the voice-model wording, the deploy base (`/Echo/` or `/`), and that the source does not call Web Speech Recognition.
 
 `npm run build` copies the wasm, typechecks, and writes a static site to `dist/`. `npm run preview` serves that build.
 
 ## GitHub Pages
 
-`.github/workflows/pages.yml` runs on every push to `main`. It installs with `npm ci`, builds with `npm run build`, and deploys `dist/` with GitHub Pages from Actions. Vite `base` is `/Echo/`, so JS, CSS, icons, audio, and the favicon load under that path.
+`.github/workflows/pages.yml` runs on every push to `main`. It installs with `npm ci`, builds with `npm run build`, and deploys `dist/` with GitHub Pages from Actions. That workflow sets `VITE_BASE=/Echo/`, so JS, CSS, icons, audio, and the favicon load under that path.
 
 One-time repository setting (required before the first deploy succeeds):
 
 **Settings → Pages → Build and deployment → Source: GitHub Actions**
 
 After that, the workflow on `main` publishes the site. Re-run **Deploy GitHub Pages** from the Actions tab if a deploy failed before Pages was switched to GitHub Actions.
+
+## Vercel
+
+The same codebase deploys to Vercel at the site root. `vercel.json` rewrites unknown paths to `index.html` so a refresh still loads the app. Files that exist in `dist/` (JS, CSS, audio, models, the service worker) are served as themselves.
+
+Vite chooses `base` in this order:
+
+1. `VITE_BASE`, if it is set
+2. `BASE_PATH`, if it is set
+3. `/` when `VERCEL` is set (Vercel sets this on production and preview builds)
+4. `/Echo/` otherwise (local `npm run dev` and `npm run build`)
+
+Set `VITE_BASE=/` in the Vercel project environment if you want the root base to be explicit. Leaving it unset is enough, because `VERCEL` selects `/`. Do not set `VITE_BASE=/Echo/` on Vercel. The PWA `start_url` and `scope` use that same base, so a Vercel build requests `/assets/...`, `/audio/...`, and `/models/...`.
+
+To check the root build locally:
+
+```bash
+VITE_BASE=/ npm run build
+npm run preview
+```
+
+`VERCEL=1 npm run build` is the same root base Vercel produces when `VITE_BASE` is unset.
