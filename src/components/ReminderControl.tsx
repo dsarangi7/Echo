@@ -1,10 +1,13 @@
 import { parseReminderTime } from "../practice/shanghai";
 import {
   REMINDER_DENIED,
+  REMINDER_IOS_HINT,
   REMINDER_LABEL,
+  REMINDER_LOCAL_TIME,
   REMINDER_ON,
-  REMINDER_PWA,
+  REMINDER_PASSED,
   REMINDER_UNAVAILABLE,
+  reminderWaitingCopy,
   type ReminderNote,
 } from "../ui/streakCopy";
 
@@ -25,7 +28,17 @@ function timeFromInput(value: string): string | null {
 /** Daily reminder toggle and 24h time. Storage and delivery stay in Kai's modules. */
 export function ReminderControl({ enabled, time, note, onChange }: Props) {
   const status =
-    note === "denied" ? REMINDER_DENIED : note === "unavailable" ? REMINDER_UNAVAILABLE : note === "on" ? REMINDER_ON : null;
+    note === "denied"
+      ? REMINDER_DENIED
+      : note === "unavailable"
+        ? REMINDER_UNAVAILABLE
+        : note === "passed"
+          ? REMINDER_PASSED
+          : note === "waiting"
+            ? reminderWaitingCopy(time)
+            : note === "on"
+              ? REMINDER_ON
+              : null;
 
   return (
     <div className="reminder-row" id="reminder-control">
@@ -65,8 +78,10 @@ export function ReminderControl({ enabled, time, note, onChange }: Props) {
             <small>{status.zh}</small>
           </>
         ) : null}
-        <span className="hint">{REMINDER_PWA.en}</span>
-        <small>{REMINDER_PWA.zh}</small>
+        <span className="hint">{REMINDER_IOS_HINT.en}</span>
+        <small>{REMINDER_IOS_HINT.zh}</small>
+        <span className="hint">{REMINDER_LOCAL_TIME.en}</span>
+        <small>{REMINDER_LOCAL_TIME.zh}</small>
       </p>
     </div>
   );

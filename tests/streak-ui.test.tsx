@@ -12,11 +12,15 @@ import type { Sentence } from "../src/practice/types";
 import {
   MILESTONE_COPY,
   REMINDER_DENIED,
+  REMINDER_IOS_HINT,
   REMINDER_LABEL,
+  REMINDER_LOCAL_TIME,
   REMINDER_ON,
-  REMINDER_PWA,
+  REMINDER_PASSED,
   REMINDER_UNAVAILABLE,
   milestoneJustHit,
+  openReminderNote,
+  reminderWaitingCopy,
 } from "../src/ui/streakCopy";
 
 const item: Sentence = { set: "Office", zhSet: "办公室", en: "The printer is out.", zh: "打印机没纸了。" };
@@ -67,8 +71,8 @@ describe("streak chrome copy", () => {
   });
 
   it("renders the reminder toggle, time, and honest status", () => {
-    const off = renderToStaticMarkup(
-      <ReminderControl enabled={false} time="20:00" note="idle" onChange={() => undefined} />,
+    const off = visibleText(
+      renderToStaticMarkup(<ReminderControl enabled={false} time="20:00" note="idle" onChange={() => undefined} />),
     );
     expect(off).toContain(REMINDER_LABEL.en);
     expect(off).toContain(REMINDER_LABEL.zh);
@@ -76,30 +80,49 @@ describe("streak chrome copy", () => {
     expect(off).toContain('aria-pressed="false"');
     expect(off).toContain('type="time"');
     expect(off).toContain('value="20:00"');
-    expect(off).toContain(REMINDER_PWA.en);
-    expect(off).toContain(REMINDER_PWA.zh);
+    expect(off).toContain(REMINDER_IOS_HINT.en);
+    expect(off).toContain(REMINDER_IOS_HINT.zh);
+    expect(off).toContain(REMINDER_LOCAL_TIME.en);
+    expect(off).toContain(REMINDER_LOCAL_TIME.zh);
+    expect(off).not.toContain("Shanghai time");
     expect(off).not.toContain(REMINDER_ON.en);
     expect(off).not.toContain(REMINDER_UNAVAILABLE.en);
 
-    const on = renderToStaticMarkup(
-      <ReminderControl enabled={true} time="09:05" note="on" onChange={() => undefined} />,
+    const on = visibleText(
+      renderToStaticMarkup(<ReminderControl enabled={true} time="09:05" note="on" onChange={() => undefined} />),
     );
     expect(on).toContain('aria-pressed="true"');
     expect(on).toContain('value="09:05"');
     expect(on).toContain(REMINDER_ON.en);
     expect(on).toContain(REMINDER_ON.zh);
 
-    const blocked = renderToStaticMarkup(
-      <ReminderControl enabled={false} time="09:05" note="denied" onChange={() => undefined} />,
+    const blocked = visibleText(
+      renderToStaticMarkup(<ReminderControl enabled={false} time="09:05" note="denied" onChange={() => undefined} />),
     );
     expect(blocked).toContain(REMINDER_DENIED.en);
     expect(blocked).toContain(REMINDER_DENIED.zh);
 
-    const unavailable = renderToStaticMarkup(
-      <ReminderControl enabled={false} time="09:05" note="unavailable" onChange={() => undefined} />,
+    const unavailable = visibleText(
+      renderToStaticMarkup(<ReminderControl enabled={false} time="09:05" note="unavailable" onChange={() => undefined} />),
     );
     expect(unavailable).toContain(REMINDER_UNAVAILABLE.en);
     expect(unavailable).toContain(REMINDER_UNAVAILABLE.zh);
+
+    const waiting = visibleText(
+      renderToStaticMarkup(<ReminderControl enabled={true} time="20:00" note="waiting" onChange={() => undefined} />),
+    );
+    expect(waiting).toContain(reminderWaitingCopy("20:00").en);
+    expect(waiting).toContain(reminderWaitingCopy("20:00").zh);
+    expect(waiting).not.toContain("Shanghai");
+
+    const passed = visibleText(
+      renderToStaticMarkup(<ReminderControl enabled={true} time="08:00" note="passed" onChange={() => undefined} />),
+    );
+    expect(passed).toContain(REMINDER_PASSED.en);
+    expect(passed).toContain(REMINDER_PASSED.zh);
+    expect(openReminderNote({ enabled: true, slotPassed: false, handledToday: false })).toBe("waiting");
+    expect(openReminderNote({ enabled: true, slotPassed: true, handledToday: true })).toBe("passed");
+    expect(openReminderNote({ enabled: false, slotPassed: true, handledToday: true, problem: "denied" })).toBe("denied");
   });
 
   it("shows each milestone toast in the practice language, with the other line under it", () => {

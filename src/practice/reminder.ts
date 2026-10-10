@@ -1,15 +1,18 @@
 import { readStreakRecord, type StreakRecord } from "./streak";
 import {
+  addLocalDays,
   addShanghaiDays,
   countDaysInRange,
   isShanghaiDayKey,
   laterDay,
+  localDateKey,
+  localInstant,
+  localMinutes,
   normalizePracticeDays,
   parseReminderTime,
   reminderMinutes,
   shanghaiDateKey,
   shanghaiInstant,
-  shanghaiMinutes,
   shanghaiWeekStart,
 } from "./shanghai";
 
@@ -29,7 +32,8 @@ export { parseReminderTime } from "./shanghai";
  * ```
  * { enabled, time: "HH:MM", lastDailyDay: "YYYY-MM-DD" | null, lastWeeklyWeekStart: "YYYY-MM-DD" | null }
  * ```
- * `time` is a 24-hour clock in Asia/Shanghai, same calendar as the streak.
+ * `time` is a 24-hour clock on this device, not Asia/Shanghai.
+ * Practice days and the weekly summary stay on the Shanghai calendar.
  * `lastWeeklyWeekStart` is the Monday of the last completed week already summarized.
  *
  * The service worker mirror (not for Chan) is IndexedDB `echo-practice-sync` / store `kv` / key `snapshot`.
@@ -48,7 +52,7 @@ export const REMINDER_CAPABILITIES = {
   streak:
     "Current and best streak live in localStorage on this device. A day is a calendar day in Asia/Shanghai, and it counts when Say it records at least one Clear or Partial.",
   androidChromeInstalled:
-    "An installed Android Chrome PWA can register Periodic Background Sync. Chrome may wake the service worker about every 12 hours or later, and the nudge is shown then if the Shanghai clock is already past the chosen time. That is not an exact alarm.",
+    "An installed Android Chrome PWA can register Periodic Background Sync. Chrome may wake the service worker about every 12 hours or later, and the nudge is shown then if this device's clock is already past the chosen time. That is not an exact alarm.",
   androidChromeTab:
     "A normal Android Chrome tab can notify while the page is open, and the next time the page is opened after the chosen time. Periodic Background Sync is usually refused until the PWA is installed.",
   iosSafari:
@@ -59,9 +63,9 @@ export const REMINDER_CAPABILITIES = {
 
 export type ReminderState = {
   enabled: boolean;
-  /** 24-hour HH:MM in Asia/Shanghai. */
+  /** 24-hour HH:MM on the device clock. */
   time: string;
-  /** Shanghai day we already showed the daily nudge for. */
+  /** Device-local day we already showed the daily nudge for. */
   lastDailyDay: string | null;
   /** Monday of the last completed Shanghai week we already summarized. */
   lastWeeklyWeekStart: string | null;
@@ -91,6 +95,14 @@ export function dailyNudgeCopy(): { title: string; body: string } {
   return {
     title: "课猫 Echo",
     body: "Time to practice. 该练一句了。",
+  };
+}
+
+/** One-shot when reminders are turned on after today's local time already passed. */
+export function reminderProofCopy(): { title: string; body: string } {
+  return {
+    title: "课猫 Echo",
+    body: "Test: Echo can notify this device. 测试：这台设备能收到 Echo 的通知。",
   };
 }
 
@@ -153,9 +165,10 @@ export function writeReminderState(storage: Pick<Storage, "getItem" | "setItem">
 }
 
 /**
- * Persist the picker. The first time it turns on, today's slot is skipped when
- * that clock time has already passed, and the previous week is marked summarized
- * so we do not backfill a weekly nudge.
+ * Persist the picker. The clock is the device's local time.
+ * The first time it turns on, today's local slot is skipped when that time has
+ * already passed, and the previous Shanghai week is marked summarized so we do
+ * not backfill a weekly nudge.
  */
 export function saveReminderSettings(
   storage: Pick<Storage, "getItem" | "setItem">,
@@ -170,7 +183,7 @@ export function saveReminderSettings(
   if (turningOn) {
     if (!lastWeeklyWeekStart) lastWeeklyWeekStart = addShanghaiDays(shanghaiWeekStart(now), -7);
     const target = reminderMinutes(time);
-    if (target != null && shanghaiMinutes(now) >= target) lastDailyDay = shanghaiDateKey(now);
+    if (target != null && localMinutes(now) >= target) lastDailyDay = localDateKey(now);
   }
   return writeReminderState(storage, {
     enabled: input.enabled,
@@ -188,14 +201,21 @@ export function daysInShanghaiWeek(practiceDays: readonly string[], weekStart: s
   return countDaysInRange(practiceDays, weekStart, addShanghaiDays(weekStart, 6));
 }
 
+/** True when the device clock is already at or past HH:MM. */
+export function reminderSlotPassed(time: string, now = new Date()): boolean {
+  const target = reminderMinutes(time);
+  if (target == null) return false;
+  return localMinutes(now) >= target;
+}
+
 /** Notices that should be shown at `now`. Does not mark them shown. */
 export function dueNotices(state: ReminderState, practiceDays: readonly string[], now: Date): DueNotice[] {
   if (!state.enabled) return [];
   const notices: DueNotice[] = [];
-  const today = shanghaiDateKey(now);
+  const today = localDateKey(now);
   const target = reminderMinutes(state.time);
-  const practicedToday = practiceDays.includes(today);
-  if (target != null && !practicedToday && state.lastDailyDay !== today && shanghaiMinutes(now) >= target) {
+  const practicedToday = practiceDays.includes(shanghaiDateKey(now));
+  if (target != null && !practicedToday && state.lastDailyDay !== today && localMinutes(now) >= target) {
     notices.push({ kind: "daily", day: today, ...dailyNudgeCopy() });
   }
   const summarizedWeek = previousShanghaiWeek(now);
@@ -226,10 +246,10 @@ export function nextReminderCheck(state: ReminderState, practiceDays: readonly s
   if (!state.enabled) return null;
   const time = parseReminderTime(state.time);
   if (!time) return null;
-  const today = shanghaiDateKey(now);
+  const today = localDateKey(now);
   const target = reminderMinutes(time) ?? 0;
-  const stillAhead = state.lastDailyDay !== today && !practiceDays.includes(today) && shanghaiMinutes(now) < target;
-  const dailyAt = shanghaiInstant(stillAhead ? today : addShanghaiDays(today, 1), time);
+  const stillAhead = state.lastDailyDay !== today && !practiceDays.includes(shanghaiDateKey(now)) && localMinutes(now) < target;
+  const dailyAt = localInstant(stillAhead ? today : addLocalDays(today, 1), time);
   const summarizedWeek = previousShanghaiWeek(now);
   if (state.lastWeeklyWeekStart && state.lastWeeklyWeekStart < summarizedWeek) {
     return Math.min(dailyAt, now.getTime() + 15 * 60 * 1000);

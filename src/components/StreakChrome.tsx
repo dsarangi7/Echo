@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { disableDailyReminder, enableDailyReminder } from "../practice/reminder-runtime";
-import { saveReminderSettings } from "../practice/reminder";
+import { reminderSlotPassed, saveReminderSettings } from "../practice/reminder";
+import { localDateKey } from "../practice/shanghai";
 import { STREAK_CHANGED_EVENT, practiceLocalStorage, type StreakMilestone } from "../practice/streak";
 import type { Lang } from "../practice/types";
 import { usePracticeStreak, useReminderSettings } from "../practice/usePracticeSignals";
-import { milestoneJustHit, type ReminderNote } from "../ui/streakCopy";
+import { milestoneJustHit, openReminderNote } from "../ui/streakCopy";
 import { MilestoneToast } from "./MilestoneToast";
 import { ReminderControl } from "./ReminderControl";
 import { StreakFlame } from "./StreakFlame";
@@ -26,7 +27,12 @@ export function StreakChrome({ lang }: Props) {
   const [problem, setProblem] = useState<"denied" | "unavailable" | null>(null);
   const [draftTime, setDraftTime] = useState<string | null>(null);
   const time = draftTime ?? reminder.time;
-  const note: ReminderNote = problem ?? (reminder.enabled ? "on" : "idle");
+  const note = openReminderNote({
+    enabled: reminder.enabled,
+    slotPassed: reminderSlotPassed(time),
+    handledToday: reminder.lastDailyDay === localDateKey(new Date()),
+    problem,
+  });
 
   useEffect(() => {
     const onStreak = (event: Event) => {

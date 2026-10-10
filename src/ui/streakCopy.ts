@@ -37,12 +37,47 @@ export const REMINDER_DENIED = {
   zh: "通知被拦住了，提醒保持关闭。",
 } as const;
 
-export const REMINDER_PWA = {
-  en: "Reminders work best when the app is installed. Not an exact alarm.",
-  zh: "安装到主屏幕后，提醒更稳。不是准点闹钟。",
+export const REMINDER_IOS_HINT = {
+  en: "On iPhone, Echo can't ring while closed. After the time passes, open Echo again for the nudge. Android app can ring on time.",
+  zh: "在 iPhone 上，Echo 关闭后不会响。过了时间再打开 Echo，才会收到提醒。Android 应用可以准时响。",
 } as const;
 
-export type ReminderNote = "idle" | "on" | "denied" | "unavailable";
+export const REMINDER_LOCAL_TIME = {
+  en: "The time is this device's local time.",
+  zh: "时间按这台设备的本地时间。",
+} as const;
+
+export const REMINDER_PWA = {
+  en: `${REMINDER_IOS_HINT.en} ${REMINDER_LOCAL_TIME.en}`,
+  zh: `${REMINDER_IOS_HINT.zh}${REMINDER_LOCAL_TIME.zh}`,
+} as const;
+
+export const REMINDER_PASSED = {
+  en: "Today's time already passed on this device — you'll get the nudge next open after tomorrow's time.",
+  zh: "今天的时间已经过了（按这台设备的时间）——明天那个时间之后再次打开，才会收到提醒。",
+} as const;
+
+export function reminderWaitingCopy(time: string): { en: string; zh: string } {
+  return {
+    en: `We'll nudge when you open Echo after ${time} on this device (iPhone can't alert while closed).`,
+    zh: `这台设备的 ${time} 之后再打开 Echo，就会提醒你（iPhone 关闭后不会响）。`,
+  };
+}
+
+export type ReminderNote = "idle" | "on" | "waiting" | "passed" | "denied" | "unavailable";
+
+export function openReminderNote(input: {
+  enabled: boolean;
+  slotPassed: boolean;
+  handledToday: boolean;
+  problem?: "denied" | "unavailable" | null;
+}): ReminderNote {
+  if (input.problem) return input.problem;
+  if (!input.enabled) return "idle";
+  if (!input.slotPassed) return "waiting";
+  if (input.handledToday) return "passed";
+  return "on";
+}
 
 export function milestoneLines(day: StreakMilestone, lang: Lang): { primary: string; secondary: string } {
   const copy = MILESTONE_COPY[day];

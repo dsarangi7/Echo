@@ -39,7 +39,7 @@ export function usePracticeStreak(): StreakView {
   return view;
 }
 
-/** Saved reminder time and enabled flag for Chan's picker. `time` is HH:MM in Asia/Shanghai. */
+/** Saved reminder time and enabled flag. `time` is HH:MM on this device. Streak days stay Asia/Shanghai. */
 export function useReminderSettings(): ReminderState {
   const [state, setState] = useState<ReminderState>(() => loadReminder(practiceLocalStorage()));
 
