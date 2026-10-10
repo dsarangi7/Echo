@@ -4,9 +4,10 @@ type Props = {
   lang: Lang;
   text: string;
   marks: boolean[] | null;
+  unrecognized?: boolean;
 };
 
-export function TargetSentence({ lang, text, marks }: Props) {
+export function TargetSentence({ lang, text, marks, unrecognized = false }: Props) {
   if (lang === "en") {
     const parts = text.split(/(\s+)/);
     let wordIndex = 0;
@@ -18,8 +19,9 @@ export function TargetSentence({ lang, text, marks }: Props) {
           if (!clean) return <span key={i}>{tok}</span>;
           const mark = marks ? marks[wordIndex] : undefined;
           wordIndex += 1;
+          const className = unrecognized ? "unk" : mark === undefined ? undefined : mark ? "ok" : "bad";
           return (
-            <span key={i} className={mark === undefined ? undefined : mark ? "ok" : "bad"}>
+            <span key={i} className={className}>
               {tok}
             </span>
           );
@@ -36,8 +38,9 @@ export function TargetSentence({ lang, text, marks }: Props) {
         if (!isChar) return <span key={i}>{ch}</span>;
         const mark = marks ? marks[charIndex] : undefined;
         charIndex += 1;
+        const className = unrecognized ? "unk" : mark === undefined ? undefined : mark ? "ok" : "bad";
         return (
-          <span key={i} className={mark === undefined ? undefined : mark ? "ok" : "bad"}>
+          <span key={i} className={className}>
             {ch}
           </span>
         );

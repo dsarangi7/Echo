@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { packError, packs } from "./packs";
-import { gradeTranscript } from "./score";
+import { gradeTranscript, isShortZhLine, recognitionFailHeadline, type GradeOutcome } from "./score";
 import { hearPaceRate, type HearPace } from "./pace";
 import { loadHearPaces, loadIndexes, loadLang, saveHearPaces, saveIndexes, saveLang } from "./storage";
 import type { CaptureHandle, MicFailure } from "../speech/record";
 import {
+  MIN_SPEECH_MS,
+  SHORT_ZH_MIN_SPEECH_MS,
   createRecordingContext,
   isSecurePage,
   micFailureMessage,
@@ -35,6 +37,8 @@ export function usePractice() {
   const [indexes, setIndexes] = useState(loadIndexes);
   const [paces, setPaces] = useState(loadHearPaces);
   const [marks, setMarks] = useState<boolean[] | null>(null);
+  const [outcome, setOutcome] = useState<GradeOutcome | "idle">("idle");
+  const [heardPreview, setHeardPreview] = useState("");
   const [catMode, setCatMode] = useState<CatMode>("idle");
   const [mouth, setMouth] = useState(0);
   const [kicker, setKicker] = useState("Hello");
@@ -69,6 +73,8 @@ export function usePractice() {
 
   const resetPractice = useCallback(() => {
     setMarks(null);
+    setOutcome("idle");
+    setHeardPreview("");
     setKicker("Practice");
     setScore("");
     setHeard(langRef.current === "en" ? PROMPT_EN : PROMPT_ZH);
@@ -102,6 +108,9 @@ export function usePractice() {
     setCatMode("idle");
     setListening(false);
     setMouth(0);
+    setMarks(null);
+    setOutcome("idle");
+    setHeardPreview("");
     setKicker("Note");
     setScore("");
     setHeard(message);
@@ -115,6 +124,8 @@ export function usePractice() {
       setListening(false);
       clearTimers();
       setMarks(null);
+      setOutcome("idle");
+      setHeardPreview("");
       setScore("");
       setMouth(0);
       setCatMode("idle");
@@ -265,6 +276,8 @@ export function usePractice() {
     clearTimers();
     setMouth(0);
     setMarks(null);
+    setOutcome("idle");
+    setHeardPreview("");
     setScore("");
     setCatMode("listen");
     setListening(true);
@@ -275,9 +288,12 @@ export function usePractice() {
         : "在听…再点一次「说一说」。",
     );
 
+    const targetLang = langRef.current;
+    const targetLine = primaryText(targetLang, packs[targetLang][indexRef.current]);
     const capture = startCapture(audioCtx, streamPromise, {
       maxMs: 15000,
       silenceMs: 900,
+      minSpeechMs: isShortZhLine(targetLang, targetLine) ? SHORT_ZH_MIN_SPEECH_MS : MIN_SPEECH_MS,
       onLevel: (rms) => {
         if (token !== tokenRef.current) return;
         setMouth(Math.min(1, rms * 8));
@@ -300,19 +316,27 @@ export function usePractice() {
         return;
       }
       setKicker("Transcribing");
-      setHeard(langRef.current === "en" ? "Transcribing on this device…" : "正在这台设备上识别…");
+      setHeard(targetLang === "en" ? "Transcribing on this device…" : "正在这台设备上识别…");
       try {
         const pcm = resampleTo16k(recorded.samples, recorded.sampleRate);
-        const spoken = (await transcribe(pcm, langRef.current)).trim();
+        const spoken = (await transcribe(pcm, targetLang, targetLine)).trim();
         if (token !== tokenRef.current) return;
-        const currentLang = langRef.current;
-        const current = packs[currentLang][indexRef.current];
-        const graded = gradeTranscript(currentLang, primaryText(currentLang, current), spoken);
-        setMarks(graded.marks);
-        setKicker("Heard");
-        setHeard(spoken || (currentLang === "en" ? "(nothing heard)" : "（没听到）"));
-        setScore(graded.label);
+        const graded = gradeTranscript(targetLang, targetLine, spoken);
         setCatMode("idle");
+        setHeardPreview(graded.heardPreview);
+        if (graded.outcome === "recognition_fail") {
+          setMarks(null);
+          setOutcome("recognition_fail");
+          setKicker(targetLang === "zh" ? "识别" : "Recognition");
+          setHeard(recognitionFailHeadline(targetLang));
+          setScore("");
+          return;
+        }
+        setMarks(graded.marks);
+        setOutcome("scored");
+        setKicker("Heard");
+        setHeard(spoken);
+        setScore(graded.label);
       } catch {
         if (token !== tokenRef.current) return;
         noteFailure("Could not transcribe on this device. Try again. 这台设备上没识别成，再试一次。");
@@ -326,6 +350,8 @@ export function usePractice() {
     item,
     pack,
     marks,
+    outcome,
+    heardPreview,
     catMode,
     mouth,
     kicker,

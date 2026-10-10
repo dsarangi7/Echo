@@ -39,6 +39,14 @@ describe("Say it does not use Google speech recognition", () => {
     const worker = readFileSync("src/speech/whisper.worker.ts", "utf8");
     expect(worker).toContain("configureLocalWhisper");
     expect(worker).not.toContain("allowLocalModels = false");
+    expect(worker).toContain("initialPrompt");
+    expect(worker).toContain("whisperInitialPromptIds");
+    expect(worker).toContain("decoder_input_ids");
+    expect(worker).toContain("installInitialPromptStrip");
+    expect(worker).toContain('task: "transcribe"');
+    const stt = readFileSync("src/speech/stt.ts", "utf8");
+    expect(stt).toContain("initialPrompt");
+    expect(stt).toContain("whisperLanguage(lang)");
     const practice = readFileSync("src/practice/usePractice.ts", "utf8");
     const hear = practice.slice(practice.indexOf("const hear"), practice.indexOf("const sayIt"));
     expect(hear).not.toContain("ensureModel");
@@ -50,6 +58,13 @@ describe("Say it does not use Google speech recognition", () => {
     expect(opened).toContain("void ensureModel()");
     expect(opened).toContain("playIntro(langRef.current, true)");
     expect(practice).toContain("playIntro(next)");
+    expect(practice).toContain("transcribe(pcm, targetLang, targetLine)");
+    expect(practice).toContain("minSpeechMs");
+    expect(practice).toContain("SHORT_ZH_MIN_SPEECH_MS");
+    expect(practice).toContain('outcome === "recognition_fail"');
+    expect(readFileSync("src/components/PracticePanel.tsx", "utf8")).toContain("Try again");
+    expect(readFileSync("src/components/PracticePanel.tsx", "utf8")).toContain("recognition_fail");
+    expect(readFileSync("src/components/TargetSentence.tsx", "utf8")).toContain('"unk"');
     expect(readFileSync("src/App.tsx", "utf8")).toContain('onIntroduce={practice.introduce}');
     expect(readFileSync("src/components/CatMascot.tsx", "utf8")).toContain('id="cat-intro"');
   });

@@ -13,7 +13,9 @@ export type CaptureHandle = {
 };
 
 const SPEECH_RMS = 0.012;
-const MIN_SPEECH_MS = 280;
+export const MIN_SPEECH_MS = 280;
+/** A little more voiced audio before a short Chinese line is sent to Whisper tiny. */
+export const SHORT_ZH_MIN_SPEECH_MS = 420;
 
 export const MIC_DENIED =
   "Microphone is blocked. Allow the microphone in the browser settings, then try again. 麦克风被拦住了。请在浏览器设置里允许麦克风，然后再试。";
@@ -195,8 +197,9 @@ function stopTracks(stream: MediaStream | null) {
 export function startCapture(
   ctx: AudioContext,
   streamRequest: Promise<MediaStream>,
-  options: { maxMs: number; silenceMs: number; onLevel?: (rms: number) => void },
+  options: { maxMs: number; silenceMs: number; minSpeechMs?: number; onLevel?: (rms: number) => void },
 ): CaptureHandle {
+  const minSpeechMs = options.minSpeechMs ?? MIN_SPEECH_MS;
   let finish: () => void = () => undefined;
   let cancel: () => void = () => undefined;
 
@@ -233,7 +236,7 @@ export function startCapture(
 
     finish = () => {
       shutdown();
-      if (!heardSpeech || speechMs < MIN_SPEECH_MS) {
+      if (!heardSpeech || speechMs < minSpeechMs) {
         stop("no-speech");
         return;
       }
@@ -269,7 +272,7 @@ export function startCapture(
         } else if (heardSpeech) {
           silenceMs += frameMs;
         }
-        const quietLongEnough = heardSpeech && speechMs >= MIN_SPEECH_MS && silenceMs >= options.silenceMs;
+        const quietLongEnough = heardSpeech && speechMs >= minSpeechMs && silenceMs >= options.silenceMs;
         const gaveUp = !heardSpeech && elapsedMs >= 6000;
         if (quietLongEnough || gaveUp || elapsedMs >= options.maxMs) finish();
       };

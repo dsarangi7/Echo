@@ -127,7 +127,7 @@ export function ensureModel(): Promise<void> {
   return ready;
 }
 
-export function transcribe(audio: Float32Array, lang: Lang): Promise<string> {
+export function transcribe(audio: Float32Array, lang: Lang, initialPrompt = ""): Promise<string> {
   return ensureModel().then(
     () =>
       new Promise((resolve, reject) => {
@@ -151,7 +151,10 @@ export function transcribe(audio: Float32Array, lang: Lang): Promise<string> {
           },
         });
         const copy = new Float32Array(audio);
-        worker.postMessage({ type: "transcribe", id, audio: copy, language: whisperLanguage(lang) }, [copy.buffer]);
+        worker.postMessage(
+          { type: "transcribe", id, audio: copy, language: whisperLanguage(lang), initialPrompt },
+          [copy.buffer],
+        );
       }),
   );
 }

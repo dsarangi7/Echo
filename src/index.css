@@ -249,6 +249,14 @@ h1 {
   padding: 0 0.06em;
 }
 
+.sentence .unk {
+  color: #d8d8d0;
+  background: transparent;
+  border-radius: 6px;
+  padding: 0 0.08em 1px;
+  border-bottom: 1.5px dashed #9a9a92;
+}
+
 .meaning {
   margin: 12px 0 0;
   color: #d2d2d2;
@@ -362,6 +370,11 @@ button.act:focus-visible,
 
 .sw.ok { background: var(--neon); margin-left: 0; }
 .sw.bad { background: var(--bad); }
+.sw.unk {
+  background: transparent;
+  border: 1.5px dashed #9a9a92;
+  box-sizing: border-box;
+}
 
 .result {
   margin-top: 16px;
@@ -379,6 +392,9 @@ button.act:focus-visible,
 }
 
 #heard { margin: 6px 0 0; font-size: 18px; line-height: 1.4; }
+.fail-headline { font-weight: 650; line-height: 1.45; }
+.heard-muted { margin: 8px 0 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
+.fail-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
 #score {
   margin: 8px 0 0;
   font-size: 20px;
