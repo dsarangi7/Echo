@@ -11,6 +11,7 @@ const config: CapacitorConfig = {
     LocalNotifications: {
       smallIcon: "ic_stat_echo",
       iconColor: "#C8FF3D",
+      sound: "echo_meow.wav",
     },
   },
 };

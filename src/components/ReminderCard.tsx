@@ -1,9 +1,16 @@
-import { useState } from "react";
-import { isAndroidShell, syncNativeReminders } from "../native/syncReminders";
+import { useEffect, useState } from "react";
+import { armNativeReminder, isAndroidShell, reminderArmListener, type SyncResult } from "../native/syncReminders";
+import {
+  REMINDER_ANDROID_BATTERY,
+  REMINDER_ANDROID_CLOCK,
+  REMINDER_ANDROID_DENIED,
+  REMINDER_ANDROID_EXACT,
+  REMINDER_ANDROID_FAILED,
+  REMINDER_ANDROID_ON,
+} from "../native/reminderCopy";
 import { disableDailyReminder, enableDailyReminder, publishPracticeSnapshot } from "../practice/reminder-runtime";
-import { parseReminderTime, reminderSlotPassed, saveReminderSettings, type ReminderState } from "../practice/reminder";
+import { parseReminderTime, reminderSlotPassed, type ReminderState } from "../practice/reminder";
 import { localDateKey } from "../practice/shanghai";
-import { practiceLocalStorage } from "../practice/streak";
 import { usePracticeStreak, useReminderSettings } from "../practice/usePracticeSignals";
 import { REMINDER_IOS_HINT, REMINDER_LOCAL_TIME, REMINDER_PASSED, reminderWaitingCopy } from "../ui/streakCopy";
 
@@ -14,27 +21,37 @@ function webStatus(reminder: ReminderState, now = new Date()): { en: string; zh:
   return null;
 }
 
+function alertCopy(result: SyncResult | null): { en: string; zh: string } | null {
+  if (result === "denied") return REMINDER_ANDROID_DENIED;
+  if (result === "exact-denied") return REMINDER_ANDROID_EXACT;
+  if (result === "failed") return REMINDER_ANDROID_FAILED;
+  return null;
+}
+
+/** Website card plus the Android shell. The shell asks for permission before it stays on. */
 export function ReminderCard() {
   const streak = usePracticeStreak();
   const reminder = useReminderSettings();
+  const [native, setNative] = useState(isAndroidShell);
+  const [problem, setProblem] = useState<SyncResult | null>(null);
   const [note, setNote] = useState("");
+
+  useEffect(() => {
+    setNative(isAndroidShell());
+    return reminderArmListener((detail) => setProblem(detail.result === "off" || detail.result === "skipped" ? null : detail.result));
+  }, []);
 
   const apply = async (enabled: boolean, time: string) => {
     const parsed = parseReminderTime(time) ?? reminder.time;
-    const storage = practiceLocalStorage();
-    if (!storage) return;
-    if (isAndroidShell()) {
-      saveReminderSettings(storage, { enabled, time: parsed });
-      void publishPracticeSnapshot();
-      const result = await syncNativeReminders();
-      if (enabled && result === "denied") {
-        saveReminderSettings(storage, { enabled: false, time: parsed });
-        setNote("Allow notifications to ring at this time. 请允许通知，才能按时提醒。");
-        return;
-      }
+    if (native) {
+      const turningOn = enabled && !reminder.enabled;
+      const result = await armNativeReminder({ enabled, time: parsed, test: turningOn });
+      setProblem(result === "off" || result === "skipped" ? null : result);
       setNote("");
+      void publishPracticeSnapshot();
       return;
     }
+    setProblem(null);
     if (!enabled) {
       disableDailyReminder();
       setNote("");
@@ -52,7 +69,9 @@ export function ReminderCard() {
     setNote("");
   };
 
-  const status = note ? null : webStatus(reminder);
+  const alert = native ? alertCopy(problem) : null;
+  const on = native && reminder.enabled && problem !== "denied" && problem !== "exact-denied" && problem !== "failed";
+  const status = note || native ? null : webStatus(reminder);
 
   return (
     <section className="card reminder-card" id="reminders" aria-labelledby="reminders-title">
@@ -69,7 +88,7 @@ export function ReminderCard() {
           <input
             id="daily-reminder"
             type="checkbox"
-            checked={reminder.enabled}
+            checked={native ? on : reminder.enabled}
             onChange={(event) => void apply(event.target.checked, reminder.time)}
           />
           <span>
@@ -79,24 +98,37 @@ export function ReminderCard() {
         <input
           id="daily-time"
           type="time"
-          aria-label="Reminder time, local"
+          aria-label={native ? "Reminder time on this phone" : "Reminder time, local"}
           value={reminder.time}
           onChange={(event) => void apply(reminder.enabled, event.target.value)}
         />
       </div>
-      <p className="legend" id="reminder-platform">
-        <span>{REMINDER_IOS_HINT.en}</span>
-        <small>{REMINDER_IOS_HINT.zh}</small>
-        <span>{REMINDER_LOCAL_TIME.en}</span>
-        <small>{REMINDER_LOCAL_TIME.zh}</small>
-      </p>
-      {isAndroidShell() ? (
+      {native ? (
         <p className="legend">
-          The Android app rings at this local time, and on Monday sends the week summary. Android
-          应用按这台设备的时间响，周一发送本周总结。
+          {REMINDER_ANDROID_CLOCK.en} {REMINDER_ANDROID_CLOCK.zh}
+        </p>
+      ) : (
+        <p className="legend" id="reminder-platform">
+          <span>{REMINDER_IOS_HINT.en}</span>
+          <small>{REMINDER_IOS_HINT.zh}</small>
+          <span>{REMINDER_LOCAL_TIME.en}</span>
+          <small>{REMINDER_LOCAL_TIME.zh}</small>
+        </p>
+      )}
+      {on ? (
+        <p className="reminder-alert is-on" id="reminder-note" role="status">
+          <b>{REMINDER_ANDROID_ON.en}</b>
+          <small>{REMINDER_ANDROID_ON.zh}</small>
+          <span>{REMINDER_ANDROID_BATTERY.en}</span>
+          <small>{REMINDER_ANDROID_BATTERY.zh}</small>
         </p>
       ) : null}
-      {note ? (
+      {alert ? (
+        <p className="reminder-alert" id="reminder-note" role="alert">
+          <b>{alert.en}</b>
+          <small>{alert.zh}</small>
+        </p>
+      ) : note ? (
         <p className="legend" id="reminder-note" role="status">
           {note}
         </p>
