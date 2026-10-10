@@ -825,28 +825,27 @@ button.session-count.unsure:focus-visible,
   font-size: 14px;
   font-weight: 600;
 }
-.reminder-row {
+.reminder-fields {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 10px 14px;
   margin-top: 12px;
 }
-.reminder-row label {
+.reminder-fields label {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   font-size: 14px;
   font-weight: 700;
 }
-.reminder-row label small {
+.reminder-fields label small {
   display: block;
   color: var(--muted);
   font-size: 12px;
   font-weight: 600;
 }
-.reminder-row input[type="time"],
-.reminder-row select {
+.reminder-fields input[type="time"] {
   background: #151515;
   color: var(--text);
   border: 1px solid #3a3a3a;
@@ -854,10 +853,30 @@ button.session-count.unsure:focus-visible,
   padding: 8px 10px;
   font: inherit;
 }
-.reminder-row input[type="checkbox"] {
+.reminder-fields input[type="checkbox"] {
   width: 18px;
   height: 18px;
   accent-color: var(--neon);
+}
+.reminder-alert {
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid #a33b3b;
+  background: #2a1414;
+  color: #ffd7d2;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+.reminder-alert b,
+.reminder-alert small,
+.reminder-alert span { display: block; }
+.reminder-alert small { margin-top: 4px; font-weight: 650; }
+.reminder-alert.is-on {
+  border-color: #3f6b32;
+  background: #142216;
+  color: #d9f5cf;
 }
 
 @media (max-width: 900px) {

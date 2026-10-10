@@ -169,7 +169,7 @@ export async function publishPracticeSnapshot(): Promise<void> {
 
 /**
  * Call from Chan's enable control, inside the click. Asks for notification
- * permission, stores the Shanghai clock time, and arms delivery.
+ * permission, stores the device-local clock time, and arms delivery.
  */
 export async function enableDailyReminder(time: string): Promise<ReminderEnableResult> {
   const parsed = parseReminderTime(time);

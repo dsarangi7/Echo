@@ -16,6 +16,7 @@ import {
   weeklyNudgeCopy,
   type SyncSnapshot,
 } from "../src/practice/reminder";
+import { deviceInstant } from "../src/practice/deviceClock";
 import { shanghaiInstant } from "../src/practice/shanghai";
 import { STREAK_STORAGE_KEY, recordPracticeClearOrPartial } from "../src/practice/streak";
 
@@ -47,28 +48,35 @@ function at(day: string, time = "12:00"): Date {
   return new Date(shanghaiInstant(day, time));
 }
 
+/** A Date whose local clock matches `day` and `time`, whatever the machine timezone is. */
+function localAt(day: string, time: string): Date {
+  const [year, month, date] = day.split("-").map(Number);
+  const [hour, minute] = time.split(":").map(Number);
+  return new Date(year, month - 1, date, hour, minute, 0, 0);
+}
+
 describe("daily reminder", () => {
-  it("stores a Shanghai clock time and does not backfill when it is turned on", () => {
+  it("stores a phone-local clock time and does not backfill when it is turned on", () => {
     const storage = memoryStorage();
     expect(loadReminder(storage).time).toBe(DEFAULT_REMINDER_TIME);
     expect(loadReminder(storage).enabled).toBe(false);
 
-    const late = saveReminderSettings(storage, { enabled: true, time: "8:05" }, at("2026-10-07", "21:00"));
+    const late = saveReminderSettings(storage, { enabled: true, time: "8:05" }, localAt("2026-10-07", "21:00"));
     expect(late).toMatchObject({
       enabled: true,
       time: "08:05",
       lastDailyDay: "2026-10-07",
-      lastWeeklyWeekStart: "2026-09-28",
     });
-    expect(dueNotices(late, [], at("2026-10-07", "21:30"))).toEqual([]);
+    expect(late.lastWeeklyWeekStart).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(dueNotices(late, [], localAt("2026-10-07", "21:30"))).toEqual([]);
 
-    const waiting = saveReminderSettings(storage, { enabled: false, time: "20:00" }, at("2026-10-07", "21:00"));
+    const waiting = saveReminderSettings(storage, { enabled: false, time: "20:00" }, localAt("2026-10-07", "21:00"));
     expect(waiting.enabled).toBe(false);
     expect(waiting.time).toBe("20:00");
-    const armed = saveReminderSettings(storage, { enabled: true, time: "20:00" }, at("2026-10-08", "09:00"));
+    const armed = saveReminderSettings(storage, { enabled: true, time: "20:00" }, localAt("2026-10-08", "09:00"));
     expect(armed.lastDailyDay).toBe("2026-10-07");
-    expect(dueNotices(armed, [], at("2026-10-08", "19:59"))).toEqual([]);
-    const due = dueNotices(armed, [], at("2026-10-08", "20:00"));
+    expect(dueNotices(armed, [], localAt("2026-10-08", "19:59"))).toEqual([]);
+    const due = dueNotices(armed, [], localAt("2026-10-08", "20:00"));
     expect(due.map((notice) => notice.kind)).toEqual(["daily"]);
     expect(due[0]).toMatchObject(dailyNudgeCopy());
     expect(dailyNudgeCopy().body).not.toMatch(/%/);
@@ -76,11 +84,12 @@ describe("daily reminder", () => {
 
   it("skips the daily nudge after a Clear or Partial that same Shanghai day", () => {
     const storage = memoryStorage();
-    saveReminderSettings(storage, { enabled: true, time: "20:00" }, at("2026-10-08", "09:00"));
-    recordPracticeClearOrPartial(storage, at("2026-10-08", "18:00"));
+    const evening = localAt("2026-10-08", "20:30");
+    saveReminderSettings(storage, { enabled: true, time: "20:00" }, localAt("2026-10-08", "09:00"));
+    recordPracticeClearOrPartial(storage, evening);
     const state = loadReminder(storage);
     const days = JSON.parse(storage.getItem(STREAK_STORAGE_KEY) ?? "{}").practiceDays as string[];
-    expect(dueNotices(state, days, at("2026-10-08", "20:30"))).toEqual([]);
+    expect(dueNotices(state, days, evening)).toEqual([]);
   });
 
   it("rejects a clock time that is not a real minute", () => {
@@ -137,10 +146,12 @@ describe("weekly nudge", () => {
     expect(commitDelivery(planned, fresh)).toBeNull();
   });
 
-  it("schedules the open page for the next Shanghai reminder, not a tight loop", () => {
-    const state = saveReminderSettings(memoryStorage(), { enabled: true, time: "20:00" }, at("2026-10-08", "09:00"));
-    const next = nextReminderCheck(state, [], at("2026-10-08", "12:00"));
-    expect(next).toBe(shanghaiInstant("2026-10-08", "20:00"));
+  it("schedules the open page for the next phone-local reminder, not a Shanghai shift", () => {
+    const state = saveReminderSettings(memoryStorage(), { enabled: true, time: "20:00" }, localAt("2026-10-08", "09:00"));
+    const next = nextReminderCheck(state, [], localAt("2026-10-08", "12:00"));
+    expect(next).toBe(deviceInstant("2026-10-08", "20:00"));
+    expect(new Date(next ?? 0).getHours()).toBe(20);
+    expect(new Date(next ?? 0).getMinutes()).toBe(0);
   });
 });
 

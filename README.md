@@ -78,7 +78,7 @@ The built site includes a web manifest and a service worker. On GitHub Pages (HT
 
 `start_url` and `scope` follow the Vite base (`/Echo/` on GitHub Pages, `/` on Vercel). Theme color is the same dark background as the page.
 
-The Android app is a separate install. It wraps this build and delivers a daily reminder plus a Monday Shanghai streak summary while the app is closed. It reads the same `echo-practice-streak` and `echo-practice-reminder` records as the site. Build steps and the `com.ayk.echo` id are in [docs/android.md](docs/android.md).
+The Android app is a separate install. It wraps this build and delivers a daily reminder plus a Monday streak summary while the app is closed, at the phone's own clock time. The practice streak is still counted in Asia/Shanghai. It reads the same `echo-practice-streak` and `echo-practice-reminder` records as the site. Build steps and the `com.ayk.echo` id are in [docs/android.md](docs/android.md).
 
 ## Run
 

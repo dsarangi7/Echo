@@ -1,46 +1,47 @@
-import { useState } from "react";
-import { isAndroidShell, syncNativeReminders } from "../native/syncReminders";
-import { disableDailyReminder, enableDailyReminder, publishPracticeSnapshot } from "../practice/reminder-runtime";
-import { parseReminderTime, saveReminderSettings } from "../practice/reminder";
-import { practiceLocalStorage } from "../practice/streak";
+import { useEffect, useState } from "react";
+import { isAndroidShell, armNativeReminder, reminderArmListener, type SyncResult } from "../native/syncReminders";
+import {
+  REMINDER_ANDROID_BATTERY,
+  REMINDER_ANDROID_CLOCK,
+  REMINDER_ANDROID_DENIED,
+  REMINDER_ANDROID_EXACT,
+  REMINDER_ANDROID_FAILED,
+  REMINDER_ANDROID_ON,
+} from "../native/reminderCopy";
+import { publishPracticeSnapshot } from "../practice/reminder-runtime";
+import { parseReminderTime } from "../practice/reminder";
 import { usePracticeStreak, useReminderSettings } from "../practice/usePracticeSignals";
 
+function alertCopy(result: SyncResult | null): { en: string; zh: string } | null {
+  if (result === "denied") return REMINDER_ANDROID_DENIED;
+  if (result === "exact-denied") return REMINDER_ANDROID_EXACT;
+  if (result === "failed") return REMINDER_ANDROID_FAILED;
+  return null;
+}
+
+/** Android reminder card. Hidden on the website, which keeps the streak-strip control. */
 export function ReminderCard() {
   const streak = usePracticeStreak();
   const reminder = useReminderSettings();
-  const [note, setNote] = useState("");
+  const [native, setNative] = useState(isAndroidShell);
+  const [problem, setProblem] = useState<SyncResult | null>(null);
+
+  useEffect(() => {
+    setNative(isAndroidShell());
+    return reminderArmListener((detail) => setProblem(detail.result === "off" || detail.result === "skipped" ? null : detail.result));
+  }, []);
+
+  if (!native) return null;
+
+  const alert = alertCopy(problem);
+  const on = reminder.enabled && problem !== "denied" && problem !== "exact-denied" && problem !== "failed";
 
   const apply = async (enabled: boolean, time: string) => {
     const parsed = parseReminderTime(time) ?? reminder.time;
-    const storage = practiceLocalStorage();
-    if (!storage) return;
-    if (isAndroidShell()) {
-      saveReminderSettings(storage, { enabled, time: parsed });
-      void publishPracticeSnapshot();
-      const result = await syncNativeReminders();
-      if (enabled && result === "denied") {
-        saveReminderSettings(storage, { enabled: false, time: parsed });
-        setNote("Allow notifications to ring at this time. 请允许通知，才能按时提醒。");
-        return;
-      }
-      setNote("");
-      return;
-    }
-    if (!enabled) {
-      disableDailyReminder();
-      setNote("");
-      return;
-    }
-    const result = await enableDailyReminder(parsed);
-    if (!result.ok && result.reason === "denied") {
-      setNote("Allow notifications in the browser to use this reminder. 请在浏览器里允许通知。");
-      return;
-    }
-    if (!result.ok && result.reason === "unsupported") {
-      setNote("This browser cannot schedule a fixed-time alert. The Android app can. 这个浏览器不能定时提醒，Android 应用可以。");
-      return;
-    }
-    setNote("");
+    const turningOn = enabled && !reminder.enabled;
+    const result = await armNativeReminder({ enabled, time: parsed, test: turningOn });
+    setProblem(result === "off" || result === "skipped" ? null : result);
+    void publishPracticeSnapshot();
   };
 
   return (
@@ -53,7 +54,7 @@ export function ReminderCard() {
         {streak.daysThisWeek} 天 · 连续 {streak.current} 天。 A Shanghai day counts after one Clear or Partial Say-it.
         上海时间，说一说听清或部分即算一天。
       </p>
-      <div className="reminder-row">
+      <div className="reminder-fields">
         <label htmlFor="daily-reminder">
           <input
             id="daily-reminder"
@@ -68,18 +69,26 @@ export function ReminderCard() {
         <input
           id="daily-time"
           type="time"
-          aria-label="Reminder time, Shanghai"
+          aria-label="Reminder time on this phone"
           value={reminder.time}
           onChange={(event) => void apply(reminder.enabled, event.target.value)}
         />
       </div>
       <p className="legend">
-        The time is Shanghai time. The Android app rings every day then, and on Monday sends the week summary. The site
-        stores the same reminder. 时间按上海。Android 应用每天这个点提醒，周一发送本周总结。网页保存的是同一条设置。
+        {REMINDER_ANDROID_CLOCK.en} {REMINDER_ANDROID_CLOCK.zh}
       </p>
-      {note ? (
-        <p className="legend" id="reminder-note">
-          {note}
+      {on ? (
+        <p className="reminder-alert is-on" id="reminder-note" role="status">
+          <b>{REMINDER_ANDROID_ON.en}</b>
+          <small>{REMINDER_ANDROID_ON.zh}</small>
+          <span>{REMINDER_ANDROID_BATTERY.en}</span>
+          <small>{REMINDER_ANDROID_BATTERY.zh}</small>
+        </p>
+      ) : null}
+      {alert ? (
+        <p className="reminder-alert" id="reminder-note" role="alert">
+          <b>{alert.en}</b>
+          <small>{alert.zh}</small>
         </p>
       ) : null}
     </section>
