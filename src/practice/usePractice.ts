@@ -2,14 +2,25 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { packError, packs } from "./packs";
 import { gradeTranscript } from "./score";
 import { loadIndexes, loadLang, saveIndexes, saveLang } from "./storage";
-import type { CaptureHandle } from "../speech/record";
-import { startCapture } from "../speech/record";
+import type { CaptureHandle, MicFailure } from "../speech/record";
+import {
+  createRecordingContext,
+  isSecurePage,
+  micFailureMessage,
+  releaseStream,
+  requestMicrophone,
+  startCapture,
+} from "../speech/record";
 import { resampleTo16k } from "../speech/resample";
 import { introLine } from "../speech/intro";
 import { DOWNLOAD_LABEL } from "../speech/model";
 import { ensureModel, subscribeModel, transcribe } from "../speech/stt";
 import { HEAR_FAIL, speakIntro, speakLine, stopSpeaking } from "../speech/tts";
 import type { CatMode, Lang, Sentence } from "./types";
+
+function micNote(kind: MicFailure): string {
+  return micFailureMessage(kind, { secure: isSecurePage() });
+}
 
 const PROMPT_EN = "Tap Hear it, then Say it. 先听一听，再说一说。";
 const PROMPT_ZH = "点「听一听」，再点「说一说」。 Hear it, then say it.";
@@ -221,15 +232,18 @@ export function usePractice() {
       captureRef.current.finish();
       return;
     }
-    void ensureModel().catch(() => undefined);
+    // getUserMedia and AudioContext.resume have to start in this tap, before any await.
+    const streamPromise = requestMicrophone();
     let audioCtx: AudioContext;
     try {
-      audioCtx = new AudioContext();
+      audioCtx = createRecordingContext();
+      void audioCtx.resume();
     } catch {
-      noteFailure("This browser cannot open the microphone. 这个浏览器开不了麦克风。");
+      void releaseStream(streamPromise);
+      noteFailure(micFailureMessage("failed", { secure: isSecurePage() }));
       return;
     }
-    void audioCtx.resume();
+    void ensureModel().catch(() => undefined);
     const token = ++tokenRef.current;
     stopSpeaking();
     clearTimers();
@@ -245,7 +259,7 @@ export function usePractice() {
         : "在听…再点一次「说一说」。",
     );
 
-    const capture = startCapture(audioCtx, {
+    const capture = startCapture(audioCtx, streamPromise, {
       maxMs: 15000,
       silenceMs: 900,
       onLevel: (rms) => {
@@ -261,12 +275,8 @@ export function usePractice() {
       if (token !== tokenRef.current || recorded === "cancelled") return;
       setListening(false);
       setMouth(0);
-      if (recorded === "denied") {
-        noteFailure("Microphone is blocked. Allow the mic, then try again. 麦克风被拦住了，请允许后再试。");
-        return;
-      }
-      if (recorded === "no-mic") {
-        noteFailure("No microphone on this device. 这台设备没有麦克风。");
+      if (recorded === "denied" || recorded === "no-mic" || recorded === "failed") {
+        noteFailure(micNote(recorded));
         return;
       }
       if (recorded === "no-speech") {

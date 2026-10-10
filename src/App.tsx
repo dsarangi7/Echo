@@ -66,10 +66,6 @@ export function App() {
         <CatMascot mode={practice.catMode} mouth={practice.mouth} onIntroduce={practice.introduce} />
         <PracticePanel {...practice} />
       </div>
-
-      <footer className="note">
-        这是课堂演示。猫是原创的，不是 Talking Tom。听写对的是词或字，不是口音分数。说一说在本机运行，可以加到主屏幕。 / Class demo. Original cat, not Talking Tom. It checks words or characters, not an accent score. Say it runs on this device. You can install it.
-      </footer>
     </div>
   );
 }

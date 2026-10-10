@@ -331,13 +331,6 @@ button.act:focus-visible,
 
 .keys { margin: 14px 0 0; color: #8d8d8d; font-size: 12px; }
 
-footer.note {
-  margin-top: 18px;
-  color: #9a9a9a;
-  font-size: 13px;
-  line-height: 1.55;
-}
-
 #err { color: var(--bad); margin: 8px 0 0; }
 #err:empty { display: none; }
 
