@@ -96,6 +96,37 @@ export function reminderMinutes(time: string): number | null {
   return clock.hour * 60 + clock.minute;
 }
 
+/**
+ * Device-local clock for the daily reminder. Practice streaks stay on the
+ * Asia/Shanghai calendar; only the alarm hour follows this phone or computer.
+ */
+export function localDateKey(now: Date): string {
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+/** Minutes after midnight on the device clock, 0–1439. */
+export function localMinutes(now: Date): number {
+  return now.getHours() * 60 + now.getMinutes();
+}
+
+/** Move a device-local calendar day by `delta` days. Noon avoids a DST midnight. */
+export function addLocalDays(day: string, delta: number): string {
+  const [year, month, date] = day.split("-").map(Number);
+  if (!isShanghaiDayKey(day)) return day;
+  return localDateKey(new Date(year, month - 1, date + delta, 12, 0, 0, 0));
+}
+
+/** Epoch milliseconds for HH:MM on a device-local calendar day. */
+export function localInstant(day: string, time: string): number {
+  const parsed = parseClock(time);
+  const [year, month, date] = day.split("-").map(Number);
+  if (!parsed || !isShanghaiDayKey(day)) return Number.NaN;
+  return new Date(year, month - 1, date, parsed.hour, parsed.minute, 0, 0).getTime();
+}
+
 const DAY_KEY = /^\d{4}-\d{2}-\d{2}$/;
 
 export function normalizePracticeDays(days: readonly string[]): string[] {

@@ -1,9 +1,18 @@
 import { useState } from "react";
 import { isAndroidShell, syncNativeReminders } from "../native/syncReminders";
 import { disableDailyReminder, enableDailyReminder, publishPracticeSnapshot } from "../practice/reminder-runtime";
-import { parseReminderTime, saveReminderSettings } from "../practice/reminder";
+import { parseReminderTime, reminderSlotPassed, saveReminderSettings, type ReminderState } from "../practice/reminder";
+import { localDateKey } from "../practice/shanghai";
 import { practiceLocalStorage } from "../practice/streak";
 import { usePracticeStreak, useReminderSettings } from "../practice/usePracticeSignals";
+import { REMINDER_IOS_HINT, REMINDER_LOCAL_TIME, REMINDER_PASSED, reminderWaitingCopy } from "../ui/streakCopy";
+
+function webStatus(reminder: ReminderState, now = new Date()): { en: string; zh: string } | null {
+  if (isAndroidShell() || !reminder.enabled) return null;
+  if (!reminderSlotPassed(reminder.time, now)) return reminderWaitingCopy(reminder.time);
+  if (reminder.lastDailyDay === localDateKey(now)) return REMINDER_PASSED;
+  return null;
+}
 
 export function ReminderCard() {
   const streak = usePracticeStreak();
@@ -36,12 +45,14 @@ export function ReminderCard() {
       setNote("Allow notifications in the browser to use this reminder. 请在浏览器里允许通知。");
       return;
     }
-    if (!result.ok && result.reason === "unsupported") {
+    if (!result.ok) {
       setNote("This browser cannot schedule a fixed-time alert. The Android app can. 这个浏览器不能定时提醒，Android 应用可以。");
       return;
     }
     setNote("");
   };
+
+  const status = note ? null : webStatus(reminder);
 
   return (
     <section className="card reminder-card" id="reminders" aria-labelledby="reminders-title">
@@ -68,18 +79,31 @@ export function ReminderCard() {
         <input
           id="daily-time"
           type="time"
-          aria-label="Reminder time, Shanghai"
+          aria-label="Reminder time, local"
           value={reminder.time}
           onChange={(event) => void apply(reminder.enabled, event.target.value)}
         />
       </div>
-      <p className="legend">
-        The time is Shanghai time. The Android app rings every day then, and on Monday sends the week summary. The site
-        stores the same reminder. 时间按上海。Android 应用每天这个点提醒，周一发送本周总结。网页保存的是同一条设置。
+      <p className="legend" id="reminder-platform">
+        <span>{REMINDER_IOS_HINT.en}</span>
+        <small>{REMINDER_IOS_HINT.zh}</small>
+        <span>{REMINDER_LOCAL_TIME.en}</span>
+        <small>{REMINDER_LOCAL_TIME.zh}</small>
       </p>
+      {isAndroidShell() ? (
+        <p className="legend">
+          The Android app rings at this local time, and on Monday sends the week summary. Android
+          应用按这台设备的时间响，周一发送本周总结。
+        </p>
+      ) : null}
       {note ? (
-        <p className="legend" id="reminder-note">
+        <p className="legend" id="reminder-note" role="status">
           {note}
+        </p>
+      ) : status ? (
+        <p className="legend" id="reminder-note" role="status">
+          <span>{status.en}</span>
+          <small>{status.zh}</small>
         </p>
       ) : null}
     </section>

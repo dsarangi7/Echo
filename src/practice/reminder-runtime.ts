@@ -7,6 +7,8 @@ import {
   markNoticeShown,
   mergeSnapshots,
   nextReminderCheck,
+  reminderProofCopy,
+  reminderSlotPassed,
   saveReminderSettings,
   snapshotFromStorage,
   writeReminderState,
@@ -47,29 +49,73 @@ function notificationsGranted(): boolean {
   return typeof Notification !== "undefined" && Notification.permission === "granted";
 }
 
+/** iOS (including iPadOS desktop UA) often drops a service-worker notification while the page is open. */
+export function prefersPageNotification(
+  userAgent = typeof navigator === "undefined" ? "" : navigator.userAgent,
+  maxTouchPoints = typeof navigator === "undefined" ? 0 : navigator.maxTouchPoints,
+): boolean {
+  if (/iPad|iPhone|iPod/i.test(userAgent)) return true;
+  return /Macintosh/i.test(userAgent) && maxTouchPoints > 1;
+}
+
+type NoticePorts = {
+  pageFirst: boolean;
+  showPage: () => boolean;
+  showWorker: () => Promise<boolean>;
+};
+
+/** Page constructor first on iOS. Other browsers try the worker, then the page if that throws. */
+export async function deliverNotification(
+  title: string,
+  options: NotificationOptions,
+  ports?: NoticePorts,
+): Promise<boolean> {
+  const chosen: NoticePorts = ports ?? {
+    pageFirst: prefersPageNotification(),
+    showPage: () => {
+      try {
+        new Notification(title, options);
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    showWorker: async () => {
+      try {
+        if (typeof navigator === "undefined" || !navigator.serviceWorker) return false;
+        const registration = await navigator.serviceWorker.getRegistration();
+        if (!registration?.active) return false;
+        await registration.showNotification(title, options);
+        return true;
+      } catch {
+        return false;
+      }
+    },
+  };
+  if (chosen.pageFirst) {
+    if (chosen.showPage()) return true;
+    return chosen.showWorker();
+  }
+  if (await chosen.showWorker()) return true;
+  return chosen.showPage();
+}
+
 async function showNotice(notice: DueNotice): Promise<boolean> {
   const options: NotificationOptions = {
     body: notice.body,
     tag: notice.kind === "daily" ? "echo-daily" : "echo-weekly",
     lang: "zh-CN",
   };
-  try {
-    if (typeof navigator !== "undefined" && navigator.serviceWorker) {
-      const registration = await navigator.serviceWorker.getRegistration();
-      if (registration?.active) {
-        await registration.showNotification(notice.title, options);
-        return true;
-      }
-    }
-  } catch {
-    /* The page constructor below is the fallback while no worker controls the page. */
-  }
-  try {
-    new Notification(notice.title, options);
-    return true;
-  } catch {
-    return false;
-  }
+  return deliverNotification(notice.title, options);
+}
+
+async function showReminderProof(): Promise<boolean> {
+  const proof = reminderProofCopy();
+  return deliverNotification(proof.title, {
+    body: proof.body,
+    tag: "echo-reminder-test",
+    lang: "zh-CN",
+  });
 }
 
 async function registerPeriodicSync(enabled: boolean): Promise<void> {
@@ -168,16 +214,17 @@ export async function publishPracticeSnapshot(): Promise<void> {
 }
 
 /**
- * Call from Chan's enable control, inside the click. Asks for notification
- * permission, stores the Shanghai clock time, and arms delivery.
+ * Call from the enable control, inside the click. Asks for notification
+ * permission, stores the device-local clock time, and arms delivery.
+ * The Android shell does not use this; it calls syncNativeReminders.
  */
-export async function enableDailyReminder(time: string): Promise<ReminderEnableResult> {
+export async function enableDailyReminder(time: string, now = new Date()): Promise<ReminderEnableResult> {
   const parsed = parseReminderTime(time);
   if (!parsed) return { ok: false, reason: "invalid-time" };
   const storage = practiceLocalStorage();
   if (!storage) return { ok: false, reason: "storage" };
   if (typeof Notification === "undefined") {
-    saveReminderSettings(storage, { enabled: false, time: parsed });
+    saveReminderSettings(storage, { enabled: false, time: parsed }, now);
     return { ok: false, reason: "unsupported" };
   }
   let permission = Notification.permission;
@@ -189,11 +236,15 @@ export async function enableDailyReminder(time: string): Promise<ReminderEnableR
     }
   }
   if (permission !== "granted") {
-    saveReminderSettings(storage, { enabled: false, time: parsed });
+    saveReminderSettings(storage, { enabled: false, time: parsed }, now);
     void publishPracticeSnapshot();
     return { ok: false, reason: "denied" };
   }
-  saveReminderSettings(storage, { enabled: true, time: parsed });
+  const prev = loadReminder(storage);
+  saveReminderSettings(storage, { enabled: true, time: parsed }, now);
+  if (!prev.enabled && reminderSlotPassed(parsed, now)) {
+    await showReminderProof().catch(() => false);
+  }
   void publishPracticeSnapshot();
   return { ok: true };
 }
@@ -207,7 +258,7 @@ export function disableDailyReminder(): ReminderState | null {
   return next;
 }
 
-/** In-page timer plus a refresh when the tab becomes visible. Safe to call once from App. */
+/** In-page timer plus a refresh when the tab is shown, including bfcache restores. Safe to call once from App. */
 export function startReminderRuntime(): () => void {
   if (typeof window === "undefined") return () => undefined;
   let stopped = false;
@@ -251,12 +302,17 @@ export function startReminderRuntime(): () => void {
     void tick();
   };
 
+  const onPageShow = () => {
+    void tick();
+  };
+
   const onPracticeSignal = () => {
     void tick();
   };
 
   document.addEventListener("visibilitychange", onWake);
   window.addEventListener("focus", onWake);
+  window.addEventListener("pageshow", onPageShow);
   window.addEventListener(STREAK_CHANGED_EVENT, onPracticeSignal);
   window.addEventListener(REMINDER_CHANGED_EVENT, onPracticeSignal);
   void tick();
@@ -266,6 +322,7 @@ export function startReminderRuntime(): () => void {
     window.clearTimeout(timer);
     document.removeEventListener("visibilitychange", onWake);
     window.removeEventListener("focus", onWake);
+    window.removeEventListener("pageshow", onPageShow);
     window.removeEventListener(STREAK_CHANGED_EVENT, onPracticeSignal);
     window.removeEventListener(REMINDER_CHANGED_EVENT, onPracticeSignal);
   };
