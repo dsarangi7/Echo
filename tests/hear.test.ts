@@ -146,7 +146,14 @@ describe("Hear it pace", () => {
       playbackRate: 1,
       preservesPitch: false,
       webkitPreservesPitch: false,
-      src: "",
+      _src: "",
+      get src() {
+        return this._src;
+      },
+      set src(value: string) {
+        this._src = value;
+        this.playbackRate = 1;
+      },
       style: { cssText: "" },
       setAttribute() {},
       removeAttribute() {},
@@ -155,6 +162,7 @@ describe("Hear it pace", () => {
       play() {
         return Promise.resolve();
       },
+      onloadedmetadata: null as null | (() => void),
       onplaying: null as null | (() => void),
       onended: null as null | (() => void),
       onerror: null as null | (() => void),
@@ -183,6 +191,9 @@ describe("Hear it pace", () => {
       expect(clip.playbackRate).toBe(0.75);
       expect(clip.preservesPitch).toBe(true);
       expect(clip.webkitPreservesPitch).toBe(true);
+      clip.playbackRate = 1;
+      clip.onloadedmetadata?.();
+      expect(clip.playbackRate).toBe(0.75);
       setSpeakingRate(1);
       expect(clip.playbackRate).toBe(1);
       clip.onplaying?.();

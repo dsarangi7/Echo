@@ -92,6 +92,7 @@ function pulse(onMouth: (open: number) => void) {
 function releaseClip(audio: HTMLAudioElement | null) {
   if (!audio) return;
   audio.onplaying = null;
+  audio.onloadedmetadata = null;
   audio.onended = null;
   audio.onerror = null;
   audio.pause();
@@ -184,7 +185,6 @@ export function speakClip(lang: Lang, src: string, text: string, handlers: Speak
   );
   const audio = document.createElement("audio");
   configureClipAudio(audio);
-  applyPlaybackRate(audio, speakingRate);
   audio.setAttribute("aria-hidden", "true");
   // Keep it in the document without display:none. iOS skips playback for hidden media.
   audio.style.cssText = "position:fixed;width:0;height:0;opacity:0;pointer-events:none;";
@@ -211,11 +211,16 @@ export function speakClip(lang: Lang, src: string, text: string, handlers: Speak
     handlers.onUnavailable();
   };
 
+  const keepRate = () => {
+    if (token !== utteranceToken || handed) return;
+    applyPlaybackRate(audio, speakingRate);
+  };
+  audio.onloadedmetadata = keepRate;
   audio.onplaying = () => {
     if (token !== utteranceToken || handed) return;
     started = true;
     window.clearTimeout(startTimer);
-    applyPlaybackRate(audio, speakingRate);
+    keepRate();
     handlers.onStart();
     pulse(handlers.onMouth);
   };
@@ -229,6 +234,8 @@ export function speakClip(lang: Lang, src: string, text: string, handlers: Speak
   };
   audio.onerror = () => handOff();
   audio.src = src;
+  // Chrome resets playbackRate when src is assigned. Set it after that, and again once metadata loads.
+  applyPlaybackRate(audio, speakingRate);
 
   // play() stays in the tap turn so mobile browsers treat it as a user gesture.
   try {
