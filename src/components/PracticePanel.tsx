@@ -97,45 +97,47 @@ export function PracticePanel(practice: Practice) {
         {meaning}
       </p>
 
-      <div className="pace">
-        <p className="pace-label" id="pace-label">
-          <b>Hear it pace</b>
-          <span>听的语速</span>
-        </p>
-        <div className="pace-switch" role="group" aria-labelledby="pace-label">
-          {HEAR_PACES.map((id) => (
-            <button
-              key={id}
-              type="button"
-              id={`pace-${id}`}
-              className={pace === id ? "on" : undefined}
-              aria-pressed={pace === id}
-              onClick={() => setPace(id)}
-            >
-              <span>{HEAR_PACE_LABEL[id].en}</span>
-              <small>{HEAR_PACE_LABEL[id].zh}</small>
-            </button>
-          ))}
+      <div className="thumb-dock">
+        <div className="pace">
+          <p className="pace-label" id="pace-label">
+            <b>Hear it pace</b>
+            <span>听的语速</span>
+          </p>
+          <div className="pace-switch" role="group" aria-labelledby="pace-label">
+            {HEAR_PACES.map((id) => (
+              <button
+                key={id}
+                type="button"
+                id={`pace-${id}`}
+                className={pace === id ? "on" : undefined}
+                aria-pressed={pace === id}
+                onClick={() => setPace(id)}
+              >
+                <span>{HEAR_PACE_LABEL[id].en}</span>
+                <small>{HEAR_PACE_LABEL[id].zh}</small>
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      <div className="actions">
-        <button type="button" className="act ghost" id="prev" onClick={() => jump(-1)}>
-          <b>Previous</b>
-          <small>上一句</small>
-        </button>
-        <button type="button" className="act primary" id="hear" onClick={hear}>
-          <b>Hear it</b>
-          <small>听一听</small>
-        </button>
-        <button type="button" className={listening ? "act primary live" : "act primary"} id="say" aria-pressed={listening} onClick={sayIt}>
-          <b>{listening ? "Stop" : "Say it"}</b>
-          <small>{listening ? "点此结束" : "说一说"}</small>
-        </button>
-        <button type="button" className="act ghost" id="next" onClick={() => jump(1)}>
-          <b>Next</b>
-          <small>下一句</small>
-        </button>
+        <div className="actions">
+          <button type="button" className="act ghost" id="prev" onClick={() => jump(-1)}>
+            <b>Previous</b>
+            <small>上一句</small>
+          </button>
+          <button type="button" className="act primary" id="hear" onClick={hear}>
+            <b>Hear it</b>
+            <small>听一听</small>
+          </button>
+          <button type="button" className={listening ? "act primary live" : "act primary"} id="say" aria-pressed={listening} onClick={sayIt}>
+            <b>{listening ? "Stop" : "Say it"}</b>
+            <small>{listening ? "点此结束" : "说一说"}</small>
+          </button>
+          <button type="button" className="act ghost" id="next" onClick={() => jump(1)}>
+            <b>Next</b>
+            <small>下一句</small>
+          </button>
+        </div>
       </div>
 
       <p className="status-note" id="model-note" aria-live="polite">
