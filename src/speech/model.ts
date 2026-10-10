@@ -77,3 +77,36 @@ export function formatDownloadProgress(files: ReadonlyMap<string, FileProgress>)
   const pct = Math.max(0, Math.min(100, Math.round((loaded / total) * 100)));
   return `${DOWNLOAD_LABEL} ${pct}%`;
 }
+
+export type DownloadTotals = {
+  loaded: number;
+  total: number;
+  /** 0–100 when at least one file reported a size. Otherwise null. */
+  pct: number | null;
+};
+
+/** Bytes received versus known file sizes. Unknown totals stay out of the meter. */
+export function downloadTotals(files: ReadonlyMap<string, FileProgress>): DownloadTotals {
+  let loaded = 0;
+  let total = 0;
+  for (const file of files.values()) {
+    loaded += file.loaded;
+    if (file.total > 0) total += file.total;
+  }
+  if (total <= 0) return { loaded, total: 0, pct: null };
+  const pct = Math.max(0, Math.min(100, Math.round((loaded / total) * 100)));
+  return { loaded, total, pct };
+}
+
+/** Approx megabytes for the download meter, e.g. "21.4 MB". */
+export function formatMegabytes(bytes: number): string {
+  if (!Number.isFinite(bytes) || bytes <= 0) return "0.0 MB";
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+/** Percent plus approximate megabytes. Null until a file size is known. */
+export function formatDownloadMeter(files: ReadonlyMap<string, FileProgress>): string | null {
+  const snap = downloadTotals(files);
+  if (snap.pct == null) return null;
+  return `${snap.pct}% · ${formatMegabytes(snap.loaded)} / ${formatMegabytes(snap.total)}`;
+}
