@@ -87,6 +87,14 @@ def main() -> None:
             synth(model, row[key], out / f"{index:03d}.mp3")
             print(lang, index)
 
+    intros = json.loads((ROOT / "src/data/intro.json").read_text())
+    intro_dir = ROOT / "public/audio/intro"
+    intro_dir.mkdir(parents=True, exist_ok=True)
+    synth(EN_MODEL, intros["en"], intro_dir / "en.mp3")
+    print("intro", "en")
+    synth(ZH_MODEL, intros["zh"], intro_dir / "zh.mp3")
+    print("intro", "zh")
+
 
 if __name__ == "__main__":
     main()

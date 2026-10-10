@@ -1,7 +1,6 @@
 import type { Lang } from "../practice/types";
 import {
   DOWNLOAD_LABEL,
-  IDLE_MODEL_NOTE,
   MODEL_LOAD_ERROR,
   MODEL_UNSUPPORTED,
   READY_LABEL,
@@ -26,7 +25,7 @@ type OutMsg =
   | { type: "error"; id?: number; message: string };
 
 const listeners = new Set<(note: string) => void>();
-let note = IDLE_MODEL_NOTE;
+let note = DOWNLOAD_LABEL;
 let worker: Worker | null = null;
 let ready: Promise<void> | null = null;
 let seq = 0;

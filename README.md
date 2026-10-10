@@ -20,7 +20,7 @@ No paid API keys. Nothing is sent to Google Cloud, Azure, or OpenAI.
 **Say it** runs quantized Whisper tiny in the browser with [`@xenova/transformers`](https://www.npmjs.com/package/@xenova/transformers) (ONNX, WebAssembly, one thread). The happy path does not call `webkitSpeechRecognition` or any other Google speech recognizer. The weights ship with this site under `public/models/Xenova/whisper-tiny/`. Say it does not download them from Hugging Face or hf-mirror.
 
 - Vendored size is **about 44 MB**: quantized encoder `10,124,910` bytes, quantized merged decoder `30,727,765` bytes, plus tokenizer files (`tokenizer.json` is `2,480,466` bytes). That is the GitHub Pages payload for the model. The decoder stays under GitHub’s 50 MB file warning.
-- Hear it does not wait for that download. The status line starts with **Hear it is ready.** The model fetch begins when you tap **Say it**, then the line shows **Downloading Say it voice model…** and a percent.
+- Hear it does not wait for that download. The page starts loading the model immediately and the status line says **Wait a moment — downloading the voice model…** (and the same in 中文) until it is ready, with a percent when the sizes are known. You can still tap **Hear it** while that runs.
 - Transformers.js loads those files from this origin (`/Echo/models/...` on GitHub Pages, `/models/...` on Vercel) and stores them in the **Cache API** (`transformers-cache`). The next Say it reuses that cache, including after you install the app. Remote model hosts are disabled (`allowRemoteModels` is false).
 - The service worker does not precache the ONNX files. The decoder is about 29 MB, above the 12 MB precache cap, so a phone is not forced to download the model just to install the app.
 - The ONNX runtime is a single WASM thread, so GitHub Pages does not need cross-origin isolation. That is what lets Safari load it. The build copies `ort-wasm-simd.wasm` and `ort-wasm.wasm` (about 10 MB together) into the site.
@@ -33,6 +33,8 @@ No paid API keys. Nothing is sent to Google Cloud, Azure, or OpenAI.
 - 中文: `zh_CN-huayan-medium` (female, Mandarin)
 
 Any browser that can play MP3 can speak the lines, including Safari, Edge, Chrome, and Firefox, on desktop and on a phone. The clips are a little slower than conversation (`length_scale` 1.05) so a class can hear each word.
+
+On open, the cat says a short introduction in the current language (English in English mode, 中文 in 中文 mode). Tap the cat or the Echo nameplate to hear it again. Switching language speaks that introduction in the new language. The introduction is a Piper clip, same as Hear it, and it does not wait for the Say it model.
 
 The clip plays from the same tap that hit Hear it (`playsInline`, `preload="auto"`). On iOS the page asks for playback audio so the ringer switch does not mute it. If the clip does not start, Hear it tries the device `speechSynthesis` voice and prefers a sweet female voice when the system has one (Samantha, Aria, Jenny, Tingting, Xiaoxiao, and the other names in `src/practice/voices.ts`). That fallback is free and uses whatever the browser already has. It is not required for the 200 built-in sentences. If the clip and the device voice both fail, the page says so in English and 中文 instead of leaving the cat idle and silent. Hear it never needs the Whisper model.
 

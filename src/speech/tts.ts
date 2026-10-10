@@ -1,5 +1,6 @@
 import type { Lang } from "../practice/types";
 import { pickVoiceEn, pickVoiceZh } from "../practice/voices";
+import { introClipUrl, introLine } from "./intro";
 
 export type HearEngine = "pack" | "synthesis" | "none";
 
@@ -151,7 +152,8 @@ function speakWithSynthesis(lang: Lang, text: string, handlers: SpeakHandlers, t
   synth.speak(utterance);
 }
 
-export function speakLine(lang: Lang, index: number, text: string, handlers: SpeakHandlers) {
+/** Pack clip, or any other same-origin MP3, then the device voice with `text` if the clip cannot start. */
+export function speakClip(lang: Lang, src: string, text: string, handlers: SpeakHandlers) {
   stopSpeaking();
   const token = utteranceToken;
   preferSpeakerPlayback(
@@ -201,7 +203,7 @@ export function speakLine(lang: Lang, index: number, text: string, handlers: Spe
     handlers.onEnd();
   };
   audio.onerror = () => handOff();
-  audio.src = clipUrl(lang, index);
+  audio.src = src;
 
   // play() stays in the tap turn so mobile browsers treat it as a user gesture.
   try {
@@ -210,4 +212,12 @@ export function speakLine(lang: Lang, index: number, text: string, handlers: Spe
   } catch {
     handOff();
   }
+}
+
+export function speakLine(lang: Lang, index: number, text: string, handlers: SpeakHandlers) {
+  speakClip(lang, clipUrl(lang, index), text, handlers);
+}
+
+export function speakIntro(lang: Lang, handlers: SpeakHandlers) {
+  speakClip(lang, introClipUrl(lang), introLine(lang), handlers);
 }

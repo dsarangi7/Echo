@@ -46,6 +46,12 @@ describe("Say it does not use Google speech recognition", () => {
     expect(practice.slice(practice.indexOf("useEffect(() => {\n    const synth"), practice.indexOf("const jump"))).not.toContain(
       "ensureModel",
     );
+    const opened = practice.slice(0, practice.indexOf("const synth"));
+    expect(opened).toContain("void ensureModel()");
+    expect(opened).toContain("playIntro(langRef.current, true)");
+    expect(practice).toContain("playIntro(next)");
+    expect(readFileSync("src/App.tsx", "utf8")).toContain('onIntroduce={practice.introduce}');
+    expect(readFileSync("src/components/CatMascot.tsx", "utf8")).toContain('id="cat-intro"');
   });
 });
 

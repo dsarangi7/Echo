@@ -5,9 +5,10 @@ import { loadIndexes, loadLang, saveIndexes, saveLang } from "./storage";
 import type { CaptureHandle } from "../speech/record";
 import { startCapture } from "../speech/record";
 import { resampleTo16k } from "../speech/resample";
-import { IDLE_MODEL_NOTE } from "../speech/model";
+import { introLine } from "../speech/intro";
+import { DOWNLOAD_LABEL } from "../speech/model";
 import { ensureModel, subscribeModel, transcribe } from "../speech/stt";
-import { HEAR_FAIL, speakLine, stopSpeaking } from "../speech/tts";
+import { HEAR_FAIL, speakIntro, speakLine, stopSpeaking } from "../speech/tts";
 import type { CatMode, Lang, Sentence } from "./types";
 
 const PROMPT_EN = "Tap Hear it, then Say it. 先听一听，再说一说。";
@@ -23,10 +24,10 @@ export function usePractice() {
   const [marks, setMarks] = useState<boolean[] | null>(null);
   const [catMode, setCatMode] = useState<CatMode>("idle");
   const [mouth, setMouth] = useState(0);
-  const [kicker, setKicker] = useState("Practice");
-  const [heard, setHeard] = useState(() => (loadLang() === "en" ? PROMPT_EN : PROMPT_ZH));
+  const [kicker, setKicker] = useState("Hello");
+  const [heard, setHeard] = useState(() => introLine(loadLang()));
   const [score, setScore] = useState("");
-  const [modelNote, setModelNote] = useState(IDLE_MODEL_NOTE);
+  const [modelNote, setModelNote] = useState(DOWNLOAD_LABEL);
   const [listening, setListening] = useState(false);
   const [runtimeError, setRuntimeError] = useState("");
 
@@ -77,6 +78,64 @@ export function usePractice() {
     document.documentElement.lang = lang === "en" ? "en" : "zh-CN";
   }, [lang]);
 
+  const noteFailure = useCallback((message: string) => {
+    setCatMode("idle");
+    setListening(false);
+    setMouth(0);
+    setKicker("Note");
+    setScore("");
+    setHeard(message);
+  }, []);
+
+  const playIntro = useCallback(
+    (next: Lang, quiet = false) => {
+      const token = ++tokenRef.current;
+      captureRef.current?.cancel();
+      captureRef.current = null;
+      setListening(false);
+      clearTimers();
+      setMarks(null);
+      setScore("");
+      setMouth(0);
+      setCatMode("idle");
+      setKicker("Hello");
+      setHeard(introLine(next));
+      speakIntro(next, {
+        onStart: () => {
+          if (token !== tokenRef.current) return;
+          setCatMode("talk");
+        },
+        onMouth: (open) => {
+          if (token !== tokenRef.current) return;
+          setMouth(open);
+        },
+        onEnd: () => {
+          if (token !== tokenRef.current) return;
+          clearTimers();
+          setMouth(0);
+          setCatMode("idle");
+        },
+        onUnavailable: () => {
+          if (token !== tokenRef.current) return;
+          setMouth(0);
+          setCatMode("idle");
+          // A page-load intro can be blocked before the first tap. Hear it stays usable.
+          if (!quiet) noteFailure(HEAR_FAIL);
+        },
+      });
+    },
+    [clearTimers, noteFailure],
+  );
+
+  useEffect(() => {
+    void ensureModel().catch(() => undefined);
+    playIntro(langRef.current, true);
+    return () => {
+      tokenRef.current += 1;
+      stopSpeaking();
+    };
+  }, [playIntro]);
+
   useEffect(() => {
     const synth = window.speechSynthesis;
     synth?.getVoices();
@@ -120,23 +179,13 @@ export function usePractice() {
   const setLanguage = useCallback(
     (next: Lang) => {
       if (next === langRef.current) return;
-      stopAudio();
       langRef.current = next;
       setLang(next);
       saveLang(next);
-      resetPractice();
+      playIntro(next);
     },
-    [resetPractice, stopAudio],
+    [playIntro],
   );
-
-  const noteFailure = useCallback((message: string) => {
-    setCatMode("idle");
-    setListening(false);
-    setMouth(0);
-    setKicker("Note");
-    setScore("");
-    setHeard(message);
-  }, []);
 
   const hear = useCallback(() => {
     const token = ++tokenRef.current;
@@ -260,6 +309,7 @@ export function usePractice() {
     listening,
     error: runtimeError || packError(),
     setLanguage,
+    introduce: () => playIntro(langRef.current),
     jump,
     jumpTo,
     hear,

@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { statSync } from "node:fs";
 import { HEAR_FAIL, chooseHearEngine, clipUrl, configureClipAudio, preferSpeakerPlayback } from "../src/speech/tts";
+import { introClipUrl, introLine } from "../src/speech/intro";
 import { rankVoices } from "../src/practice/voices";
 
 describe("Hear it engine", () => {
@@ -12,6 +14,18 @@ describe("Hear it engine", () => {
   it("points clips at the Pages base", () => {
     expect(clipUrl("en", 0, "/Echo/")).toBe("/Echo/audio/en/000.mp3");
     expect(clipUrl("zh", 12, "/Echo/")).toBe("/Echo/audio/zh/012.mp3");
+  });
+
+  it("speaks a short introduction in the current language", () => {
+    expect(introLine("en")).toContain("Echo");
+    expect(introLine("en")).toContain("Hear it");
+    expect(introLine("zh")).toContain("课猫");
+    expect(introLine("zh")).toContain("听一听");
+    expect(introLine("en")).not.toBe(introLine("zh"));
+    expect(introClipUrl("en", "/Echo/")).toBe("/Echo/audio/intro/en.mp3");
+    expect(introClipUrl("zh", "/")).toBe("/audio/intro/zh.mp3");
+    expect(statSync("public/audio/intro/en.mp3").size).toBeGreaterThan(5000);
+    expect(statSync("public/audio/intro/zh.mp3").size).toBeGreaterThan(5000);
   });
 
   it("prepares an inline clip and asks iOS to use the speaker", () => {
