@@ -76,7 +76,10 @@ describe("bundled voice pack", () => {
       expect(names).toHaveLength(100);
       expect(names[0]).toBe("000.mp3");
       expect(names[99]).toBe("099.mp3");
-      expect(statSync(`public/audio/${lang}/000.mp3`).size).toBeGreaterThan(2000);
+      // Near-empty Piper stubs were about 2–4 KB and under a second. Real 40 kbps lines are larger.
+      for (const name of names) {
+        expect(statSync(`public/audio/${lang}/${name}`).size, `${lang}/${name}`).toBeGreaterThan(5000);
+      }
     }
   });
 });
