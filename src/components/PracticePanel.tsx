@@ -5,6 +5,7 @@ import { micHeardLine } from "../practice/score";
 import type { usePractice } from "../practice/usePractice";
 import { FeedbackLines } from "./FeedbackLines";
 import { SessionStrip } from "./SessionStrip";
+import { StreakChrome } from "./StreakChrome";
 import { TargetSentence } from "./TargetSentence";
 
 type Practice = ReturnType<typeof usePractice>;
@@ -88,6 +89,7 @@ export function PracticePanel(practice: Practice) {
         </p>
       </div>
 
+      <StreakChrome lang={lang} />
       <SessionStrip lang={lang} session={session ?? emptySession()} onReset={resetSession ?? (() => undefined)} />
 
       <TargetSentence lang={lang} text={primary} marks={marks} unrecognized={outcome === "recognition_fail"} />
