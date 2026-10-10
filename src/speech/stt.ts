@@ -4,6 +4,7 @@ import {
   MODEL_LOAD_ERROR,
   MODEL_UNSUPPORTED,
   READY_LABEL,
+  downloadTotals,
   formatDownloadProgress,
   whisperLanguage,
   type FileProgress,
@@ -31,9 +32,37 @@ let ready: Promise<void> | null = null;
 let seq = 0;
 const pending = new Map<number, { resolve: (text: string) => void; reject: (err: Error) => void }>();
 
+export type ModelPhase = "loading" | "ready" | "error";
+
+/** Structured first-download progress for the interstitial. The status sentence stays on `subscribeModel`. */
+export type ModelDownload = {
+  phase: ModelPhase;
+  loaded: number;
+  total: number;
+  pct: number | null;
+};
+
+const downloadListeners = new Set<(next: ModelDownload) => void>();
+let downloadState: ModelDownload = { phase: "loading", loaded: 0, total: 0, pct: null };
+
 function publish(next: string) {
   note = next;
   listeners.forEach((listener) => listener(next));
+}
+
+function publishDownload(next: ModelDownload) {
+  downloadState = next;
+  downloadListeners.forEach((listener) => listener(next));
+}
+
+export function subscribeModelDownload(listener: (next: ModelDownload) => void): () => void {
+  downloadListeners.add(listener);
+  listener(downloadState);
+  return () => downloadListeners.delete(listener);
+}
+
+export function modelDownload(): ModelDownload {
+  return downloadState;
 }
 
 export function subscribeModel(listener: (next: string) => void): () => void {
@@ -70,13 +99,23 @@ function spawn(): Promise<void> {
         if (!settled && msg.file && typeof msg.loaded === "number" && typeof msg.total === "number" && msg.total > 0) {
           files.set(msg.file, { loaded: msg.loaded, total: msg.total });
           publish(formatDownloadProgress(files));
+          const totals = downloadTotals(files);
+          publishDownload({ phase: "loading", loaded: totals.loaded, total: totals.total, pct: totals.pct });
         } else if (!settled && (msg.status === "download" || msg.status === "initiate" || msg.status === "progress")) {
           publish(files.size ? formatDownloadProgress(files) : DOWNLOAD_LABEL);
+          const totals = downloadTotals(files);
+          publishDownload({ phase: "loading", loaded: totals.loaded, total: totals.total, pct: totals.pct });
         }
         return;
       }
       if (msg.type === "ready") {
         publish(READY_LABEL);
+        publishDownload({
+          phase: "ready",
+          loaded: downloadState.loaded,
+          total: downloadState.total,
+          pct: downloadState.total > 0 ? 100 : downloadState.pct,
+        });
         ok();
         return;
       }
@@ -102,15 +141,23 @@ function spawn(): Promise<void> {
 async function loadLocal(): Promise<void> {
   if (typeof WebAssembly !== "object" || typeof Worker === "undefined") {
     publish(MODEL_UNSUPPORTED);
+    publishDownload({ phase: "error", loaded: 0, total: 0, pct: null });
     throw new Error("WebAssembly or Worker missing");
   }
   publish(DOWNLOAD_LABEL);
+  publishDownload({ phase: "loading", loaded: 0, total: 0, pct: null });
   try {
     await spawn();
   } catch (err) {
     worker?.terminate();
     worker = null;
     publish(MODEL_LOAD_ERROR);
+    publishDownload({
+      phase: "error",
+      loaded: downloadState.loaded,
+      total: downloadState.total,
+      pct: downloadState.pct,
+    });
     throw err instanceof Error ? err : new Error("Voice model load failed");
   }
 }

@@ -1,5 +1,7 @@
 import { useEffect } from "react";
+import { BrowserBanner } from "./components/BrowserBanner";
 import { CatMascot } from "./components/CatMascot";
+import { ModelInterstitial } from "./components/ModelInterstitial";
 import { PracticePanel } from "./components/PracticePanel";
 import { usePractice } from "./practice/usePractice";
 
@@ -31,6 +33,7 @@ export function App() {
 
   return (
     <div className="wrap">
+      <BrowserBanner />
       <header className="top">
         <div>
           <h1>课猫 Echo</h1>
@@ -61,6 +64,8 @@ export function App() {
           </button>
         </div>
       </header>
+
+      <ModelInterstitial onHearFirst={practice.hear} />
 
       <div className="stage">
         <CatMascot mode={practice.catMode} mouth={practice.mouth} onIntroduce={practice.introduce} />

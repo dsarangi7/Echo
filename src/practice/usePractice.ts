@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { packError, packs } from "./packs";
 import { gradeTranscript, isShortZhLine, recognitionFailHeadline, type GradeOutcome } from "./score";
+import { applyOutcome, classifyLine, emptySession, readBrowserSession, writeBrowserSession, type AttemptOutcome, type SessionTally } from "./session";
 import { hearPaceRate, type HearPace } from "./pace";
 import { loadHearPaces, loadIndexes, loadLang, saveHearPaces, saveIndexes, saveLang } from "./storage";
 import type { CaptureHandle, MicFailure } from "../speech/record";
@@ -47,12 +48,15 @@ export function usePractice() {
   const [modelNote, setModelNote] = useState(DOWNLOAD_LABEL);
   const [listening, setListening] = useState(false);
   const [runtimeError, setRuntimeError] = useState("");
+  const [session, setSession] = useState<SessionTally>(readBrowserSession);
+  const [lineOutcome, setLineOutcome] = useState<AttemptOutcome | null>(null);
 
   const tokenRef = useRef(0);
   const captureRef = useRef<CaptureHandle | null>(null);
   const langRef = useRef<Lang>(lang);
   const indexRef = useRef(0);
   const paceRef = useRef(paces);
+  const sessionRef = useRef(session);
   const timersRef = useRef<number[]>([]);
 
   const pack = packs[lang];
@@ -61,6 +65,7 @@ export function usePractice() {
   langRef.current = lang;
   indexRef.current = index;
   paceRef.current = paces;
+  sessionRef.current = session;
   const pace = paces[lang];
 
   const clearTimers = useCallback(() => {
@@ -75,9 +80,32 @@ export function usePractice() {
     setMarks(null);
     setOutcome("idle");
     setHeardPreview("");
+    setLineOutcome(null);
     setKicker("Practice");
     setScore("");
     setHeard(langRef.current === "en" ? PROMPT_EN : PROMPT_ZH);
+  }, []);
+
+  const recordOutcome = useCallback((outcome: AttemptOutcome) => {
+    const next = applyOutcome(sessionRef.current, outcome);
+    sessionRef.current = next;
+    setSession(next);
+    setLineOutcome(outcome);
+    writeBrowserSession(next);
+  }, []);
+
+  const resetSession = useCallback(() => {
+    const next = emptySession();
+    sessionRef.current = next;
+    setSession(next);
+    setLineOutcome(null);
+    setMarks(null);
+    setOutcome("idle");
+    setHeardPreview("");
+    setKicker("Practice");
+    setScore("");
+    setHeard(langRef.current === "en" ? PROMPT_EN : PROMPT_ZH);
+    writeBrowserSession(next);
   }, []);
 
   const stopAudio = useCallback(() => {
@@ -114,6 +142,7 @@ export function usePractice() {
     setKicker("Note");
     setScore("");
     setHeard(message);
+    setLineOutcome(null);
   }, []);
 
   const playIntro = useCallback(
@@ -126,6 +155,7 @@ export function usePractice() {
       setMarks(null);
       setOutcome("idle");
       setHeardPreview("");
+      setLineOutcome(null);
       setScore("");
       setMouth(0);
       setCatMode("idle");
@@ -278,6 +308,7 @@ export function usePractice() {
     setMarks(null);
     setOutcome("idle");
     setHeardPreview("");
+    setLineOutcome(null);
     setScore("");
     setCatMode("listen");
     setListening(true);
@@ -322,6 +353,7 @@ export function usePractice() {
         const spoken = (await transcribe(pcm, targetLang, targetLine)).trim();
         if (token !== tokenRef.current) return;
         const graded = gradeTranscript(targetLang, targetLine, spoken);
+        const attempt = classifyLine(graded, spoken);
         setCatMode("idle");
         setHeardPreview(graded.heardPreview);
         if (graded.outcome === "recognition_fail") {
@@ -330,6 +362,7 @@ export function usePractice() {
           setKicker(targetLang === "zh" ? "识别" : "Recognition");
           setHeard(recognitionFailHeadline(targetLang));
           setScore("");
+          recordOutcome(attempt);
           return;
         }
         setMarks(graded.marks);
@@ -337,12 +370,22 @@ export function usePractice() {
         setKicker("Heard");
         setHeard(spoken);
         setScore(graded.label);
+        recordOutcome(attempt);
       } catch {
         if (token !== tokenRef.current) return;
-        noteFailure("Could not transcribe on this device. Try again. 这台设备上没识别成，再试一次。");
+        setMarks(null);
+        setOutcome("recognition_fail");
+        setHeardPreview("");
+        setKicker(targetLang === "zh" ? "识别" : "Recognition");
+        setHeard(recognitionFailHeadline(targetLang));
+        setScore("");
+        setCatMode("idle");
+        setListening(false);
+        setMouth(0);
+        recordOutcome("recognition_fail");
       }
     })();
-  }, [clearTimers, noteFailure]);
+  }, [clearTimers, noteFailure, recordOutcome]);
 
   return {
     lang,
@@ -368,5 +411,8 @@ export function usePractice() {
     sayIt,
     pace,
     setPace,
+    session,
+    lineOutcome,
+    resetSession,
   };
 }

@@ -1,7 +1,10 @@
 import { useMemo } from "react";
 import { HEAR_PACE_LABEL, HEAR_PACES } from "../practice/pace";
+import { emptySession } from "../practice/session";
 import { micHeardLine } from "../practice/score";
 import type { usePractice } from "../practice/usePractice";
+import { FeedbackLines } from "./FeedbackLines";
+import { SessionStrip } from "./SessionStrip";
 import { TargetSentence } from "./TargetSentence";
 
 type Practice = ReturnType<typeof usePractice>;
@@ -27,6 +30,9 @@ export function PracticePanel(practice: Practice) {
     sayIt,
     pace,
     setPace,
+    session,
+    lineOutcome,
+    resetSession,
   } = practice;
 
   const sets = useMemo(() => {
@@ -81,6 +87,8 @@ export function PracticePanel(practice: Practice) {
           {index + 1} / {pack.length}
         </p>
       </div>
+
+      <SessionStrip lang={lang} session={session ?? emptySession()} onReset={resetSession ?? (() => undefined)} />
 
       <TargetSentence lang={lang} text={primary} marks={marks} unrecognized={outcome === "recognition_fail"} />
       <p className="meaning" id="meaning" lang={lang === "en" ? "zh-CN" : "en-US"}>
@@ -164,24 +172,25 @@ export function PracticePanel(practice: Practice) {
         </p>
       )}
 
-      <div className="result" id="result" aria-live="polite">
-        <p className="kicker" id="kicker">
+      <div className={outcome === "recognition_fail" ? "result recognition" : "result"} id="result" aria-live="polite">
+        <p className={outcome === "recognition_fail" ? "kicker mic-heard" : "kicker"} id="kicker">
           {kicker}
         </p>
         <p id="heard" className={outcome === "recognition_fail" ? "fail-headline" : undefined}>
           {heard}
         </p>
+        {lineOutcome ? <FeedbackLines lang={lang} kind={lineOutcome} session={session} /> : null}
         {outcome === "recognition_fail" ? (
           <>
             <p id="heard-preview" className="heard-muted">
               {micHeardLine(lang, heardPreview)}
             </p>
             <div className="fail-actions">
-              <button type="button" className="act primary" onClick={hear}>
+              <button type="button" className="act primary" id="retry-hear" onClick={hear}>
                 <b>Hear it</b>
                 <small>听一听</small>
               </button>
-              <button type="button" className="act ghost" onClick={sayIt}>
+              <button type="button" className="act ghost" id="retry-say" onClick={sayIt}>
                 <b>Try again</b>
                 <small>再说一次</small>
               </button>
