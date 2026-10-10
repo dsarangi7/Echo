@@ -2,8 +2,12 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import { fileURLToPath } from "node:url";
+import { resolveAppBase } from "./scripts/app-base";
 
 const shim = (name: string) => fileURLToPath(new URL(`./src/speech/shims/${name}.ts`, import.meta.url));
+
+// /Echo/ on GitHub Pages. / when VERCEL is set, or when VITE_BASE / BASE_PATH says so.
+const base = resolveAppBase();
 
 export default defineConfig({
   plugins: [
@@ -18,8 +22,8 @@ export default defineConfig({
         theme_color: "#121212",
         background_color: "#121212",
         display: "standalone",
-        start_url: "/Echo/",
-        scope: "/Echo/",
+        start_url: base,
+        scope: base,
         lang: "en",
         icons: [
           { src: "icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
@@ -38,8 +42,8 @@ export default defineConfig({
       },
     }),
   ],
-  // Project site: https://dsarangi7.github.io/Echo/
-  base: "/Echo/",
+  // Project site: https://dsarangi7.github.io/Echo/ — Vercel uses /.
+  base,
   optimizeDeps: {
     exclude: ["@xenova/transformers"],
   },

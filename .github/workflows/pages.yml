@@ -24,7 +24,11 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # Project site is https://dsarangi7.github.io/Echo/. Pin the base so a
+      # VERCEL variable in the environment cannot switch this deploy to /.
       - run: npm run build
+        env:
+          VITE_BASE: "/Echo/"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
