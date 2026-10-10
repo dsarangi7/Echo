@@ -1,12 +1,30 @@
 import { useMemo } from "react";
+import { HEAR_PACE_LABEL, HEAR_PACES } from "../practice/pace";
 import type { usePractice } from "../practice/usePractice";
 import { TargetSentence } from "./TargetSentence";
 
 type Practice = ReturnType<typeof usePractice>;
 
 export function PracticePanel(practice: Practice) {
-  const { lang, index, item, pack, marks, kicker, heard, score, modelNote, listening, error, jump, jumpTo, hear, sayIt } =
-    practice;
+  const {
+    lang,
+    index,
+    item,
+    pack,
+    marks,
+    kicker,
+    heard,
+    score,
+    modelNote,
+    listening,
+    error,
+    jump,
+    jumpTo,
+    hear,
+    sayIt,
+    pace,
+    setPace,
+  } = practice;
 
   const sets = useMemo(() => {
     const names: string[] = [];
@@ -65,6 +83,28 @@ export function PracticePanel(practice: Practice) {
       <p className="meaning" id="meaning" lang={lang === "en" ? "zh-CN" : "en-US"}>
         {meaning}
       </p>
+
+      <div className="pace">
+        <p className="pace-label" id="pace-label">
+          <b>Hear it pace</b>
+          <span>听的语速</span>
+        </p>
+        <div className="pace-switch" role="group" aria-labelledby="pace-label">
+          {HEAR_PACES.map((id) => (
+            <button
+              key={id}
+              type="button"
+              id={`pace-${id}`}
+              className={pace === id ? "on" : undefined}
+              aria-pressed={pace === id}
+              onClick={() => setPace(id)}
+            >
+              <span>{HEAR_PACE_LABEL[id].en}</span>
+              <small>{HEAR_PACE_LABEL[id].zh}</small>
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className="actions">
         <button type="button" className="act ghost" id="prev" onClick={() => jump(-1)}>

@@ -26,7 +26,23 @@ export function synthesisAvailable(): boolean {
   return typeof window !== "undefined" && typeof window.speechSynthesis !== "undefined" && typeof SpeechSynthesisUtterance !== "undefined";
 }
 
-type InlineAudio = HTMLAudioElement & { playsInline?: boolean };
+type InlineAudio = HTMLAudioElement & { playsInline?: boolean; webkitPreservesPitch?: boolean };
+
+/** Device `speechSynthesis` rate at Hear it Normal. Pace multiplies this; it does not replace it. */
+export const DEVICE_UTTERANCE_BASE = 0.92;
+
+export function deviceUtteranceRate(paceRate: number): number {
+  const pace = Number.isFinite(paceRate) && paceRate > 0 ? paceRate : 1;
+  return DEVICE_UTTERANCE_BASE * pace;
+}
+
+/** Stretch time and keep pitch, including Safari’s prefixed flag. */
+export function applyPlaybackRate(audio: InlineAudio, rate: number): void {
+  const safe = Number.isFinite(rate) && rate > 0 ? rate : 1;
+  audio.preservesPitch = true;
+  audio.webkitPreservesPitch = true;
+  audio.playbackRate = safe;
+}
 
 /** iOS Safari plays inline media, and `playback` still sounds when the ringer switch is silent. */
 export function configureClipAudio(audio: InlineAudio): void {
@@ -53,6 +69,13 @@ type SpeakHandlers = {
 let active: HTMLAudioElement | null = null;
 let mouthTimer = 0;
 let utteranceToken = 0;
+let speakingRate = 1;
+
+/** Change the clip that is already playing. The next Hear it also uses this rate. */
+export function setSpeakingRate(rate: number): void {
+  speakingRate = Number.isFinite(rate) && rate > 0 ? rate : 1;
+  if (active) applyPlaybackRate(active, speakingRate);
+}
 
 function clearMouth() {
   window.clearInterval(mouthTimer);
@@ -92,17 +115,16 @@ function speakWithSynthesis(lang: Lang, text: string, handlers: SpeakHandlers, t
     return;
   }
   const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = deviceUtteranceRate(speakingRate);
   if (lang === "en") {
     utterance.lang = "en-US";
     const voice = pickVoiceEn();
     if (voice) utterance.voice = voice;
-    utterance.rate = 0.92;
     utterance.pitch = 1.12;
   } else {
     utterance.lang = "zh-CN";
     const voice = pickVoiceZh();
     if (voice) utterance.voice = voice;
-    utterance.rate = 0.92;
     utterance.pitch = 1.08;
   }
   let started = false;
@@ -153,14 +175,16 @@ function speakWithSynthesis(lang: Lang, text: string, handlers: SpeakHandlers, t
 }
 
 /** Pack clip, or any other same-origin MP3, then the device voice with `text` if the clip cannot start. */
-export function speakClip(lang: Lang, src: string, text: string, handlers: SpeakHandlers) {
+export function speakClip(lang: Lang, src: string, text: string, handlers: SpeakHandlers, rate = 1) {
   stopSpeaking();
+  speakingRate = Number.isFinite(rate) && rate > 0 ? rate : 1;
   const token = utteranceToken;
   preferSpeakerPlayback(
     typeof navigator === "undefined" ? undefined : (navigator as { audioSession?: { type: string } }),
   );
   const audio = document.createElement("audio");
   configureClipAudio(audio);
+  applyPlaybackRate(audio, speakingRate);
   audio.setAttribute("aria-hidden", "true");
   // Keep it in the document without display:none. iOS skips playback for hidden media.
   audio.style.cssText = "position:fixed;width:0;height:0;opacity:0;pointer-events:none;";
@@ -191,6 +215,7 @@ export function speakClip(lang: Lang, src: string, text: string, handlers: Speak
     if (token !== utteranceToken || handed) return;
     started = true;
     window.clearTimeout(startTimer);
+    applyPlaybackRate(audio, speakingRate);
     handlers.onStart();
     pulse(handlers.onMouth);
   };
@@ -214,10 +239,10 @@ export function speakClip(lang: Lang, src: string, text: string, handlers: Speak
   }
 }
 
-export function speakLine(lang: Lang, index: number, text: string, handlers: SpeakHandlers) {
-  speakClip(lang, clipUrl(lang, index), text, handlers);
+export function speakLine(lang: Lang, index: number, text: string, handlers: SpeakHandlers, rate = 1) {
+  speakClip(lang, clipUrl(lang, index), text, handlers, rate);
 }
 
-export function speakIntro(lang: Lang, handlers: SpeakHandlers) {
-  speakClip(lang, introClipUrl(lang), introLine(lang), handlers);
+export function speakIntro(lang: Lang, handlers: SpeakHandlers, rate = 1) {
+  speakClip(lang, introClipUrl(lang), introLine(lang), handlers, rate);
 }
