@@ -46,6 +46,12 @@ describe("Say it does not use Google speech recognition", () => {
     expect(practice.slice(practice.indexOf("useEffect(() => {\n    const synth"), practice.indexOf("const jump"))).not.toContain(
       "ensureModel",
     );
+    const opened = practice.slice(0, practice.indexOf("const synth"));
+    expect(opened).toContain("void ensureModel()");
+    expect(opened).toContain("playIntro(langRef.current, true)");
+    expect(practice).toContain("playIntro(next)");
+    expect(readFileSync("src/App.tsx", "utf8")).toContain('onIntroduce={practice.introduce}');
+    expect(readFileSync("src/components/CatMascot.tsx", "utf8")).toContain('id="cat-intro"');
   });
 });
 
@@ -76,7 +82,10 @@ describe("bundled voice pack", () => {
       expect(names).toHaveLength(100);
       expect(names[0]).toBe("000.mp3");
       expect(names[99]).toBe("099.mp3");
-      expect(statSync(`public/audio/${lang}/000.mp3`).size).toBeGreaterThan(2000);
+      // Near-empty Piper stubs were about 2–4 KB and under a second. Real 40 kbps lines are larger.
+      for (const name of names) {
+        expect(statSync(`public/audio/${lang}/${name}`).size, `${lang}/${name}`).toBeGreaterThan(5000);
+      }
     }
   });
 });

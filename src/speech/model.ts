@@ -17,10 +17,9 @@ export const VENDORED_WHISPER_FILES = [
   "onnx/decoder_model_merged_quantized.onnx",
 ] as const;
 
-export const DOWNLOAD_LABEL = "Downloading Say it voice model…";
-export const READY_LABEL = "Say it voice model is on this device.";
-export const IDLE_MODEL_NOTE =
-  "Hear it is ready. Say it loads its free voice model from this site once, then keeps it on the device. 听一听可以直接用。说一说第一次从本站载入免费语音模型，之后留在这台设备上。";
+export const DOWNLOAD_LABEL = "Wait a moment — downloading the voice model… 请稍等，正在下载语音模型…";
+export const READY_LABEL =
+  "Hear it is ready. Say it voice model is on this device. 听一听可以直接用。说一说的语音模型已经在这台设备上。";
 export const MODEL_LOAD_ERROR =
   "Could not load the Say it voice model from this site. Hear it still plays. Refresh and try Say it again. 说一说的语音模型没从本站载入。听一听还能用。刷新后再试说一说。";
 export const MODEL_UNSUPPORTED =
@@ -51,7 +50,7 @@ export function whisperAssetUrl(origin: string, base: string, file: string): str
 
 /**
  * Same-origin weights only. `useBrowserCache` stores them in the Cache API (`transformers-cache`)
- * after the first Say it, so later visits do not download again.
+ * after the first visit, so later visits do not download again.
  */
 export function configureLocalWhisper(target: LocalTransformerEnv, origin: string, base: string): void {
   target.allowLocalModels = true;

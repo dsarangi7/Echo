@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   DOWNLOAD_LABEL,
-  IDLE_MODEL_NOTE,
   MODEL_LOAD_ERROR,
+  READY_LABEL,
   configureLocalWhisper,
   formatDownloadProgress,
   localModelPath,
@@ -11,8 +11,9 @@ import {
 
 describe("model download progress", () => {
   it("keeps the first-load sentence when sizes are unknown", () => {
-    expect(formatDownloadProgress(new Map())).toBe("Downloading Say it voice model…");
-    expect(DOWNLOAD_LABEL).toBe("Downloading Say it voice model…");
+    expect(formatDownloadProgress(new Map())).toBe(DOWNLOAD_LABEL);
+    expect(DOWNLOAD_LABEL).toContain("Wait a moment — downloading the voice model");
+    expect(DOWNLOAD_LABEL).toContain("请稍等，正在下载语音模型");
   });
 
   it("adds a percent across files", () => {
@@ -20,7 +21,7 @@ describe("model download progress", () => {
       ["encoder", { loaded: 5, total: 10 }],
       ["decoder", { loaded: 15, total: 30 }],
     ]);
-    expect(formatDownloadProgress(files)).toBe("Downloading Say it voice model… 50%");
+    expect(formatDownloadProgress(files)).toBe(`${DOWNLOAD_LABEL} 50%`);
   });
 });
 
@@ -49,12 +50,13 @@ describe("same-origin whisper", () => {
     );
   });
 
-  it("says Hear it is ready before Say it, and still ready if the model fails", () => {
-    expect(IDLE_MODEL_NOTE).toContain("Hear it is ready");
-    expect(IDLE_MODEL_NOTE).toContain("听一听可以直接用");
+  it("says Hear it is ready when the model is on the device, and still plays if the model fails", () => {
+    expect(READY_LABEL).toContain("Hear it is ready");
+    expect(READY_LABEL).toContain("听一听可以直接用");
     expect(MODEL_LOAD_ERROR).toContain("Hear it still plays");
     expect(MODEL_LOAD_ERROR).toContain("听一听还能用");
     expect(MODEL_LOAD_ERROR).not.toMatch(/hf-mirror|huggingface/i);
-    expect(IDLE_MODEL_NOTE).not.toMatch(/hf-mirror|huggingface/i);
+    expect(DOWNLOAD_LABEL).not.toMatch(/hf-mirror|huggingface/i);
+    expect(READY_LABEL).not.toMatch(/hf-mirror|huggingface/i);
   });
 });

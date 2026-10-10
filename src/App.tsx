@@ -63,7 +63,7 @@ export function App() {
       </header>
 
       <div className="stage">
-        <CatMascot mode={practice.catMode} mouth={practice.mouth} />
+        <CatMascot mode={practice.catMode} mouth={practice.mouth} onIntroduce={practice.introduce} />
         <PracticePanel {...practice} />
       </div>
 
