@@ -540,63 +540,63 @@
     "zh": "好的，那我先走了。"
   },
   {
-    "set": "Everyday",
-    "zhSet": "日常",
-    "en": "My Chinese isn't very good yet.",
-    "zh": "我中文还不太好。"
+    "set": "Taxi / Didi",
+    "zhSet": "打车",
+    "en": "I called you.",
+    "zh": "师傅，我打你电话了。"
   },
   {
-    "set": "Everyday",
-    "zhSet": "日常",
-    "en": "Please speak a little slower.",
-    "zh": "请你说慢一点。"
+    "set": "Taxi / Didi",
+    "zhSet": "打车",
+    "en": "I'm at the gate.",
+    "zh": "我在大门口。"
   },
   {
-    "set": "Everyday",
-    "zhSet": "日常",
-    "en": "How do you say this in Chinese?",
-    "zh": "这个用中文怎么说？"
+    "set": "Taxi / Didi",
+    "zhSet": "打车",
+    "en": "I'm at the pickup point by the north exit.",
+    "zh": "我在北门的上车点。"
   },
   {
-    "set": "Everyday",
-    "zhSet": "日常",
-    "en": "The elevator is on the left.",
-    "zh": "电梯在左边。"
+    "set": "Taxi / Didi",
+    "zhSet": "打车",
+    "en": "Please wait a moment.",
+    "zh": "师傅，等我一下。"
   },
   {
-    "set": "Everyday",
-    "zhSet": "日常",
-    "en": "Want to grab lunch at the canteen?",
-    "zh": "中午一起去食堂吗？"
+    "set": "Taxi / Didi",
+    "zhSet": "打车",
+    "en": "To Lujiazui.",
+    "zh": "去陆家嘴。"
   },
   {
-    "set": "Everyday",
-    "zhSet": "日常",
-    "en": "I'll reply on WeChat.",
-    "zh": "我微信回你。"
+    "set": "Taxi / Didi",
+    "zhSet": "打车",
+    "en": "Take the elevated road, not the highway.",
+    "zh": "走高架，别走高速。"
   },
   {
-    "set": "Everyday",
-    "zhSet": "日常",
-    "en": "It's really hot outside today.",
-    "zh": "今天外面好热。"
+    "set": "Taxi / Didi",
+    "zhSet": "打车",
+    "en": "Stop here and open the trunk.",
+    "zh": "师傅，这儿停，开一下后备箱。"
   },
   {
-    "set": "Everyday",
-    "zhSet": "日常",
-    "en": "See you tomorrow.",
-    "zh": "明天见。"
+    "set": "Taxi / Didi",
+    "zhSet": "打车",
+    "en": "I've paid. Please confirm the order.",
+    "zh": "我付好了，订单确认一下。"
   },
   {
-    "set": "Everyday",
-    "zhSet": "日常",
-    "en": "Thanks for the hard work.",
-    "zh": "辛苦了。"
+    "set": "Taxi / Didi",
+    "zhSet": "打车",
+    "en": "That's the wrong car.",
+    "zh": "师傅，车牌不对。"
   },
   {
-    "set": "Everyday",
-    "zhSet": "日常",
-    "en": "I'm going to get a glass of water.",
-    "zh": "我去倒杯水。"
+    "set": "Taxi / Didi",
+    "zhSet": "打车",
+    "en": "Thanks, driver.",
+    "zh": "谢谢师傅，辛苦了。"
   }
 ]
