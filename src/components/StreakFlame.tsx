@@ -22,7 +22,7 @@ function Flame({ lit }: { lit: boolean }) {
   );
 }
 
-/** Current streak and best streak. Numbers come from Kai's getStreak(). */
+/** Current streak and best streak. Numbers come from usePracticeStreak(). */
 export function StreakFlame({ current, best }: Props) {
   const lit = current > 0;
   const label = `Current streak ${current}, best streak ${best}. 当前连续 ${current}，最佳连续 ${best}。`;

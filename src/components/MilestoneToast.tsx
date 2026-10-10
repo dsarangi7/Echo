@@ -1,8 +1,9 @@
+import type { StreakMilestone } from "../practice/streak";
 import type { Lang } from "../practice/types";
-import { milestoneLines, type MilestoneDay } from "../ui/streakCopy";
+import { milestoneLines } from "../ui/streakCopy";
 
 type Props = {
-  day: MilestoneDay;
+  day: StreakMilestone;
   lang: Lang;
   onDismiss: () => void;
 };

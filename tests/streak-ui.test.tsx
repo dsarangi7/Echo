@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { MilestoneToast } from "../src/components/MilestoneToast";
@@ -7,25 +7,16 @@ import { ReminderControl } from "../src/components/ReminderControl";
 import { StreakChrome } from "../src/components/StreakChrome";
 import { StreakFlame } from "../src/components/StreakFlame";
 import { emptySession } from "../src/practice/session";
+import { milestoneForDays, STREAK_CHANGED_EVENT } from "../src/practice/streak";
 import type { Sentence } from "../src/practice/types";
 import {
-  getReminder,
-  getStreak,
-  recordPracticeClearOrPartial,
-  requestNotificationPermission,
-  setReminder,
-} from "../src/streak";
-import { saveReminderPreference } from "../src/ui/streakActions";
-import {
   MILESTONE_COPY,
+  REMINDER_DENIED,
   REMINDER_LABEL,
+  REMINDER_ON,
   REMINDER_PWA,
-  REMINDER_SAVED,
-  formatTimeValue,
-  milestoneDay,
-  parseTimeValue,
-  readStreakPreview,
-  visibleMilestone,
+  REMINDER_UNAVAILABLE,
+  milestoneJustHit,
 } from "../src/ui/streakCopy";
 
 const item: Sentence = { set: "Office", zhSet: "办公室", en: "The printer is out.", zh: "打印机没纸了。" };
@@ -48,13 +39,13 @@ describe("streak chrome copy", () => {
       en: "Two weeks of showing up. That's the real win.",
       zh: "两周坚持。这才是真正的收获。",
     });
-    expect(milestoneDay(3)).toBe(3);
-    expect(milestoneDay(7)).toBe(7);
-    expect(milestoneDay(14)).toBe(14);
-    expect(milestoneDay(4)).toBeNull();
-    expect(milestoneDay(15)).toBeNull();
-    expect(visibleMilestone(7, 7)).toBeNull();
-    expect(visibleMilestone(7, 3)).toBe(7);
+    expect(milestoneForDays(3)).toBe(3);
+    expect(milestoneForDays(7)).toBe(7);
+    expect(milestoneForDays(14)).toBe(14);
+    expect(milestoneForDays(4)).toBeNull();
+    expect(milestoneJustHit({ detail: { milestoneJustHit: 7 } } as unknown as Event)).toBe(7);
+    expect(milestoneJustHit({ detail: { milestoneJustHit: null } } as unknown as Event)).toBeNull();
+    expect(milestoneJustHit(new Event(STREAK_CHANGED_EVENT))).toBeNull();
   });
 
   it("renders the flame strip with current and best", () => {
@@ -75,9 +66,9 @@ describe("streak chrome copy", () => {
     expect(quiet).toContain("is-quiet");
   });
 
-  it("renders the reminder toggle, time, and honest saved note", () => {
+  it("renders the reminder toggle, time, and honest status", () => {
     const off = renderToStaticMarkup(
-      <ReminderControl enabled={false} hour={20} minute={0} onChange={() => undefined} />,
+      <ReminderControl enabled={false} time="20:00" note="idle" onChange={() => undefined} />,
     );
     expect(off).toContain(REMINDER_LABEL.en);
     expect(off).toContain(REMINDER_LABEL.zh);
@@ -87,16 +78,28 @@ describe("streak chrome copy", () => {
     expect(off).toContain('value="20:00"');
     expect(off).toContain(REMINDER_PWA.en);
     expect(off).toContain(REMINDER_PWA.zh);
-    expect(off).not.toContain(REMINDER_SAVED.en);
+    expect(off).not.toContain(REMINDER_ON.en);
+    expect(off).not.toContain(REMINDER_UNAVAILABLE.en);
 
     const on = renderToStaticMarkup(
-      <ReminderControl enabled={true} hour={9} minute={5} onChange={() => undefined} />,
+      <ReminderControl enabled={true} time="09:05" note="on" onChange={() => undefined} />,
     );
     expect(on).toContain('aria-pressed="true"');
     expect(on).toContain('value="09:05"');
-    expect(on).toContain(REMINDER_SAVED.en);
-    expect(on).toContain(REMINDER_SAVED.zh);
-    expect(on).toContain(REMINDER_PWA.en);
+    expect(on).toContain(REMINDER_ON.en);
+    expect(on).toContain(REMINDER_ON.zh);
+
+    const blocked = renderToStaticMarkup(
+      <ReminderControl enabled={false} time="09:05" note="denied" onChange={() => undefined} />,
+    );
+    expect(blocked).toContain(REMINDER_DENIED.en);
+    expect(blocked).toContain(REMINDER_DENIED.zh);
+
+    const unavailable = renderToStaticMarkup(
+      <ReminderControl enabled={false} time="09:05" note="unavailable" onChange={() => undefined} />,
+    );
+    expect(unavailable).toContain(REMINDER_UNAVAILABLE.en);
+    expect(unavailable).toContain(REMINDER_UNAVAILABLE.zh);
   });
 
   it("shows each milestone toast in the practice language, with the other line under it", () => {
@@ -113,7 +116,7 @@ describe("streak chrome copy", () => {
     }
   });
 
-  it("places the chrome above the session strip and only toasts real milestone days", () => {
+  it("places the chrome above the session strip without a toast until a milestone is hit", () => {
     const html = renderToStaticMarkup(
       <PracticePanel
         {...({
@@ -145,82 +148,45 @@ describe("streak chrome copy", () => {
     expect(html.indexOf('id="streak-strip"')).toBeGreaterThan(-1);
     expect(html.indexOf('id="streak-strip"')).toBeLessThan(html.indexOf('id="session-strip"'));
     expect(html).toContain('id="reminder-control"');
+    expect(html).toContain(REMINDER_LABEL.en);
     expect(html).not.toContain('id="milestone-toast"');
 
-    const week = renderToStaticMarkup(
-      <StreakChrome
-        lang="zh"
-        streak={{ current: 7, best: 9 }}
-        reminder={{ enabled: true, hour: 21, minute: 30 }}
-        onReminderChange={() => undefined}
-      />,
+    const zh = visibleText(
+      renderToStaticMarkup(<MilestoneToast day={7} lang="zh" onDismiss={() => undefined} />),
     );
-    expect(week).toContain("整整一周。保持这个温和的节奏。");
-    expect(week).toContain("A full week. Keep the gentle rhythm.");
-    expect(week.indexOf("整整一周")).toBeLessThan(week.indexOf("A full week"));
-    expect(week).toContain(REMINDER_SAVED.zh);
-    expect(week).toContain('value="21:30"');
-
-    const between = renderToStaticMarkup(
-      <StreakChrome
-        lang="en"
-        streak={{ current: 4, best: 4 }}
-        reminder={{ enabled: false, hour: 20, minute: 0 }}
-        onReminderChange={() => undefined}
-      />,
-    );
-    expect(between).not.toContain('id="milestone-toast"');
+    expect(zh.indexOf("整整一周")).toBeLessThan(zh.indexOf("A full week"));
   });
 });
 
-describe("streak stub adapter", () => {
-  it("round-trips the reminder and leaves the streak at zero", async () => {
-    setReminder({ enabled: false, hour: 20, minute: 0 });
-    expect(getStreak()).toEqual({ current: 0, best: 0 });
-    recordPracticeClearOrPartial();
-    expect(getStreak()).toEqual({ current: 0, best: 0 });
+describe("streak chrome wiring", () => {
+  it("reads Kai's hooks and does not keep a stub store", () => {
+    expect(existsSync(new URL("../src/streak/stub.ts", import.meta.url))).toBe(false);
+    expect(existsSync(new URL("../src/ui/streakActions.ts", import.meta.url))).toBe(false);
 
-    await saveReminderPreference({ enabled: false, hour: 8, minute: 15 });
-    expect(getReminder()).toEqual({ enabled: false, hour: 8, minute: 15 });
-
-    await saveReminderPreference({ enabled: true, hour: 8, minute: 15 });
-    expect(getReminder()).toEqual({ enabled: true, hour: 8, minute: 15 });
-    await expect(requestNotificationPermission()).resolves.toBe("unavailable");
-
-    setReminder({ enabled: true, hour: 99, minute: -4 });
-    expect(getReminder()).toEqual({ enabled: true, hour: 23, minute: 0 });
-    expect(formatTimeValue(8, 5)).toBe("08:05");
-    expect(parseTimeValue("08:05")).toEqual({ hour: 8, minute: 5 });
-    expect(parseTimeValue("8:05")).toEqual({ hour: 8, minute: 5 });
-    expect(parseTimeValue("20:00:00")).toEqual({ hour: 20, minute: 0 });
-    expect(parseTimeValue("24:00")).toBeNull();
-    expect(readStreakPreview("?streakPreview=7,14")).toEqual({ current: 7, best: 14 });
-    expect(readStreakPreview("?streakPreview=nope")).toBeNull();
-  });
-
-  it("does not implement day storage, notification scheduling, or call the recorder from chrome", () => {
-    const stub = readFileSync(new URL("../src/streak/stub.ts", import.meta.url), "utf8");
-    const code = stub.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
-    expect(code).not.toMatch(/\blocalStorage\b|\bsessionStorage\b|\bindexedDB\b|\bCapacitor\b|new Notification|serviceWorker|showNotification/);
-    expect(code).toContain('return "unavailable"');
-    const actions = readFileSync(new URL("../src/ui/streakActions.ts", import.meta.url), "utf8");
-    expect(actions).toContain("setReminder");
-    expect(actions).toContain("requestNotificationPermission");
-    expect(actions).not.toContain("recordPracticeClearOrPartial");
+    const chrome = readFileSync(new URL("../src/components/StreakChrome.tsx", import.meta.url), "utf8");
+    expect(chrome).toContain("usePracticeStreak");
+    expect(chrome).toContain("useReminderSettings");
+    expect(chrome).toContain("enableDailyReminder");
+    expect(chrome).toContain("disableDailyReminder");
+    expect(chrome).toContain("milestoneJustHit");
+    expect(chrome).not.toContain("recordPracticeClearOrPartial");
+    expect(chrome).not.toMatch(/\blocalStorage\b/);
 
     for (const file of [
-      "../src/components/StreakChrome.tsx",
       "../src/components/StreakFlame.tsx",
       "../src/components/ReminderControl.tsx",
       "../src/components/MilestoneToast.tsx",
       "../src/components/PracticePanel.tsx",
-      "../src/practice/usePractice.ts",
-      "../src/speech/stt.ts",
     ]) {
-      const src = readFileSync(new URL(file, import.meta.url), "utf8")
-        .replace(/\/\*[\s\S]*?\*\//g, "")
-        .replace(/\/\/.*$/gm, "");
+      const src = readFileSync(new URL(file, import.meta.url), "utf8");
       expect(src, file).not.toContain("recordPracticeClearOrPartial");
+      expect(src, file).not.toMatch(/\blocalStorage\b/);
+      expect(src, file).not.toMatch(/Capacitor/);
     }
+
+    const idle = renderToStaticMarkup(<StreakChrome lang="en" />);
+    expect(idle).toContain('id="streak-strip"');
+    expect(idle).toContain('id="reminder-time"');
+    expect(idle).not.toContain('id="milestone-toast"');
   });
 });

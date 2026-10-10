@@ -1,64 +1,69 @@
-import { useState } from "react";
-import { getReminder, getStreak, type ReminderPreference, type StreakSummary } from "../streak";
+import { useEffect, useState } from "react";
+import { disableDailyReminder, enableDailyReminder } from "../practice/reminder-runtime";
+import { saveReminderSettings } from "../practice/reminder";
+import { STREAK_CHANGED_EVENT, practiceLocalStorage, type StreakMilestone } from "../practice/streak";
 import type { Lang } from "../practice/types";
-import { readStreakPreview, visibleMilestone } from "../ui/streakCopy";
-import { saveReminderPreference } from "../ui/streakActions";
+import { usePracticeStreak, useReminderSettings } from "../practice/usePracticeSignals";
+import { milestoneJustHit, type ReminderNote } from "../ui/streakCopy";
 import { MilestoneToast } from "./MilestoneToast";
 import { ReminderControl } from "./ReminderControl";
 import { StreakFlame } from "./StreakFlame";
 
 type Props = {
   lang: Lang;
-  /** Pass through once Kai owns the values. Omit to read the streak module. */
-  streak?: StreakSummary;
-  reminder?: ReminderPreference;
-  onReminderChange?: (next: ReminderPreference) => void | Promise<void>;
 };
 
-function safeSearch(): string {
-  try {
-    if (typeof location === "undefined") return "";
-    return location.search ?? "";
-  } catch {
-    return "";
-  }
-}
-
-function previewStreak(): StreakSummary | null {
-  if (!import.meta.env.DEV) return null;
-  return readStreakPreview(safeSearch());
-}
-
 /**
- * Visual chrome only. Reads getStreak / getReminder and writes setReminder.
- * Does not call recordPracticeClearOrPartial and does not count Shanghai days.
+ * Visual chrome only.
+ * Streak numbers come from usePracticeStreak().
+ * The toggle calls enableDailyReminder / disableDailyReminder.
+ * The toast opens from Kai's one-shot milestoneJustHit. This file does not count days.
  */
-export function StreakChrome({ lang, streak, reminder, onReminderChange }: Props) {
-  const [localReminder, setLocalReminder] = useState(getReminder);
-  const [dismissed, setDismissed] = useState<number | null>(null);
-  const shownReminder = reminder ?? localReminder;
-  const shownStreak = streak ?? previewStreak() ?? getStreak();
-  const day = visibleMilestone(shownStreak.current, dismissed);
+export function StreakChrome({ lang }: Props) {
+  const streak = usePracticeStreak();
+  const reminder = useReminderSettings();
+  const [toast, setToast] = useState<StreakMilestone | null>(null);
+  const [problem, setProblem] = useState<"denied" | "unavailable" | null>(null);
+  const [draftTime, setDraftTime] = useState<string | null>(null);
+  const time = draftTime ?? reminder.time;
+  const note: ReminderNote = problem ?? (reminder.enabled ? "on" : "idle");
 
-  async function change(next: ReminderPreference) {
-    if (onReminderChange) {
-      await onReminderChange(next);
+  useEffect(() => {
+    const onStreak = (event: Event) => {
+      const hit = milestoneJustHit(event);
+      if (hit) setToast(hit);
+    };
+    window.addEventListener(STREAK_CHANGED_EVENT, onStreak);
+    return () => window.removeEventListener(STREAK_CHANGED_EVENT, onStreak);
+  }, []);
+
+  useEffect(() => {
+    if (draftTime && reminder.time === draftTime) setDraftTime(null);
+  }, [draftTime, reminder.time]);
+
+  async function change(next: { enabled: boolean; time: string }) {
+    setDraftTime(next.time);
+    if (!next.enabled) {
+      if (next.time !== reminder.time) {
+        const storage = practiceLocalStorage();
+        if (storage) saveReminderSettings(storage, { enabled: false, time: next.time });
+      } else {
+        disableDailyReminder();
+      }
+      setProblem(null);
       return;
     }
-    await saveReminderPreference(next);
-    setLocalReminder(getReminder());
+    const result = await enableDailyReminder(next.time);
+    if (result.ok) setProblem(null);
+    else if (result.reason === "denied") setProblem("denied");
+    else setProblem("unavailable");
   }
 
   return (
     <section className="streak-chrome" id="streak-chrome" aria-label="Practice streak and daily reminder. 连续练习和每天提醒">
-      <StreakFlame current={shownStreak.current} best={shownStreak.best} />
-      <ReminderControl
-        enabled={shownReminder.enabled}
-        hour={shownReminder.hour}
-        minute={shownReminder.minute}
-        onChange={(next) => void change(next)}
-      />
-      {day ? <MilestoneToast day={day} lang={lang} onDismiss={() => setDismissed(day)} /> : null}
+      <StreakFlame current={streak.current} best={streak.best} />
+      <ReminderControl enabled={reminder.enabled} time={time} note={note} onChange={(next) => void change(next)} />
+      {toast ? <MilestoneToast day={toast} lang={lang} onDismiss={() => setToast(null)} /> : null}
     </section>
   );
 }
