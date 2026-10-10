@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { packError, packs } from "./packs";
 import { gradeTranscript, isShortZhLine, recognitionFailHeadline, type GradeOutcome } from "./score";
+import { publishPracticeSnapshot } from "./reminder-runtime";
 import { applyOutcome, classifyLine, emptySession, readBrowserSession, writeBrowserSession, type AttemptOutcome, type SessionTally } from "./session";
+import { practiceLocalStorage, recordPracticeClearOrPartial } from "./streak";
 import { hearPaceRate, type HearPace } from "./pace";
 import { loadHearPaces, loadIndexes, loadLang, saveHearPaces, saveIndexes, saveLang } from "./storage";
 import type { CaptureHandle, MicFailure } from "../speech/record";
@@ -92,6 +94,10 @@ export function usePractice() {
     setSession(next);
     setLineOutcome(outcome);
     writeBrowserSession(next);
+    if (outcome === "clear" || outcome === "partial") {
+      recordPracticeClearOrPartial(practiceLocalStorage(), new Date());
+      void publishPracticeSnapshot();
+    }
   }, []);
 
   const resetSession = useCallback(() => {

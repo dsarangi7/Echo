@@ -3,11 +3,14 @@ import { BrowserBanner } from "./components/BrowserBanner";
 import { CatMascot } from "./components/CatMascot";
 import { ModelInterstitial } from "./components/ModelInterstitial";
 import { PracticePanel } from "./components/PracticePanel";
+import { startReminderRuntime } from "./practice/reminder-runtime";
 import { usePractice } from "./practice/usePractice";
 
 export function App() {
   const practice = usePractice();
   const { lang, setLanguage, jump } = practice;
+
+  useEffect(() => startReminderRuntime(), []);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
