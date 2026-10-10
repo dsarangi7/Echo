@@ -1,0 +1,40 @@
+// Release signing for com.ayk.echo. Passwords come from the environment or from
+// android/keystore/keystore.properties (gitignored). See docs/android.md.
+
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file("keystore/keystore.properties")
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withInputStream { stream -> keystoreProperties.load(stream) }
+}
+
+def echoStoreFile = System.getenv("ECHO_KEYSTORE_FILE") ?: keystoreProperties.getProperty("storeFile") ?: "keystore/echo-release.keystore"
+def echoStorePassword = System.getenv("ECHO_KEYSTORE_PASSWORD") ?: keystoreProperties.getProperty("storePassword")
+def echoKeyAlias = System.getenv("ECHO_KEY_ALIAS") ?: keystoreProperties.getProperty("keyAlias") ?: "echo"
+def echoKeyPassword = System.getenv("ECHO_KEY_PASSWORD") ?: keystoreProperties.getProperty("keyPassword")
+
+def releaseRequested = gradle.startParameter.taskNames.any { name ->
+    name.toLowerCase().contains("release")
+}
+if (releaseRequested && (!echoStorePassword || !echoKeyPassword)) {
+    throw new GradleException("Release signing needs ECHO_KEYSTORE_PASSWORD and ECHO_KEY_PASSWORD, or android/keystore/keystore.properties. See docs/android.md.")
+}
+
+android {
+    signingConfigs {
+        release {
+            if (echoStorePassword && echoKeyPassword) {
+                storeFile rootProject.file(echoStoreFile)
+                storePassword echoStorePassword
+                keyAlias echoKeyAlias
+                keyPassword echoKeyPassword
+            }
+        }
+    }
+    buildTypes {
+        release {
+            if (echoStorePassword && echoKeyPassword) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+}

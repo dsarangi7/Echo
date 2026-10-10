@@ -3,6 +3,8 @@ import { BrowserBanner } from "./components/BrowserBanner";
 import { CatMascot } from "./components/CatMascot";
 import { ModelInterstitial } from "./components/ModelInterstitial";
 import { PracticePanel } from "./components/PracticePanel";
+import { ReminderCard } from "./components/ReminderCard";
+import { syncNativeReminders } from "./native/syncReminders";
 import { startReminderRuntime } from "./practice/reminder-runtime";
 import { usePractice } from "./practice/usePractice";
 
@@ -11,6 +13,10 @@ export function App() {
   const { lang, setLanguage, jump } = practice;
 
   useEffect(() => startReminderRuntime(), []);
+
+  useEffect(() => {
+    void syncNativeReminders();
+  }, []);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -74,6 +80,7 @@ export function App() {
         <CatMascot mode={practice.catMode} mouth={practice.mouth} onIntroduce={practice.introduce} />
         <PracticePanel {...practice} />
       </div>
+      <ReminderCard />
     </div>
   );
 }

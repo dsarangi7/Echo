@@ -6,6 +6,7 @@ import { applyOutcome, classifyLine, emptySession, readBrowserSession, writeBrow
 import { practiceLocalStorage, recordPracticeClearOrPartial } from "./streak";
 import { hearPaceRate, type HearPace } from "./pace";
 import { loadHearPaces, loadIndexes, loadLang, saveHearPaces, saveIndexes, saveLang } from "./storage";
+import { syncNativeReminders } from "../native/syncReminders";
 import type { CaptureHandle, MicFailure } from "../speech/record";
 import {
   MIN_SPEECH_MS,
@@ -97,6 +98,7 @@ export function usePractice() {
     if (outcome === "clear" || outcome === "partial") {
       recordPracticeClearOrPartial(practiceLocalStorage(), new Date());
       void publishPracticeSnapshot();
+      void syncNativeReminders();
     }
   }, []);
 

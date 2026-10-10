@@ -7,3 +7,17 @@ dist
 public/onnx/
 .piper-voices
 .venv
+
+# Android release signing. Passwords and the keystore stay out of git.
+android/keystore/*.keystore
+android/keystore/*.jks
+android/keystore/keystore.properties
+android/local.properties
+android/.gradle/
+android/**/build/
+*.apk
+
+# Web assets copied by `cap sync` (includes the Whisper weights).
+android/app/src/main/assets/public/
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json
