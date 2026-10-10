@@ -6,6 +6,12 @@ describe("resolveAppBase", () => {
     expect(resolveAppBase({})).toBe("/Echo/");
   });
 
+  it("uses / for the Capacitor Android shell", () => {
+    expect(resolveAppBase({ CAPACITOR: "1" })).toBe("/");
+    expect(resolveAppBase({ VITE_CAPACITOR: "1" })).toBe("/");
+    expect(resolveAppBase({ CAPACITOR: "1", VITE_BASE: "/Echo/" })).toBe("/Echo/");
+  });
+
   it("uses / on Vercel when VITE_BASE and BASE_PATH are unset", () => {
     expect(resolveAppBase({ VERCEL: "1" })).toBe("/");
     expect(resolveAppBase({ VERCEL: "1", VERCEL_ENV: "preview" })).toBe("/");

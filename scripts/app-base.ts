@@ -2,12 +2,15 @@
  * Vite `base` for this app.
  *
  * GitHub Pages is a project site at /Echo/. Vercel production and preview
- * hosts (*.vercel.app) serve the app at /. Explicit VITE_BASE or BASE_PATH
- * wins, so the Pages workflow can pin /Echo/ even if VERCEL is present.
+ * hosts (*.vercel.app) serve the app at /. The Capacitor Android shell also
+ * serves at /. Explicit VITE_BASE or BASE_PATH wins, so the Pages workflow
+ * can pin /Echo/ even if VERCEL is present.
  */
 export function resolveAppBase(env: Record<string, string | undefined> = process.env): string {
   const explicit = env.VITE_BASE || env.BASE_PATH;
   if (explicit) return normalizeBase(explicit);
+  // The Android shell serves the built files at the WebView root, not /Echo/.
+  if (env.CAPACITOR || env.VITE_CAPACITOR) return "/";
   if (env.VERCEL) return "/";
   return "/Echo/";
 }

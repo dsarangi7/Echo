@@ -607,6 +607,52 @@ button.session-count.unsure:focus-visible,
   outline-offset: 2px;
 }
 
+.reminder-card { margin-top: 18px; }
+.reminder-card h2 {
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+}
+.reminder-card h2 small {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+}
+.reminder-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin-top: 12px;
+}
+.reminder-row label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.reminder-row label small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+.reminder-row input[type="time"],
+.reminder-row select {
+  background: #151515;
+  color: var(--text);
+  border: 1px solid #3a3a3a;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font: inherit;
+}
+.reminder-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--neon);
+}
+
 @media (max-width: 900px) {
   .stage { grid-template-columns: 1fr; }
   .wrap { padding: 18px 14px 32px; }
