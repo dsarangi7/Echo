@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { HEAR_PACE_LABEL, HEAR_PACES } from "../practice/pace";
+import { micHeardLine } from "../practice/score";
 import type { usePractice } from "../practice/usePractice";
 import { TargetSentence } from "./TargetSentence";
 
@@ -12,6 +13,8 @@ export function PracticePanel(practice: Practice) {
     item,
     pack,
     marks,
+    outcome,
+    heardPreview,
     kicker,
     heard,
     score,
@@ -79,7 +82,7 @@ export function PracticePanel(practice: Practice) {
         </p>
       </div>
 
-      <TargetSentence lang={lang} text={primary} marks={marks} />
+      <TargetSentence lang={lang} text={primary} marks={marks} unrecognized={outcome === "recognition_fail"} />
       <p className="meaning" id="meaning" lang={lang === "en" ? "zh-CN" : "en-US"}>
         {meaning}
       </p>
@@ -129,38 +132,64 @@ export function PracticePanel(practice: Practice) {
         {modelNote}
       </p>
 
-      {lang === "en" ? (
-        <>
-          <p className="legend" id="legend-match">
-            <span className="sw ok" />
-            matched word
-            <span className="sw bad" />
-            missing word · 对上了 / 没对上
-          </p>
-          <p className="legend" id="legend-score">
-            It checks words, not an accent score. 按词比对，不是口音分数。
-          </p>
-        </>
+      {outcome === "recognition_fail" ? (
+        <p className="legend" id="legend-match">
+          <span className="sw unk" />
+          {lang === "zh"
+            ? "没标成错。识别可能偏了，不是你说错。 Not marked wrong — recognition may be off."
+            : "Not marked wrong — recognition may be off. 没标成错，可能是识别偏了。"}
+        </p>
+      ) : lang === "en" ? (
+        <p className="legend" id="legend-match">
+          <span className="sw ok" />
+          matched word
+          <span className="sw bad" />
+          missing word · 对上了 / 没对上
+        </p>
       ) : (
-        <>
-          <p className="legend" id="legend-match">
-            <span className="sw ok" />
-            对上了这个字 matched
-            <span className="sw bad" />
-            没对上 missing
-          </p>
-          <p className="legend" id="legend-score">
-            按字比对，不是口音分数。It checks characters, not an accent score.
-          </p>
-        </>
+        <p className="legend" id="legend-match">
+          <span className="sw ok" />
+          对上了这个字 matched
+          <span className="sw bad" />
+          没对上 missing
+        </p>
+      )}
+      {lang === "en" ? (
+        <p className="legend" id="legend-score">
+          It checks words, not an accent score. 按词比对，不是口音分数。
+        </p>
+      ) : (
+        <p className="legend" id="legend-score">
+          按字比对，不是口音分数。It checks characters, not an accent score.
+        </p>
       )}
 
       <div className="result" id="result" aria-live="polite">
         <p className="kicker" id="kicker">
           {kicker}
         </p>
-        <p id="heard">{heard}</p>
-        <p id="score">{score}</p>
+        <p id="heard" className={outcome === "recognition_fail" ? "fail-headline" : undefined}>
+          {heard}
+        </p>
+        {outcome === "recognition_fail" ? (
+          <>
+            <p id="heard-preview" className="heard-muted">
+              {micHeardLine(lang, heardPreview)}
+            </p>
+            <div className="fail-actions">
+              <button type="button" className="act primary" onClick={hear}>
+                <b>Hear it</b>
+                <small>听一听</small>
+              </button>
+              <button type="button" className="act ghost" onClick={sayIt}>
+                <b>Try again</b>
+                <small>再说一次</small>
+              </button>
+            </div>
+          </>
+        ) : (
+          <p id="score">{score}</p>
+        )}
       </div>
       <p className="keys">← → 换句子 · arrow keys change the sentence</p>
       <p id="err">{error}</p>
