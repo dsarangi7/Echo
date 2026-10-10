@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { packError, packs } from "./packs";
 import { gradeTranscript } from "./score";
-import { loadIndexes, loadLang, saveIndexes, saveLang } from "./storage";
+import { hearPaceRate, type HearPace } from "./pace";
+import { loadHearPaces, loadIndexes, loadLang, saveHearPaces, saveIndexes, saveLang } from "./storage";
 import type { CaptureHandle, MicFailure } from "../speech/record";
 import {
   createRecordingContext,
@@ -15,7 +16,7 @@ import { resampleTo16k } from "../speech/resample";
 import { introLine } from "../speech/intro";
 import { DOWNLOAD_LABEL } from "../speech/model";
 import { ensureModel, subscribeModel, transcribe } from "../speech/stt";
-import { HEAR_FAIL, speakIntro, speakLine, stopSpeaking } from "../speech/tts";
+import { HEAR_FAIL, setSpeakingRate, speakIntro, speakLine, stopSpeaking } from "../speech/tts";
 import type { CatMode, Lang, Sentence } from "./types";
 
 function micNote(kind: MicFailure): string {
@@ -32,6 +33,7 @@ function primaryText(lang: Lang, item: Sentence): string {
 export function usePractice() {
   const [lang, setLang] = useState<Lang>(loadLang);
   const [indexes, setIndexes] = useState(loadIndexes);
+  const [paces, setPaces] = useState(loadHearPaces);
   const [marks, setMarks] = useState<boolean[] | null>(null);
   const [catMode, setCatMode] = useState<CatMode>("idle");
   const [mouth, setMouth] = useState(0);
@@ -46,6 +48,7 @@ export function usePractice() {
   const captureRef = useRef<CaptureHandle | null>(null);
   const langRef = useRef<Lang>(lang);
   const indexRef = useRef(0);
+  const paceRef = useRef(paces);
   const timersRef = useRef<number[]>([]);
 
   const pack = packs[lang];
@@ -53,6 +56,8 @@ export function usePractice() {
   const item = pack[index];
   langRef.current = lang;
   indexRef.current = index;
+  paceRef.current = paces;
+  const pace = paces[lang];
 
   const clearTimers = useCallback(() => {
     timersRef.current.forEach((id) => {
@@ -83,6 +88,10 @@ export function usePractice() {
   useEffect(() => {
     saveIndexes(indexes);
   }, [indexes]);
+
+  useEffect(() => {
+    saveHearPaces(paces);
+  }, [paces]);
 
   useEffect(() => {
     document.title = lang === "en" ? "课猫 Echo · English practice" : "课猫 Echo · 中文口语练习";
@@ -133,7 +142,7 @@ export function usePractice() {
           // A page-load intro can be blocked before the first tap. Hear it stays usable.
           if (!quiet) noteFailure(HEAR_FAIL);
         },
-      });
+      }, hearPaceRate(paceRef.current[next]));
     },
     [clearTimers, noteFailure],
   );
@@ -204,8 +213,9 @@ export function usePractice() {
     captureRef.current = null;
     setListening(false);
     clearTimers();
-    const line = primaryText(langRef.current, packs[langRef.current][indexRef.current]);
-    speakLine(langRef.current, indexRef.current, line, {
+    const currentLang = langRef.current;
+    const line = primaryText(currentLang, packs[currentLang][indexRef.current]);
+    speakLine(currentLang, indexRef.current, line, {
       onStart: () => {
         if (token !== tokenRef.current) return;
         setCatMode("talk");
@@ -224,8 +234,14 @@ export function usePractice() {
         if (token !== tokenRef.current) return;
         noteFailure(HEAR_FAIL);
       },
-    });
+    }, hearPaceRate(paceRef.current[currentLang]));
   }, [clearTimers, noteFailure]);
+
+  const setPace = useCallback((next: HearPace) => {
+    const currentLang = langRef.current;
+    setPaces((prev) => (prev[currentLang] === next ? prev : { ...prev, [currentLang]: next }));
+    setSpeakingRate(hearPaceRate(next));
+  }, []);
 
   const sayIt = useCallback(() => {
     if (captureRef.current) {
@@ -324,5 +340,7 @@ export function usePractice() {
     jumpTo,
     hear,
     sayIt,
+    pace,
+    setPace,
   };
 }

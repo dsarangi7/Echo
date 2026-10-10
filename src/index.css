@@ -257,11 +257,68 @@ h1 {
   min-height: 1.45em;
 }
 
+.pace {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin-top: 18px;
+}
+
+.pace-label {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.pace-label b {
+  display: block;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.pace-switch {
+  display: inline-flex;
+  border: 1px solid #3a3a3a;
+  border-radius: 999px;
+  background: #151515;
+  padding: 3px;
+}
+
+.pace-switch button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  line-height: 1.15;
+}
+
+.pace-switch button small {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.75;
+  margin-top: 1px;
+}
+
+.pace-switch button.on {
+  background: var(--neon);
+  color: var(--ink);
+}
+
+.pace-switch button.on small { color: #243000; opacity: 0.85; }
+
 .actions {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 22px;
+  margin-top: 14px;
 }
 
 button.act {
@@ -284,7 +341,8 @@ button.ghost:hover { border-color: var(--neon); color: var(--neon); }
 
 button.act:focus-visible,
 .set:focus-visible,
-.lang-switch button:focus-visible {
+.lang-switch button:focus-visible,
+.pace-switch button:focus-visible {
   outline: 2px solid var(--neon);
   outline-offset: 2px;
 }
