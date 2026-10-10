@@ -16,7 +16,7 @@ import { resampleTo16k } from "../speech/resample";
 import { introLine } from "../speech/intro";
 import { DOWNLOAD_LABEL } from "../speech/model";
 import { ensureModel, subscribeModel, transcribe } from "../speech/stt";
-import { HEAR_FAIL, setSpeakingRate, speakIntro, speakLine, stopSpeaking } from "../speech/tts";
+import { hearFailCopy, setSpeakingRate, speakIntro, speakLine, stopSpeaking } from "../speech/tts";
 import type { CatMode, Lang, Sentence } from "./types";
 
 function micNote(kind: MicFailure): string {
@@ -135,12 +135,12 @@ export function usePractice() {
           setMouth(0);
           setCatMode("idle");
         },
-        onUnavailable: () => {
+        onUnavailable: (reason) => {
           if (token !== tokenRef.current) return;
           setMouth(0);
           setCatMode("idle");
           // A page-load intro can be blocked before the first tap. Hear it stays usable.
-          if (!quiet) noteFailure(HEAR_FAIL);
+          if (!quiet) noteFailure(hearFailCopy(reason));
         },
       }, hearPaceRate(paceRef.current[next]));
     },
@@ -230,9 +230,9 @@ export function usePractice() {
         setMouth(0);
         setCatMode("idle");
       },
-      onUnavailable: () => {
+      onUnavailable: (reason) => {
         if (token !== tokenRef.current) return;
-        noteFailure(HEAR_FAIL);
+        noteFailure(hearFailCopy(reason));
       },
     }, hearPaceRate(paceRef.current[currentLang]));
   }, [clearTimers, noteFailure]);

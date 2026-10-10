@@ -4,8 +4,110 @@ import { introClipUrl, introLine } from "./intro";
 
 export type HearEngine = "pack" | "synthesis" | "none";
 
-export const HEAR_FAIL =
-  "Could not play this line. Hear it does not need the voice model. 这句没播出来。听一听不需要语音模型。";
+/** Why Hear it could not speak. Failure copy names that reason and does not mention the Say it model. */
+export type HearFailReason = "missing" | "blocked" | "loading" | "synth";
+
+/** What the clip itself did, before the device-voice fallback. */
+export type ClipFailReason = "missing" | "blocked" | "loading" | "other";
+
+/** How the device voice ended, when the clip did not start. */
+export type SynthFailReason = "blocked" | "failed" | "unavailable";
+
+export type ClipSnapshot = {
+  errorCode: number | null;
+  readyState: number;
+  networkState: number;
+  timedOut: boolean;
+};
+
+/**
+ * Shown only after the clip and the device voice both fail.
+ * These lines do not say Hear it needs the voice model, and they do not say it does not.
+ * A download status for Say it can sit on screen at the same time without contradicting them.
+ */
+export const HEAR_FAIL_COPY: Record<HearFailReason, string> = {
+  missing: "This line's sound file is missing. 这句的音频文件没有。",
+  blocked: "Playback was blocked. Tap Hear it again. 播放被拦住了。再点一次「听一听」。",
+  loading: "This line's audio is still loading. Tap Hear it again in a moment. 这句音频还在加载。稍后再点「听一听」。",
+  synth: "The device voice could not speak this line. 这台设备的语音没把这句说出来。",
+};
+
+export function hearFailCopy(reason: HearFailReason): string {
+  return HEAR_FAIL_COPY[reason];
+}
+
+const MEDIA_ERR_ABORTED = 1;
+const MEDIA_ERR_NETWORK = 2;
+const MEDIA_ERR_DECODE = 3;
+const MEDIA_ERR_SRC_NOT_SUPPORTED = 4;
+const HAVE_FUTURE_DATA = 3;
+const NETWORK_LOADING = 2;
+const NETWORK_NO_SOURCE = 3;
+
+const CLIP_RANK: Record<ClipFailReason, number> = { other: 0, loading: 1, blocked: 2, missing: 3 };
+
+function errorName(err: unknown): string {
+  if (!err || typeof err !== "object" || !("name" in err)) return "";
+  return typeof err.name === "string" ? err.name : "";
+}
+
+function errorMessage(err: unknown): string {
+  if (typeof err === "string") return err;
+  if (!err || typeof err !== "object" || !("message" in err)) return "";
+  return typeof err.message === "string" ? err.message : "";
+}
+
+/** `play()` rejection: autoplay or a permission block, versus a source the browser cannot use. */
+export function classifyPlayRejection(err: unknown): ClipFailReason {
+  const name = errorName(err);
+  if (name === "NotAllowedError" || name === "SecurityError") return "blocked";
+  if (name === "NotSupportedError") return "missing";
+  const message = errorMessage(err).toLowerCase();
+  if (message.includes("not allowed") || message.includes("user denied permission")) return "blocked";
+  if (message.includes("not supported") || message.includes("no supported source")) return "missing";
+  return "other";
+}
+
+/**
+ * Media element state when the clip errors or the start timer fires.
+ * A missing or unreadable file is not "still loading". A download that has not
+ * finished is not "missing". Abort and autoplay are not a missing file.
+ */
+export function classifyMediaFailure(state: ClipSnapshot): ClipFailReason {
+  switch (state.errorCode) {
+    case MEDIA_ERR_SRC_NOT_SUPPORTED:
+    case MEDIA_ERR_DECODE:
+      return "missing";
+    case MEDIA_ERR_ABORTED:
+      return "blocked";
+    case MEDIA_ERR_NETWORK:
+      return "loading";
+    default:
+      break;
+  }
+  if (state.networkState === NETWORK_NO_SOURCE && state.readyState === 0) return "missing";
+  if (state.timedOut && (state.readyState < HAVE_FUTURE_DATA || state.networkState === NETWORK_LOADING)) {
+    return "loading";
+  }
+  return "other";
+}
+
+export function classifySynthError(code: string | null | undefined, available: boolean): SynthFailReason {
+  if (!available) return "unavailable";
+  if (code === "not-allowed") return "blocked";
+  return "failed";
+}
+
+/**
+ * Prefer the clip's own reason. Device-voice failure is the message only when the
+ * clip did not already fail as missing, still loading, or blocked.
+ */
+export function resolveHearFailure(clip: ClipFailReason, synth: SynthFailReason): HearFailReason {
+  if (clip === "missing") return "missing";
+  if (clip === "loading") return "loading";
+  if (clip === "blocked" || synth === "blocked") return "blocked";
+  return "synth";
+}
 
 const CLIP_START_MS = 8000;
 const SYNTH_START_MS = 1600;
@@ -63,7 +165,7 @@ type SpeakHandlers = {
   onStart: () => void;
   onMouth: (open: number) => void;
   onEnd: () => void;
-  onUnavailable: () => void;
+  onUnavailable: (reason: HearFailReason) => void;
 };
 
 let active: HTMLAudioElement | null = null;
@@ -108,10 +210,20 @@ export function stopSpeaking() {
   window.speechSynthesis?.cancel();
 }
 
-function speakWithSynthesis(lang: Lang, text: string, handlers: SpeakHandlers, token: number) {
+function clipSnapshot(audio: HTMLAudioElement, timedOut: boolean): ClipSnapshot {
+  return {
+    errorCode: audio.error?.code ?? null,
+    readyState: audio.readyState,
+    networkState: audio.networkState,
+    timedOut,
+  };
+}
+
+function speakWithSynthesis(lang: Lang, text: string, handlers: SpeakHandlers, token: number, clip: ClipFailReason) {
   const synth = window.speechSynthesis;
+  const unavailable = () => handlers.onUnavailable(resolveHearFailure(clip, "unavailable"));
   if (!synth || typeof SpeechSynthesisUtterance === "undefined") {
-    handlers.onUnavailable();
+    unavailable();
     return;
   }
   const utterance = new SpeechSynthesisUtterance(text);
@@ -130,23 +242,17 @@ function speakWithSynthesis(lang: Lang, text: string, handlers: SpeakHandlers, t
   let started = false;
   let retried = false;
   let settled = false;
-  const startTimer = window.setTimeout(() => {
-    if (token !== utteranceToken || started || settled) return;
-    settled = true;
-    synth.cancel();
-    clearMouth();
-    handlers.onMouth(0);
-    handlers.onUnavailable();
-  }, SYNTH_START_MS);
-  const finish = (ok: boolean) => {
+  const giveUp = (synthReason: SynthFailReason) => {
     if (token !== utteranceToken || settled) return;
     settled = true;
     window.clearTimeout(startTimer);
     clearMouth();
     handlers.onMouth(0);
-    if (ok) handlers.onEnd();
-    else handlers.onUnavailable();
+    handlers.onUnavailable(resolveHearFailure(clip, synthReason));
   };
+  const startTimer = window.setTimeout(() => {
+    giveUp("failed");
+  }, SYNTH_START_MS);
   utterance.onstart = () => {
     if (token !== utteranceToken || settled) return;
     started = true;
@@ -154,7 +260,18 @@ function speakWithSynthesis(lang: Lang, text: string, handlers: SpeakHandlers, t
     handlers.onStart();
     pulse(handlers.onMouth);
   };
-  utterance.onend = () => finish(started);
+  utterance.onend = () => {
+    if (token !== utteranceToken || settled) return;
+    if (!started) {
+      giveUp("failed");
+      return;
+    }
+    settled = true;
+    window.clearTimeout(startTimer);
+    clearMouth();
+    handlers.onMouth(0);
+    handlers.onEnd();
+  };
   utterance.onerror = (event) => {
     if (token !== utteranceToken || settled) return;
     const reason = event.error;
@@ -167,7 +284,7 @@ function speakWithSynthesis(lang: Lang, text: string, handlers: SpeakHandlers, t
       }, 80);
       return;
     }
-    finish(false);
+    giveUp(classifySynthError(reason, true));
   };
   synth.cancel();
   synth.resume();
@@ -193,22 +310,30 @@ export function speakClip(lang: Lang, src: string, text: string, handlers: Speak
 
   let started = false;
   let handed = false;
+  let clipFail: ClipFailReason = "other";
+  const rememberClip = (reason: ClipFailReason) => {
+    if (CLIP_RANK[reason] >= CLIP_RANK[clipFail]) clipFail = reason;
+  };
+  const stillCurrent = () => !handed && !started && token === utteranceToken;
+
   const startTimer = window.setTimeout(() => {
-    if (!started) handOff();
+    if (!stillCurrent()) return;
+    rememberClip(classifyMediaFailure(clipSnapshot(audio, true)));
+    handOff();
   }, CLIP_START_MS);
 
   const handOff = () => {
-    if (handed || started || token !== utteranceToken) return;
+    if (!stillCurrent()) return;
     handed = true;
     window.clearTimeout(startTimer);
     if (active === audio) active = null;
     releaseClip(audio);
     clearMouth();
     if (chooseHearEngine(false, synthesisAvailable()) === "synthesis") {
-      speakWithSynthesis(lang, text, handlers, token);
+      speakWithSynthesis(lang, text, handlers, token, clipFail);
       return;
     }
-    handlers.onUnavailable();
+    handlers.onUnavailable(resolveHearFailure(clipFail, "unavailable"));
   };
 
   audio.onplaying = () => {
@@ -227,14 +352,23 @@ export function speakClip(lang: Lang, src: string, text: string, handlers: Speak
     handlers.onMouth(0);
     handlers.onEnd();
   };
-  audio.onerror = () => handOff();
+  audio.onerror = () => {
+    if (!stillCurrent()) return;
+    rememberClip(classifyMediaFailure(clipSnapshot(audio, false)));
+    handOff();
+  };
   audio.src = src;
 
   // play() stays in the tap turn so mobile browsers treat it as a user gesture.
   try {
     const pending = audio.play();
-    void pending?.catch(() => handOff());
-  } catch {
+    void pending?.catch((err: unknown) => {
+      if (!stillCurrent()) return;
+      rememberClip(classifyPlayRejection(err));
+      handOff();
+    });
+  } catch (err) {
+    rememberClip(classifyPlayRejection(err));
     handOff();
   }
 }
