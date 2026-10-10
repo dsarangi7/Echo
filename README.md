@@ -36,7 +36,7 @@ Any browser that can play MP3 can speak the lines, including Safari, Edge, Chrom
 
 On open, the cat says a short introduction in the current language (English in English mode, 中文 in 中文 mode). Tap the cat or the Echo nameplate to hear it again. Switching language speaks that introduction in the new language. The introduction is a Piper clip, same as Hear it, and it does not wait for the Say it model.
 
-The clip plays from the same tap that hit Hear it (`playsInline`, `preload="auto"`). On iOS the page asks for playback audio so the ringer switch does not mute it. If the clip does not start, Hear it tries the device `speechSynthesis` voice and prefers a sweet female voice when the system has one (Samantha, Aria, Jenny, Tingting, Xiaoxiao, and the other names in `src/practice/voices.ts`). That fallback is free and uses whatever the browser already has. It is not required for the 200 built-in sentences. If the clip and the device voice both fail, the page says so in English and 中文 instead of leaving the cat idle and silent. Hear it never needs the Whisper model.
+The clip plays from the same tap that hit Hear it (`playsInline`, `preload="auto"`). On iOS the page asks for playback audio so the ringer switch does not mute it. Say it switches that session to `play-and-record` before it opens the microphone, so the playback session does not block recording. The next Hear it sets playback again. If the clip does not start, Hear it tries the device `speechSynthesis` voice and prefers a sweet female voice when the system has one (Samantha, Aria, Jenny, Tingting, Xiaoxiao, and the other names in `src/practice/voices.ts`). That fallback is free and uses whatever the browser already has. It is not required for the 200 built-in sentences. If the clip and the device voice both fail, the page says so in English and 中文 instead of leaving the cat idle and silent. Hear it never needs the Whisper model.
 
 Piper is not run as WASM inside the page. A live Piper voice is about 60 MB per language, and it would be a second ONNX runtime next to Whisper. The same free voices, saved as 40 kbps MP3, stay small and play everywhere.
 
@@ -51,9 +51,19 @@ To rebuild the clips after a sentence edit, install Piper and ffmpeg, then run `
 | Firefox | MP3 pack | On-device Whisper |
 | Very old browsers without WebAssembly | MP3 pack still plays | The page stays up and explains that the voice model cannot start |
 
-Say it needs a microphone and a user gesture. Install the PWA or open the HTTPS site; a file:// page cannot use the mic.
+Say it needs a microphone and a user gesture on an HTTPS page. A file:// page cannot use the mic. The Say it tap calls `getUserMedia({ audio: true })` and `AudioContext.resume()` in that same turn, before it waits on anything. A phone that blocks the mic, has no input, or fails for another reason gets a different bilingual note: allow the microphone in the browser settings, no microphone on this device, or could not open it. The site does not send a Permissions-Policy that disables `microphone`.
 
-The first Say it needs a network once, for the 44 MB weights on this site. After that, recognition is on the device (Cache API). Hear it is offline as soon as the app shell and MP3s are cached, even if the voice model never loads.
+The first visit needs a network once, for the 44 MB weights on this site. After that, recognition is on the device (Cache API). Hear it is offline as soon as the app shell and MP3s are cached, even if the voice model never loads.
+
+### Phone check
+
+Unit tests cover the tap order and the denied / no-mic / failed split. A real phone still needs a manual pass after deploy:
+
+1. Open https://dsarangi7.github.io/Echo/ in Safari (iPhone) or Chrome (Android). The page must be HTTPS.
+2. Tap **Say it**. The browser should prompt for the microphone, or use a permission you already allowed. It should not say “No microphone on this device / 这台设备没有麦克风” on a phone that has a mic.
+3. Say the sentence, then tap **Say it** again or wait for the pause. The transcript stays on this device (Whisper tiny).
+4. Block the microphone in the browser settings, tap **Say it** again, and confirm the note tells you to allow the microphone in the browser settings. That note is not the “no microphone” line.
+5. If an in-app browser (WeChat) never shows the prompt, open the same HTTPS link in Safari or Chrome and allow the microphone there.
 
 ## Install (PWA)
 
@@ -81,7 +91,7 @@ npm run build
 npm run preview
 ```
 
-`npm test` checks scoring, the Hear it order, the sentence packs, the voice-model wording, the deploy base (`/Echo/` or `/`), and that the source does not call Web Speech Recognition.
+`npm test` checks scoring, the Hear it order, the sentence packs, the voice-model wording, the Say it microphone errors, the deploy base (`/Echo/` or `/`), and that the source does not call Web Speech Recognition.
 
 `npm run build` copies the wasm, typechecks, and writes a static site to `dist/`. `npm run preview` serves that build.
 

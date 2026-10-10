@@ -1,8 +1,9 @@
+export type MicFailure = "no-mic" | "denied" | "failed";
+
 export type CaptureResult =
   | { samples: Float32Array; sampleRate: number }
   | "no-speech"
-  | "no-mic"
-  | "denied"
+  | MicFailure
   | "cancelled";
 
 export type CaptureHandle = {
@@ -14,9 +15,165 @@ export type CaptureHandle = {
 const SPEECH_RMS = 0.012;
 const MIN_SPEECH_MS = 280;
 
-function isDenied(err: unknown): boolean {
-  const name = err instanceof DOMException ? err.name : "";
-  return name === "NotAllowedError" || name === "PermissionDeniedError" || name === "SecurityError";
+export const MIC_DENIED =
+  "Microphone is blocked. Allow the microphone in the browser settings, then try again. 麦克风被拦住了。请在浏览器设置里允许麦克风，然后再试。";
+
+export const MIC_NONE = "No microphone on this device. 这台设备没有麦克风。";
+
+export const MIC_FAILED =
+  "Could not open the microphone. Allow the microphone in the browser settings, then try again. 麦克风没打开。请在浏览器设置里允许麦克风，然后再试。";
+
+export const MIC_INSECURE =
+  "Could not open the microphone on this page. Open the HTTPS site and allow the microphone in the browser settings, then try again. 这个页面打不开麦克风。请打开 HTTPS 网页，在浏览器设置里允许麦克风后再试。";
+
+export class MicRequestError extends Error {
+  readonly failure: MicFailure;
+
+  constructor(failure: MicFailure, message: string) {
+    super(message);
+    this.name = "MicRequestError";
+    this.failure = failure;
+  }
+}
+
+type LegacyGetUserMedia = (
+  constraints: MediaStreamConstraints,
+  onSuccess: (stream: MediaStream) => void,
+  onError: (err: unknown) => void,
+) => void;
+
+export type MicNavigator = {
+  mediaDevices?: { getUserMedia?: (constraints: MediaStreamConstraints) => Promise<MediaStream> };
+  getUserMedia?: LegacyGetUserMedia;
+  webkitGetUserMedia?: LegacyGetUserMedia;
+  mozGetUserMedia?: LegacyGetUserMedia;
+  audioSession?: { type: string };
+};
+
+type AudioCtor = typeof AudioContext;
+
+function readErrorName(err: unknown): string {
+  if (typeof err !== "object" || err === null || !("name" in err)) return "";
+  const name = (err as { name?: unknown }).name;
+  return typeof name === "string" ? name : "";
+}
+
+function readErrorMessage(err: unknown): string {
+  if (typeof err !== "object" || err === null || !("message" in err)) return typeof err === "string" ? err : "";
+  const message = (err as { message?: unknown }).message;
+  return typeof message === "string" ? message : "";
+}
+
+/** Map a getUserMedia rejection to denied, no-mic, or a generic failure. */
+export function classifyMicError(err: unknown): MicFailure {
+  if (err instanceof MicRequestError) return err.failure;
+  const name = readErrorName(err);
+  const message = readErrorMessage(err).toLowerCase();
+
+  if (name === "NotFoundError" || name === "DevicesNotFoundError") return "no-mic";
+  if (name === "NotAllowedError" || name === "PermissionDeniedError") return "denied";
+  if (
+    message.includes("permission denied") ||
+    message.includes("permission dismissed") ||
+    message.includes("user denied")
+  ) {
+    return "denied";
+  }
+  if (
+    message.includes("requested device not found") ||
+    message.includes("device not found") ||
+    message.includes("no microphone")
+  ) {
+    return "no-mic";
+  }
+  // NotReadableError, OverconstrainedError, AbortError, SecurityError, TypeError, and unknown.
+  return "failed";
+}
+
+export function micFailureMessage(kind: MicFailure, options?: { secure?: boolean }): string {
+  if (kind === "no-mic") return MIC_NONE;
+  if (kind === "denied") return MIC_DENIED;
+  if (options?.secure === false) return MIC_INSECURE;
+  return MIC_FAILED;
+}
+
+export function isSecurePage(win: { isSecureContext?: boolean } | undefined = typeof window === "undefined" ? undefined : window): boolean {
+  return win?.isSecureContext !== false;
+}
+
+/**
+ * Hear it sets the iOS audio session to `playback`, which cannot record.
+ * Say it switches to `play-and-record` in the same tap, before getUserMedia.
+ */
+export function preferRecordSession(nav: { audioSession?: { type: string } } | null | undefined): void {
+  const session = nav?.audioSession;
+  if (!session) return;
+  const previous = session.type;
+  try {
+    session.type = "play-and-record";
+  } catch {
+    try {
+      session.type = "auto";
+    } catch {
+      try {
+        session.type = previous;
+      } catch {
+        // Leave whatever session the browser kept.
+      }
+    }
+  }
+}
+
+function currentNavigator(): MicNavigator | undefined {
+  return typeof navigator === "undefined" ? undefined : (navigator as MicNavigator);
+}
+
+/**
+ * Start the mic permission request. Call this synchronously from the Say it tap.
+ * `{ audio: true }` stays in that turn; a constraint object is a common mobile reject,
+ * and a later retry is outside the gesture on Safari.
+ */
+export function requestMicrophone(nav: MicNavigator | undefined = currentNavigator()): Promise<MediaStream> {
+  preferRecordSession(nav);
+  const media = nav?.mediaDevices;
+  const gum = media?.getUserMedia;
+  if (media && typeof gum === "function") {
+    try {
+      return gum.call(media, { audio: true });
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  }
+
+  const legacy = nav?.getUserMedia ?? nav?.webkitGetUserMedia ?? nav?.mozGetUserMedia;
+  if (typeof legacy === "function" && nav) {
+    return new Promise((resolve, reject) => {
+      try {
+        legacy.call(nav, { audio: true }, resolve, reject);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
+  const why = isSecurePage() ? "This browser has no microphone API." : "Microphone requires a secure (HTTPS) page.";
+  return Promise.reject(new MicRequestError("failed", why));
+}
+
+export function releaseStream(pending: Promise<MediaStream>): Promise<void> {
+  return pending.then(
+    (stream) => {
+      stream.getTracks().forEach((track) => track.stop());
+    },
+    () => undefined,
+  );
+}
+
+export function createRecordingContext(win: Window | undefined = typeof window === "undefined" ? undefined : window): AudioContext {
+  const host = win as (Window & { AudioContext?: AudioCtor; webkitAudioContext?: AudioCtor }) | undefined;
+  const Ctor = host?.AudioContext ?? host?.webkitAudioContext;
+  if (!Ctor) throw new MicRequestError("failed", "AudioContext missing");
+  return new Ctor();
 }
 
 function concat(chunks: Float32Array[]): Float32Array {
@@ -31,8 +188,13 @@ function concat(chunks: Float32Array[]): Float32Array {
   return out;
 }
 
+function stopTracks(stream: MediaStream | null) {
+  stream?.getTracks().forEach((track) => track.stop());
+}
+
 export function startCapture(
   ctx: AudioContext,
+  streamRequest: Promise<MediaStream>,
   options: { maxMs: number; silenceMs: number; onLevel?: (rms: number) => void },
 ): CaptureHandle {
   let finish: () => void = () => undefined;
@@ -46,12 +208,6 @@ export function startCapture(
       resolve(result);
     };
 
-    if (!navigator.mediaDevices?.getUserMedia) {
-      void ctx.close();
-      stop("no-mic");
-      return;
-    }
-
     const chunks: Float32Array[] = [];
     let heardSpeech = false;
     let speechMs = 0;
@@ -61,11 +217,17 @@ export function startCapture(
     let stream: MediaStream | null = null;
     let processor: ScriptProcessorNode | null = null;
 
+    try {
+      void ctx.resume();
+    } catch {
+      // The Say it tap also resumes. A throw here still lets the stream path report failure.
+    }
+
     const shutdown = () => {
       if (closed) return;
       closed = true;
       processor?.disconnect();
-      stream?.getTracks().forEach((track) => track.stop());
+      stopTracks(stream);
       void ctx.close();
     };
 
@@ -83,53 +245,78 @@ export function startCapture(
       stop("cancelled");
     };
 
-    void navigator.mediaDevices
-      .getUserMedia({
-        audio: { echoCancellation: true, noiseSuppression: true, channelCount: 1 },
-      })
-      .catch((err: unknown) => {
-        if (isDenied(err)) throw err;
-        return navigator.mediaDevices.getUserMedia({ audio: true });
-      })
-      .then((live) => {
-        if (settled) {
-          live.getTracks().forEach((track) => track.stop());
+    const attach = (live: MediaStream) => {
+      stream = live;
+      const source = ctx.createMediaStreamSource(live);
+      const node = ctx.createScriptProcessor(4096, 1, 1);
+      processor = node;
+      const mute = ctx.createGain();
+      mute.gain.value = 0;
+      node.onaudioprocess = (event) => {
+        if (settled) return;
+        const input = event.inputBuffer.getChannelData(0);
+        chunks.push(new Float32Array(input));
+        let sum = 0;
+        for (let i = 0; i < input.length; i++) sum += input[i] * input[i];
+        const rms = Math.sqrt(sum / input.length);
+        options.onLevel?.(rms);
+        const frameMs = (input.length / ctx.sampleRate) * 1000;
+        elapsedMs += frameMs;
+        if (rms >= SPEECH_RMS) {
+          heardSpeech = true;
+          speechMs += frameMs;
+          silenceMs = 0;
+        } else if (heardSpeech) {
+          silenceMs += frameMs;
+        }
+        const quietLongEnough = heardSpeech && speechMs >= MIN_SPEECH_MS && silenceMs >= options.silenceMs;
+        const gaveUp = !heardSpeech && elapsedMs >= 6000;
+        if (quietLongEnough || gaveUp || elapsedMs >= options.maxMs) finish();
+      };
+      source.connect(node);
+      node.connect(mute);
+      mute.connect(ctx.destination);
+    };
+
+    void streamRequest
+      .then(async (live) => {
+        if (settled || closed) {
+          stopTracks(live);
           return;
         }
-        stream = live;
-        const source = ctx.createMediaStreamSource(live);
-        const node = ctx.createScriptProcessor(4096, 1, 1);
-        processor = node;
-        const mute = ctx.createGain();
-        mute.gain.value = 0;
-        node.onaudioprocess = (event) => {
-          if (settled) return;
-          const input = event.inputBuffer.getChannelData(0);
-          chunks.push(new Float32Array(input));
-          let sum = 0;
-          for (let i = 0; i < input.length; i++) sum += input[i] * input[i];
-          const rms = Math.sqrt(sum / input.length);
-          options.onLevel?.(rms);
-          const frameMs = (input.length / ctx.sampleRate) * 1000;
-          elapsedMs += frameMs;
-          if (rms >= SPEECH_RMS) {
-            heardSpeech = true;
-            speechMs += frameMs;
-            silenceMs = 0;
-          } else if (heardSpeech) {
-            silenceMs += frameMs;
-          }
-          const quietLongEnough = heardSpeech && speechMs >= MIN_SPEECH_MS && silenceMs >= options.silenceMs;
-          const gaveUp = !heardSpeech && elapsedMs >= 6000;
-          if (quietLongEnough || gaveUp || elapsedMs >= options.maxMs) finish();
-        };
-        source.connect(node);
-        node.connect(mute);
-        mute.connect(ctx.destination);
+        const tracks = typeof live.getAudioTracks === "function" ? live.getAudioTracks() : [];
+        if (tracks.length === 0) {
+          stopTracks(live);
+          shutdown();
+          stop("no-mic");
+          return;
+        }
+        try {
+          if (ctx.state === "suspended") await ctx.resume();
+        } catch {
+          // Fall through and treat a still-suspended context as a failed open.
+        }
+        if (settled || closed) {
+          stopTracks(live);
+          return;
+        }
+        if (ctx.state === "suspended") {
+          stopTracks(live);
+          shutdown();
+          stop("failed");
+          return;
+        }
+        try {
+          attach(live);
+        } catch (err) {
+          stopTracks(live);
+          shutdown();
+          stop(classifyMicError(err));
+        }
       })
       .catch((err: unknown) => {
         shutdown();
-        stop(isDenied(err) ? "denied" : "no-mic");
+        stop(classifyMicError(err));
       });
   });
 
