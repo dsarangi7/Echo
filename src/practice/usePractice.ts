@@ -250,6 +250,7 @@ export function usePractice() {
 
   const setPace = useCallback((next: HearPace) => {
     const currentLang = langRef.current;
+    paceRef.current = { ...paceRef.current, [currentLang]: next };
     setPaces((prev) => (prev[currentLang] === next ? prev : { ...prev, [currentLang]: next }));
     setSpeakingRate(hearPaceRate(next));
   }, []);
