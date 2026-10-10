@@ -78,6 +78,8 @@ The built site includes a web manifest and a service worker. On GitHub Pages (HT
 
 `start_url` and `scope` follow the Vite base (`/Echo/` on GitHub Pages, `/` on Vercel). Theme color is the same dark background as the page.
 
+The Android app is a separate install. It wraps this build and delivers a daily reminder plus a Monday Shanghai streak summary while the app is closed. It reads the same `echo-practice-streak` and `echo-practice-reminder` records as the site. Build steps and the `com.ayk.echo` id are in [docs/android.md](docs/android.md).
+
 ## Run
 
 ```bash
@@ -93,7 +95,7 @@ npm run build
 npm run preview
 ```
 
-`npm test` checks scoring, the Hear it order, the sentence packs, the voice-model wording, the Say it microphone errors, the deploy base (`/Echo/` or `/`), and that the source does not call Web Speech Recognition.
+`npm test` checks scoring, the Hear it order, the sentence packs, the voice-model wording, the Say it microphone errors, the deploy base (`/Echo/` or `/`), the Shanghai streak, the reminder copy, the Android reminder plan, and that the source does not call Web Speech Recognition.
 
 `npm run build` copies the wasm, typechecks, and writes a static site to `dist/`. `npm run preview` serves that build.
 
@@ -115,8 +117,9 @@ Vite chooses `base` in this order:
 
 1. `VITE_BASE`, if it is set
 2. `BASE_PATH`, if it is set
-3. `/` when `VERCEL` is set (Vercel sets this on production and preview builds)
-4. `/Echo/` otherwise (local `npm run dev` and `npm run build`)
+3. `/` when `CAPACITOR` or `VITE_CAPACITOR` is set (the Android release build)
+4. `/` when `VERCEL` is set (Vercel sets this on production and preview builds)
+5. `/Echo/` otherwise (local `npm run dev` and `npm run build`)
 
 Set `VITE_BASE=/` in the Vercel project environment if you want the root base to be explicit. Leaving it unset is enough, because `VERCEL` selects `/`. Do not set `VITE_BASE=/Echo/` on Vercel. The PWA `start_url` and `scope` use that same base, so a Vercel build requests `/assets/...`, `/audio/...`, and `/models/...`.
 
