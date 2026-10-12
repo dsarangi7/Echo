@@ -24,9 +24,7 @@ export function PracticePanel(practice: Practice) {
     kicker,
     heard,
     score,
-    modelNote,
     listening,
-    error,
     jumpTo,
     hear,
     sayIt,
@@ -63,6 +61,11 @@ export function PracticePanel(practice: Practice) {
   const meaning = lang === "en" ? item.zh : item.en;
   const setTitle = lang === "zh" ? item.zhSet : item.set;
   const setSub = lang === "zh" ? item.set : item.zhSet;
+  const quietStart =
+    (kicker === "Hello" || kicker === "Practice" || kicker === "Note") &&
+    outcome !== "recognition_fail" &&
+    !lineOutcome &&
+    !score;
 
   const move = useCallback(
     (delta: -1 | 1) => {
@@ -182,10 +185,6 @@ export function PracticePanel(practice: Practice) {
         </div>
       )}
 
-      <p className="status-note" id="model-note" aria-live="polite">
-        {modelNote}
-      </p>
-
       {picking ? null : (
         <>
           <details className="match-notes">
@@ -223,6 +222,7 @@ export function PracticePanel(practice: Practice) {
             )}
           </details>
 
+          {quietStart ? null : (
           <div className={outcome === "recognition_fail" ? "result recognition" : "result"} id="result" aria-live="polite">
             <p className={outcome === "recognition_fail" ? "kicker mic-heard" : "kicker"} id="kicker">
               {kicker}
@@ -251,10 +251,10 @@ export function PracticePanel(practice: Practice) {
               <p id="score">{score}</p>
             )}
           </div>
+          )}
           <p className="keys">左右滑动，或点两边的箭头。 Swipe, or ← →. arrow keys change the sentence</p>
         </>
       )}
-      <p id="err">{error}</p>
       <StreakChrome lang={lang} />
       <SessionStrip lang={lang} session={session ?? emptySession()} onReset={resetSession ?? (() => undefined)} />
     </section>

@@ -141,5 +141,15 @@ describe("flash card practice", () => {
     expect(panelSrc).toContain("stepPack");
     expect(app).not.toContain("ArrowRight");
     expect(hook).toContain("stepWithinSet");
+    const cat = app.indexOf("<CatMascot");
+    const practice = app.indexOf("<PracticePanel");
+    const banner = app.indexOf("<BrowserBanner");
+    const model = app.indexOf("<ModelInterstitial");
+    expect(cat).toBeGreaterThan(-1);
+    expect(cat).toBeLessThan(practice);
+    expect(practice).toBeLessThan(banner);
+    expect(banner).toBeLessThan(model);
+    expect(app).toContain('id="greeting"');
+    expect(app).not.toContain("<footer");
   });
 });
