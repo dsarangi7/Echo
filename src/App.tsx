@@ -7,10 +7,11 @@ import { ReminderCard } from "./components/ReminderCard";
 import { syncNativeReminders } from "./native/syncReminders";
 import { startReminderRuntime } from "./practice/reminder-runtime";
 import { usePractice } from "./practice/usePractice";
+import { introLine } from "./speech/intro";
 
 export function App() {
   const practice = usePractice();
-  const { lang, setLanguage, jump } = practice;
+  const { lang, setLanguage } = practice;
 
   useEffect(() => startReminderRuntime(), []);
 
@@ -18,36 +19,18 @@ export function App() {
     void syncNativeReminders();
   }, []);
 
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.altKey || event.ctrlKey || event.metaKey) return;
-      const tag = (event.target as HTMLElement | null)?.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "BUTTON") return;
-      if (event.key === "ArrowRight") {
-        event.preventDefault();
-        jump(1);
-      } else if (event.key === "ArrowLeft") {
-        event.preventDefault();
-        jump(-1);
-      }
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [jump]);
-
-  const tag =
-    lang === "en"
-      ? "课猫 Echo · English / Chinese practice · Practice English now"
-      : "课猫 Echo · English / Chinese practice · 现在练中文";
+  const greeting = introLine(lang);
+  const greetingAside = introLine(lang === "en" ? "zh" : "en");
 
   return (
     <div className="wrap">
-      <BrowserBanner />
-      <header className="top">
-        <div>
+      <header className="hello">
+        <CatMascot mode={practice.catMode} mouth={practice.mouth} onIntroduce={practice.introduce} />
+        <div className="hello-copy">
           <h1>课猫 Echo</h1>
-          <p className="tag" id="tag">
-            {tag}
+          <p className="meow" id="greeting">
+            <b>{greeting}</b>
+            <small lang={lang === "en" ? "zh-CN" : "en"}>{greetingAside}</small>
           </p>
         </div>
         <div className="lang-switch" role="group" aria-label="Language to practice">
@@ -74,13 +57,23 @@ export function App() {
         </div>
       </header>
 
-      <ModelInterstitial onHearFirst={practice.hear} />
-
       <div className="stage">
-        <CatMascot mode={practice.catMode} mouth={practice.mouth} onIntroduce={practice.introduce} />
         <PracticePanel {...practice} />
       </div>
       <ReminderCard />
+      <section className="notices" aria-label="Notices. 提示">
+        {practice.kicker === "Note" && practice.heard ? (
+          <p className="notice-line" id="notice-heard" role="status">
+            {practice.heard}
+          </p>
+        ) : null}
+        <BrowserBanner />
+        <ModelInterstitial onHearFirst={practice.hear} />
+        <p className="status-note" id="model-note" aria-live="polite">
+          {practice.modelNote}
+        </p>
+        <p id="err">{practice.error}</p>
+      </section>
     </div>
   );
 }
