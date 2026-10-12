@@ -18,8 +18,14 @@ export const MILESTONE_COPY: Record<StreakMilestone, { en: string; zh: string }>
 };
 
 export const REMINDER_LABEL = {
-  en: "Remind me daily at",
-  zh: "每天提醒我",
+  en: "Daily reminder",
+  zh: "每天提醒",
+} as const;
+
+/** One short line for Settings. Same facts as the longer iPhone note, without the wall of text. */
+export const REMINDER_HONESTY = {
+  en: "iPhone can't ring while closed. Android can. This device's local time.",
+  zh: "iPhone 关闭后不会响。Android 可以准时响。按这台设备的本地时间。",
 } as const;
 
 export const REMINDER_ON = {

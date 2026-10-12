@@ -52,7 +52,8 @@ export default defineConfig(({ command }) => ({
             manifest: {
               name: "课猫 Echo",
               short_name: "课猫 Echo",
-              description: "Practice English or Chinese out loud. Hear it and Say it run on this device.",
+              description:
+                "Practice English and Chinese out loud with Hear it and Say it. Office and everyday phrases. Free PWA — works on this device.",
               theme_color: "#121212",
               background_color: "#121212",
               display: "standalone",

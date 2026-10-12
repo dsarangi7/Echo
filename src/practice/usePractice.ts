@@ -8,6 +8,7 @@ import { practiceLocalStorage, recordPracticeClearOrPartial } from "./streak";
 import { hearPaceRate, type HearPace } from "./pace";
 import { loadHearPaces, loadIndexes, loadLang, saveHearPaces, saveIndexes, saveLang } from "./storage";
 import { syncNativeReminders } from "../native/syncReminders";
+import { SITE_DESCRIPTION_EN, SITE_DESCRIPTION_ZH, SITE_TITLE } from "../ui/seo";
 import type { CaptureHandle, MicFailure } from "../speech/record";
 import {
   MIN_SPEECH_MS,
@@ -137,8 +138,14 @@ export function usePractice() {
   }, [paces]);
 
   useEffect(() => {
-    document.title = lang === "en" ? "课猫 Echo · English practice" : "课猫 Echo · 中文口语练习";
-    document.documentElement.lang = lang === "en" ? "en" : "zh-CN";
+    const zh = lang === "zh";
+    document.title = SITE_TITLE;
+    document.documentElement.lang = zh ? "zh-CN" : "en";
+    const description = document.querySelector('meta[name="description"]');
+    if (description) {
+      description.setAttribute("lang", zh ? "zh-CN" : "en");
+      description.setAttribute("content", zh ? SITE_DESCRIPTION_ZH : SITE_DESCRIPTION_EN);
+    }
   }, [lang]);
 
   const noteFailure = useCallback((message: string) => {

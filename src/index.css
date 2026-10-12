@@ -99,6 +99,112 @@ h1 {
 
 .lang-switch button.on small { color: #243000; opacity: 0.85; }
 
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.settings-open {
+  appearance: none;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid #3a3a3a;
+  border-radius: 999px;
+  padding: 8px 14px;
+  cursor: pointer;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.settings-open span { display: block; font-size: 14px; font-weight: 750; }
+.settings-open small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; font-weight: 600; }
+.settings-open:hover,
+.settings-open[aria-expanded="true"] { border-color: var(--neon); }
+
+.settings-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding:
+    calc(12px + env(safe-area-inset-top, 0px))
+    calc(12px + env(safe-area-inset-right, 0px))
+    calc(12px + env(safe-area-inset-bottom, 0px))
+    calc(12px + env(safe-area-inset-left, 0px));
+  background: rgba(0, 0, 0, 0.62);
+}
+
+.settings-sheet {
+  width: min(440px, 100%);
+  max-height: min(640px, calc(100dvh - 24px));
+  overflow: auto;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 18px 18px 20px;
+}
+
+.settings-sheet:focus { outline: none; }
+.settings-sheet:focus-visible { outline: 2px solid var(--neon); outline-offset: 3px; }
+
+.settings-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.settings-head h2 {
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+}
+
+.settings-head h2 small {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.settings-close {
+  appearance: none;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid #3a3a3a;
+  border-radius: 999px;
+  padding: 6px 12px;
+  cursor: pointer;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.settings-close b { display: block; font-size: 13px; font-weight: 750; }
+.settings-close small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; font-weight: 600; }
+
+.settings-sheet .reminder-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+  margin-top: 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #141414;
+  min-width: 0;
+  max-width: 100%;
+}
+.settings-sheet .reminder-alert { margin-top: 12px; }
+
+@media (min-width: 721px) {
+  .settings-backdrop { align-items: center; }
+}
+
 .stage {
   display: block;
 }
@@ -359,6 +465,8 @@ button.ghost:hover { border-color: var(--neon); color: var(--neon); }
 button.act:focus-visible,
 .set:focus-visible,
 .lang-switch button:focus-visible,
+.settings-open:focus-visible,
+.settings-close:focus-visible,
 .pace-switch button:focus-visible {
   outline: 2px solid var(--neon);
   outline-offset: 2px;
@@ -596,19 +704,6 @@ button.act:focus-visible,
 
 .streak-strip.is-quiet .streak-best b { color: var(--text); }
 
-.streak-chrome .reminder-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px 12px;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: #141414;
-  min-width: 0;
-  max-width: 100%;
-}
-
 .reminder-toggle {
   appearance: none;
   width: 42px;
@@ -664,7 +759,8 @@ button.act:focus-visible,
 
 .reminder-time {
   appearance: none;
-  width: 7.5rem;
+  width: 11rem;
+  min-width: 11rem;
   background: #101010;
   color: var(--text);
   border: 1px solid #3a3a3a;
@@ -927,7 +1023,7 @@ button.session-count.unsure:focus-visible,
   h1 { font-size: 22px; }
   .tag { overflow-wrap: anywhere; }
   .cat-svg { width: min(280px, 78vw); }
-  .top, .top > div, .lang-switch, .nameplate, .nameplate strong, .nameplate span { min-width: 0; max-width: 100%; }
+  .top, .top > div, .top-actions, .lang-switch, .nameplate, .nameplate strong, .nameplate span { min-width: 0; max-width: 100%; }
   .browser-banner,
   .browser-tip,
   .model-interstitial,
@@ -946,8 +1042,28 @@ button.session-count.unsure:focus-visible,
   h1 { font-size: 22px; }
   .top { gap: 10px; margin-bottom: 12px; align-items: center; }
   .tag { font-size: 13px; }
+  .top-actions { gap: 8px; }
   .lang-switch { max-width: 100%; }
-  .lang-switch button { min-height: 44px; padding: 6px 12px; }
+  .lang-switch button,
+  .settings-open,
+  .settings-close { min-height: 44px; padding: 6px 12px; }
+  .settings-backdrop { align-items: flex-end; }
+  .settings-sheet .reminder-row {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    grid-template-areas:
+      "toggle label"
+      "time time"
+      "note note";
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+  }
+  .settings-sheet .reminder-time {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
 
   .cat-svg { width: min(180px, 48vw); }
   .cat-card { padding: 12px 12px 14px; }
@@ -1065,16 +1181,6 @@ button.session-count.unsure:focus-visible,
   .streak-best { margin-left: 0; justify-self: end; }
   .streak-best b { font-size: 18px; }
 
-  .streak-chrome .reminder-row {
-    display: grid;
-    grid-template-columns: 44px minmax(0, 1fr) minmax(0, 8.75rem);
-    grid-template-areas:
-      "toggle label time"
-      "note note note";
-    align-items: center;
-    gap: 8px;
-    padding: 8px 10px;
-  }
   .reminder-toggle {
     grid-area: toggle;
     width: 44px;
@@ -1571,6 +1677,12 @@ button.session-count.unsure:focus-visible,
   line-height: 1.45;
 }
 
+.hello .top-actions {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  margin-left: auto;
+}
+
 .hello .lang-switch { flex: 0 0 auto; align-self: flex-start; }
 
 .notices {
@@ -1603,5 +1715,10 @@ button.session-count.unsure:focus-visible,
   .hello .cat-svg { width: 80px; }
   .hello h1 { font-size: 20px; }
   .meow b { font-size: 16px; }
-  .hello .lang-switch { flex: 1 1 100%; }
+  .hello .top-actions {
+    flex: 1 1 100%;
+    margin-left: 0;
+    justify-content: flex-start;
+  }
+  .hello .lang-switch { flex: 1 1 auto; }
 }

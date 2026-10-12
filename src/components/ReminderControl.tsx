@@ -1,9 +1,8 @@
 import { parseReminderTime } from "../practice/shanghai";
 import {
   REMINDER_DENIED,
-  REMINDER_IOS_HINT,
+  REMINDER_HONESTY,
   REMINDER_LABEL,
-  REMINDER_LOCAL_TIME,
   REMINDER_ON,
   REMINDER_PASSED,
   REMINDER_UNAVAILABLE,
@@ -47,16 +46,16 @@ export function ReminderControl({ enabled, time, note, onChange }: Props) {
         id="reminder-toggle"
         className={enabled ? "reminder-toggle on" : "reminder-toggle"}
         aria-pressed={enabled}
+        aria-labelledby="reminder-label"
         aria-describedby="reminder-note"
-        aria-label={enabled ? "Daily reminder on. 每天提醒已开" : "Daily reminder off. 每天提醒已关"}
         onClick={() => onChange({ enabled: !enabled, time })}
       >
         <span aria-hidden="true" />
       </button>
-      <label className="reminder-label" id="reminder-label" htmlFor="reminder-time">
+      <p className="reminder-label" id="reminder-label">
         <b>{REMINDER_LABEL.en}</b>
         <small>{REMINDER_LABEL.zh}</small>
-      </label>
+      </p>
       <input
         id="reminder-time"
         className="reminder-time"
@@ -64,6 +63,7 @@ export function ReminderControl({ enabled, time, note, onChange }: Props) {
         lang="en-GB"
         step={60}
         value={time}
+        aria-label="Reminder time, local"
         aria-describedby="reminder-note"
         onChange={(event) => {
           const parsed = timeFromInput(event.target.value);
@@ -78,10 +78,8 @@ export function ReminderControl({ enabled, time, note, onChange }: Props) {
             <small>{status.zh}</small>
           </>
         ) : null}
-        <span className="hint">{REMINDER_IOS_HINT.en}</span>
-        <small>{REMINDER_IOS_HINT.zh}</small>
-        <span className="hint">{REMINDER_LOCAL_TIME.en}</span>
-        <small>{REMINDER_LOCAL_TIME.zh}</small>
+        <span className="hint">{REMINDER_HONESTY.en}</span>
+        <small>{REMINDER_HONESTY.zh}</small>
       </p>
     </div>
   );

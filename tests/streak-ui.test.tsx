@@ -12,9 +12,8 @@ import type { Sentence } from "../src/practice/types";
 import {
   MILESTONE_COPY,
   REMINDER_DENIED,
-  REMINDER_IOS_HINT,
+  REMINDER_HONESTY,
   REMINDER_LABEL,
-  REMINDER_LOCAL_TIME,
   REMINDER_ON,
   REMINDER_PASSED,
   REMINDER_UNAVAILABLE,
@@ -80,10 +79,10 @@ describe("streak chrome copy", () => {
     expect(off).toContain('aria-pressed="false"');
     expect(off).toContain('type="time"');
     expect(off).toContain('value="20:00"');
-    expect(off).toContain(REMINDER_IOS_HINT.en);
-    expect(off).toContain(REMINDER_IOS_HINT.zh);
-    expect(off).toContain(REMINDER_LOCAL_TIME.en);
-    expect(off).toContain(REMINDER_LOCAL_TIME.zh);
+    expect(off).toContain('aria-label="Reminder time, local"');
+    expect(off).toContain(REMINDER_HONESTY.en);
+    expect(off).toContain(REMINDER_HONESTY.zh);
+    expect(off).not.toContain("After the time passes, open Echo again");
     expect(off).not.toContain("Shanghai time");
     expect(off).not.toContain(REMINDER_ON.en);
     expect(off).not.toContain(REMINDER_UNAVAILABLE.en);
@@ -170,8 +169,12 @@ describe("streak chrome copy", () => {
     );
     expect(html.indexOf('id="streak-strip"')).toBeGreaterThan(-1);
     expect(html.indexOf('id="streak-strip"')).toBeLessThan(html.indexOf('id="session-strip"'));
-    expect(html).toContain('id="reminder-control"');
-    expect(html).toContain(REMINDER_LABEL.en);
+    expect(html).toContain('id="hear"');
+    expect(html).toContain('id="say"');
+    expect(html).not.toContain('id="reminder-control"');
+    expect(html).not.toContain('id="reminders"');
+    expect(html).not.toContain("Remind me daily");
+    expect(html).not.toContain("On iPhone, Echo can't ring");
     expect(html).not.toContain('id="milestone-toast"');
 
     const zh = visibleText(
@@ -188,12 +191,22 @@ describe("streak chrome wiring", () => {
 
     const chrome = readFileSync(new URL("../src/components/StreakChrome.tsx", import.meta.url), "utf8");
     expect(chrome).toContain("usePracticeStreak");
-    expect(chrome).toContain("useReminderSettings");
-    expect(chrome).toContain("enableDailyReminder");
-    expect(chrome).toContain("disableDailyReminder");
     expect(chrome).toContain("milestoneJustHit");
+    expect(chrome).not.toContain("useReminderSettings");
+    expect(chrome).not.toContain("enableDailyReminder");
+    expect(chrome).not.toContain("disableDailyReminder");
     expect(chrome).not.toContain("recordPracticeClearOrPartial");
     expect(chrome).not.toMatch(/\blocalStorage\b/);
+
+    const settings = readFileSync(new URL("../src/components/SettingsSheet.tsx", import.meta.url), "utf8");
+    expect(settings).toContain("useReminderSettings");
+    expect(settings).toContain("enableDailyReminder");
+    expect(settings).toContain("disableDailyReminder");
+    expect(settings).toContain("armNativeReminder(");
+    expect(settings).toContain("isAndroidShell()");
+    expect(settings).not.toContain("syncNativeReminders()");
+    expect(settings).not.toContain("recordPracticeClearOrPartial");
+    expect(settings).not.toMatch(/\blocalStorage\b/);
 
     for (const file of [
       "../src/components/StreakFlame.tsx",
@@ -209,7 +222,8 @@ describe("streak chrome wiring", () => {
 
     const idle = renderToStaticMarkup(<StreakChrome lang="en" />);
     expect(idle).toContain('id="streak-strip"');
-    expect(idle).toContain('id="reminder-time"');
+    expect(idle).not.toContain('id="reminder-time"');
+    expect(idle).not.toContain('id="reminder-control"');
     expect(idle).not.toContain('id="milestone-toast"');
   });
 });
