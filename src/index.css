@@ -759,7 +759,8 @@ button.act:focus-visible,
 
 .reminder-time {
   appearance: none;
-  width: 7.5rem;
+  width: 11rem;
+  min-width: 11rem;
   background: #101010;
   color: var(--text);
   border: 1px solid #3a3a3a;
@@ -1049,13 +1050,19 @@ button.session-count.unsure:focus-visible,
   .settings-backdrop { align-items: flex-end; }
   .settings-sheet .reminder-row {
     display: grid;
-    grid-template-columns: 44px minmax(0, 1fr) minmax(0, 8.75rem);
+    grid-template-columns: 44px minmax(0, 1fr);
     grid-template-areas:
-      "toggle label time"
-      "note note note";
+      "toggle label"
+      "time time"
+      "note note";
     align-items: center;
     gap: 8px;
     padding: 8px 10px;
+  }
+  .settings-sheet .reminder-time {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
   }
 
   .cat-svg { width: min(180px, 48vw); }
