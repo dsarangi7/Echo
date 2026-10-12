@@ -1,9 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { BrowserBanner } from "./components/BrowserBanner";
 import { CatMascot } from "./components/CatMascot";
 import { ModelInterstitial } from "./components/ModelInterstitial";
 import { PracticePanel } from "./components/PracticePanel";
-import { ReminderCard } from "./components/ReminderCard";
+import { SettingsSheet } from "./components/SettingsSheet";
 import { syncNativeReminders } from "./native/syncReminders";
 import { startReminderRuntime } from "./practice/reminder-runtime";
 import { usePractice } from "./practice/usePractice";
@@ -12,6 +12,7 @@ import { introLine } from "./speech/intro";
 export function App() {
   const practice = usePractice();
   const { lang, setLanguage } = practice;
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => startReminderRuntime(), []);
 
@@ -33,34 +34,47 @@ export function App() {
             <small lang={lang === "en" ? "zh-CN" : "en"}>{greetingAside}</small>
           </p>
         </div>
-        <div className="lang-switch" role="group" aria-label="Language to practice">
+        <div className="top-actions">
           <button
             type="button"
-            id="lang-en"
-            className={lang === "en" ? "on" : undefined}
-            aria-pressed={lang === "en"}
-            onClick={() => setLanguage("en")}
+            className="settings-open"
+            id="open-settings"
+            aria-haspopup="dialog"
+            aria-expanded={settingsOpen}
+            aria-controls="settings-sheet"
+            onClick={() => setSettingsOpen(true)}
           >
-            <span>English</span>
-            <small>练英语</small>
+            <span>Settings</span>
+            <small>设置</small>
           </button>
-          <button
-            type="button"
-            id="lang-zh"
-            className={lang === "zh" ? "on" : undefined}
-            aria-pressed={lang === "zh"}
-            onClick={() => setLanguage("zh")}
-          >
-            <span>中文</span>
-            <small>练中文</small>
-          </button>
+          <div className="lang-switch" role="group" aria-label="Language to practice">
+            <button
+              type="button"
+              id="lang-en"
+              className={lang === "en" ? "on" : undefined}
+              aria-pressed={lang === "en"}
+              onClick={() => setLanguage("en")}
+            >
+              <span>English</span>
+              <small>练英语</small>
+            </button>
+            <button
+              type="button"
+              id="lang-zh"
+              className={lang === "zh" ? "on" : undefined}
+              aria-pressed={lang === "zh"}
+              onClick={() => setLanguage("zh")}
+            >
+              <span>中文</span>
+              <small>练中文</small>
+            </button>
+          </div>
         </div>
       </header>
 
       <div className="stage">
         <PracticePanel {...practice} />
       </div>
-      <ReminderCard />
       <section className="notices" aria-label="Notices. 提示">
         {practice.kicker === "Note" && practice.heard ? (
           <p className="notice-line" id="notice-heard" role="status">
@@ -74,6 +88,7 @@ export function App() {
         </p>
         <p id="err">{practice.error}</p>
       </section>
+      <SettingsSheet open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>
   );
 }
