@@ -30,18 +30,18 @@ function visibleText(html: string): string {
 }
 
 describe("streak chrome copy", () => {
-  it("uses Chan's milestone lines exactly", () => {
+  it("uses Hero's milestone lines exactly", () => {
     expect(MILESTONE_COPY[3]).toEqual({
-      en: "Three days in a row — you're building a habit.",
-      zh: "连续三天了——习惯正在形成。",
+      en: "You’ve practiced three days in a row. Keep going at your own pace.",
+      zh: "你已经连续练了三天。按自己的节奏继续就好。",
     });
     expect(MILESTONE_COPY[7]).toEqual({
-      en: "A full week. Keep the gentle rhythm.",
-      zh: "整整一周。保持这个温和的节奏。",
+      en: "A week of listening and speaking — that’s real progress. Nice work.",
+      zh: "听和说了一周——这是实实在在的进步。做得好。",
     });
     expect(MILESTONE_COPY[14]).toEqual({
-      en: "Two weeks of showing up. That's the real win.",
-      zh: "两周坚持。这才是真正的收获。",
+      en: "Two weeks of steady practice. You’re building a habit that lasts.",
+      zh: "两周稳定的练习。你正在养成能持续下去的习惯。",
     });
     expect(milestoneForDays(3)).toBe(3);
     expect(milestoneForDays(7)).toBe(7);
@@ -177,7 +177,7 @@ describe("streak chrome copy", () => {
     const zh = visibleText(
       renderToStaticMarkup(<MilestoneToast day={7} lang="zh" onDismiss={() => undefined} />),
     );
-    expect(zh.indexOf("整整一周")).toBeLessThan(zh.indexOf("A full week"));
+    expect(zh.indexOf("听和说了一周")).toBeLessThan(zh.indexOf("A week of listening and speaking"));
   });
 });
 

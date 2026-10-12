@@ -1,19 +1,19 @@
 import { milestoneForDays, type StreakMilestone, type StreakUpdate } from "../practice/streak";
 import type { Lang } from "../practice/types";
 
-/** Chan's milestone lines. Use these strings exactly. */
+/** Hero's milestone lines. Use the English strings exactly. */
 export const MILESTONE_COPY: Record<StreakMilestone, { en: string; zh: string }> = {
   3: {
-    en: "Three days in a row — you're building a habit.",
-    zh: "连续三天了——习惯正在形成。",
+    en: "You’ve practiced three days in a row. Keep going at your own pace.",
+    zh: "你已经连续练了三天。按自己的节奏继续就好。",
   },
   7: {
-    en: "A full week. Keep the gentle rhythm.",
-    zh: "整整一周。保持这个温和的节奏。",
+    en: "A week of listening and speaking — that’s real progress. Nice work.",
+    zh: "听和说了一周——这是实实在在的进步。做得好。",
   },
   14: {
-    en: "Two weeks of showing up. That's the real win.",
-    zh: "两周坚持。这才是真正的收获。",
+    en: "Two weeks of steady practice. You’re building a habit that lasts.",
+    zh: "两周稳定的练习。你正在养成能持续下去的习惯。",
   },
 };
 

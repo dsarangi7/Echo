@@ -17,7 +17,7 @@ export { SHANGHAI_TZ, shanghaiDateKey } from "./shanghai";
  * - Call `usePracticeStreak()` from `./usePracticeSignals` for the live badge.
  * - Or call `loadStreak(practiceLocalStorage())` any time. `current` is already
  *   adjusted when a Shanghai day was missed. Do not read the raw JSON for display.
- * - `milestone` / `milestoneJustHit` are 3, 7, or 14. Copy for those days is Chan's.
+ * - `milestone` / `milestoneJustHit` are 3, 7, or 14. Copy for those days is Hero's.
  * - `echo-streak-changed` is a CustomEvent. `detail` is a StreakUpdate when a Clear or Partial was recorded.
  *   `detail.milestoneJustHit` is the one-shot. A missed-day reset fires the event with no detail.
  *

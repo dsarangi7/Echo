@@ -8,7 +8,7 @@ type Props = {
   onDismiss: () => void;
 };
 
-/** Soft card for days 3, 7, and 14. Copy is Chan's; reaching the day is Kai's. */
+/** Soft card for days 3, 7, and 14. Copy is Hero's; reaching the day is Kai's. */
 export function MilestoneToast({ day, lang, onDismiss }: Props) {
   const lines = milestoneLines(day, lang);
   const primaryLang = lang === "zh" ? "zh-CN" : "en";
