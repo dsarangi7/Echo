@@ -10,30 +10,13 @@ import { usePractice } from "./practice/usePractice";
 
 export function App() {
   const practice = usePractice();
-  const { lang, setLanguage, jump } = practice;
+  const { lang, setLanguage } = practice;
 
   useEffect(() => startReminderRuntime(), []);
 
   useEffect(() => {
     void syncNativeReminders();
   }, []);
-
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.altKey || event.ctrlKey || event.metaKey) return;
-      const tag = (event.target as HTMLElement | null)?.tagName;
-      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "BUTTON") return;
-      if (event.key === "ArrowRight") {
-        event.preventDefault();
-        jump(1);
-      } else if (event.key === "ArrowLeft") {
-        event.preventDefault();
-        jump(-1);
-      }
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [jump]);
 
   const tag =
     lang === "en"

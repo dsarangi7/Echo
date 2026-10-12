@@ -1,6 +1,6 @@
 # 课猫 Echo
 
-Practice English or Chinese. The top toggle switches language and is remembered in this browser. Each pack has 100 sentences: the line you say is large, and the meaning sits underneath.
+Practice English or Chinese. The top toggle switches language and is remembered in this browser. Each language has 100 sentences, shown one card at a time: the line you say is large, and the meaning sits underneath in a quieter color. Swipe the card, tap the side arrows, or use the arrow keys to move inside the open pack. Packs (office, taxi / 打车, Meituan, and the rest) open from Packs · 选一组, not as a list of every sentence. Cards rotate through a small paper palette so the line you are on stays easy to see.
 
 English practice stays in the office: meetings, email, the factory, quality, and order documents. Chinese practice is for AYK work — orders, invoices, shipping documents, minutes, HR notices, drawings — plus Meituan delivery and Didi taxi rides.
 

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { stepWithinSet } from "./cards";
 import { packError, packs } from "./packs";
 import { gradeTranscript, isShortZhLine, recognitionFailHeadline, type GradeOutcome } from "./score";
 import { publishPracticeSnapshot } from "./reminder-runtime";
@@ -245,6 +246,16 @@ export function usePractice() {
     [resetPractice, stopAudio],
   );
 
+  const stepPack = useCallback(
+    (delta: number) => {
+      const currentLang = langRef.current;
+      const next = stepWithinSet(packs[currentLang], indexRef.current, delta);
+      if (next === indexRef.current) return;
+      jumpTo(next);
+    },
+    [jumpTo],
+  );
+
   const setLanguage = useCallback(
     (next: Lang) => {
       if (next === langRef.current) return;
@@ -416,6 +427,7 @@ export function usePractice() {
     introduce: () => playIntro(langRef.current),
     jump,
     jumpTo,
+    stepPack,
     hear,
     sayIt,
     pace,

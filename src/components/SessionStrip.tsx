@@ -43,18 +43,24 @@ export function SessionStrip({ lang, session, onReset }: Props) {
           </span>
         ) : null}
       </div>
-      <div className="session-summary" id="session-summary">
-        {summary.primary.map((line) => (
-          <p key={line} className="primary">
-            {line}
-          </p>
-        ))}
-        {summary.secondary.map((line) => (
-          <p key={line} className="secondary">
-            {line}
-          </p>
-        ))}
-      </div>
+      <details className="session-more">
+        <summary>
+          <span>Notes</span>
+          <small>本局说明</small>
+        </summary>
+        <div className="session-summary" id="session-summary">
+          {summary.primary.map((line) => (
+            <p key={line} className="primary">
+              {line}
+            </p>
+          ))}
+          {summary.secondary.map((line) => (
+            <p key={line} className="secondary">
+              {line}
+            </p>
+          ))}
+        </div>
+      </details>
       {tipOpen ? (
         <p className="unsure-tip" id="unsure-tip" role="status">
           <b>{UNSURE_TIP.en}</b>
