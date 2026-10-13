@@ -7,7 +7,7 @@ import { SettingsSheet } from "./components/SettingsSheet";
 import { syncNativeReminders } from "./native/syncReminders";
 import { startReminderRuntime } from "./practice/reminder-runtime";
 import { usePractice } from "./practice/usePractice";
-import { introLine } from "./speech/intro";
+import { introLine, introReading } from "./speech/intro";
 
 export function App() {
   const practice = usePractice();
@@ -20,7 +20,7 @@ export function App() {
     void syncNativeReminders();
   }, []);
 
-  const greeting = introLine(lang);
+  const greeting = introReading(lang);
   const greetingAside = introLine(lang === "en" ? "zh" : "en");
 
   return (
@@ -30,7 +30,9 @@ export function App() {
         <div className="hello-copy">
           <h1>课猫 Echo</h1>
           <p className="meow" id="greeting">
-            <b>{greeting}</b>
+            <b className={lang === "zh" ? "pinyin" : undefined} lang={lang === "zh" ? "zh-Latn" : "en"}>
+              {greeting}
+            </b>
             <small lang={lang === "en" ? "zh-CN" : "en"}>{greetingAside}</small>
           </p>
         </div>

@@ -8,7 +8,13 @@ import { CARD_TONES, cardTone, directionWithin, stepWithinSet, swipeDecision } f
 import { emptySession } from "../src/practice/session";
 import type { Sentence } from "../src/practice/types";
 
-const taxi: Sentence = { set: "Taxi / Didi", zhSet: "打车", en: "I called you.", zh: "师傅，我打你电话了。" };
+const taxi: Sentence = {
+  set: "Taxi / Didi",
+  zhSet: "打车",
+  en: "I called you.",
+  zh: "师傅，我打你电话了。",
+  py: "Shī fu, wǒ dǎ nǐ diàn huà le.",
+};
 const taxiNext: Sentence = { set: "Taxi / Didi", zhSet: "打车", en: "Please wait here.", zh: "请在这儿等我。" };
 const rider: Sentence = { set: "Rider phrases", zhSet: "外卖骑手", en: "Food is here.", zh: "外卖到了，下楼取。" };
 
@@ -88,8 +94,14 @@ describe("flash card practice", () => {
   it("shows one sentence and keeps hear, say, and pace off a wall of lines", () => {
     const html = panel();
     expect(html).toContain('data-card-tone="wheat"');
-    expect(html).toContain("<span>师</span><span>傅</span><span>，</span><span>我</span><span>打</span><span>你</span><span>电</span><span>话</span><span>了</span>");
+    expect(html).toContain('lang="zh-Latn"');
+    expect(html).toContain(">Shī</span>");
+    expect(html).toContain(">diàn</span>");
+    expect(html).toContain(">huà</span>");
+    expect(html).not.toContain("<span>师</span>");
+    expect(html).not.toContain("师傅，我打你电话了");
     expect(html).toContain("I called you.");
+    expect(html).toContain("这个音节");
     expect(html).not.toContain("请在这儿等我。");
     expect(html).not.toContain("外卖到了，下楼取。");
     expect(html).not.toContain("外卖骑手");

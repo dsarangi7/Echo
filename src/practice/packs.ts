@@ -14,5 +14,6 @@ export function packError(): string {
   const err: string[] = [];
   if (packEn.length !== 100) err.push(`EN pack is ${packEn.length}`);
   if (packZh.length !== 100) err.push(`ZH pack is ${packZh.length}`);
+  if (packZh.some((row) => !row.py?.trim())) err.push("ZH pack is missing pinyin");
   return err.join("; ");
 }
