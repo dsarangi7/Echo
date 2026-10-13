@@ -536,7 +536,6 @@ button.act:focus-visible,
 .browser-stack:empty { display: none; }
 
 .browser-banner,
-.browser-tip,
 .model-interstitial {
   border-radius: 16px;
   padding: 14px 14px 12px;
@@ -548,13 +547,7 @@ button.act:focus-visible,
   color: #f6ead4;
 }
 
-.browser-tip {
-  background: #1a1a1a;
-  border: 1px solid #3a3a3a;
-}
-
 .browser-banner .zh,
-.browser-tip .zh,
 .model-interstitial h2,
 .model-copy b,
 .unsure-tip b {
@@ -565,7 +558,6 @@ button.act:focus-visible,
 }
 
 .browser-banner .en,
-.browser-tip .en,
 .model-interstitial h2 small,
 .model-copy small,
 .unsure-tip small,
@@ -601,7 +593,6 @@ button.act:focus-visible,
   user-select: text;
 }
 
-.browser-tip .act,
 .browser-copy .act { margin-top: 8px; }
 
 .model-interstitial {
@@ -1025,13 +1016,11 @@ button.session-count.unsure:focus-visible,
   .cat-svg { width: min(280px, 78vw); }
   .top, .top > div, .top-actions, .lang-switch, .nameplate, .nameplate strong, .nameplate span { min-width: 0; max-width: 100%; }
   .browser-banner,
-  .browser-tip,
   .model-interstitial,
   .card,
   .streak-chrome,
   .session-strip { min-width: 0; max-width: 100%; }
   .browser-banner,
-  .browser-tip,
   .model-interstitial { overflow-wrap: anywhere; }
 }
 
@@ -1241,10 +1230,8 @@ button.session-count.unsure:focus-visible,
 
   .browser-stack { gap: 8px; margin-bottom: 10px; }
   .browser-banner,
-  .browser-tip,
   .model-interstitial { padding: 10px 12px; }
   .browser-banner .zh,
-  .browser-tip .zh,
   .model-interstitial h2 { font-size: 15px; }
   .browser-stack .act,
   .model-actions .act,
@@ -1571,8 +1558,22 @@ button.session-count.unsure:focus-visible,
   border-radius: 16px;
 }
 
-.practice-card .streak-chrome { margin: 14px 0 0; }
 .practice-card .session-strip { margin: 10px 0 0; }
+.practice-card .streak-chrome { margin: 6px 2px 0; }
+.practice-card .streak-footer .streak-strip {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 8px 2px 0;
+  gap: 8px 14px;
+}
+.practice-card .streak-footer .streak-flame {
+  width: 16px;
+  height: 22px;
+  filter: none;
+}
+.practice-card .streak-footer .streak-count { font-size: 13px; color: var(--muted); }
+.practice-card .streak-footer .streak-count b { font-size: 16px; }
 .session-more { width: 100%; }
 .session-more summary small { font-weight: 600; color: var(--muted); }
 

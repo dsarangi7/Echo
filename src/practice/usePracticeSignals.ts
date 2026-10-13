@@ -8,6 +8,7 @@ function zeroStreak(): StreakView {
     best: 0,
     lastPracticeDay: null,
     practiceDays: [],
+    completed: 0,
     practicedToday: false,
     daysThisWeek: 0,
     milestone: null,

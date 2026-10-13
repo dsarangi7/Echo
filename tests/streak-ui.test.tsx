@@ -6,7 +6,7 @@ import { PracticePanel } from "../src/components/PracticePanel";
 import { ReminderControl } from "../src/components/ReminderControl";
 import { StreakChrome } from "../src/components/StreakChrome";
 import { StreakFlame } from "../src/components/StreakFlame";
-import { emptySession } from "../src/practice/session";
+import { emptySession, type SessionTally } from "../src/practice/session";
 import { milestoneForDays, STREAK_CHANGED_EVENT } from "../src/practice/streak";
 import type { Sentence } from "../src/practice/types";
 import {
@@ -138,37 +138,50 @@ describe("streak chrome copy", () => {
     }
   });
 
-  it("places the chrome above the session strip without a toast until a milestone is hit", () => {
-    const html = renderToStaticMarkup(
-      <PracticePanel
-        {...({
-          lang: "en",
-          index: 0,
-          item,
-          pack: [item],
-          marks: null,
-          outcome: "idle",
-          heardPreview: "",
-          kicker: "Hello",
-          heard: "Hi",
-          score: "",
-          modelNote: "",
-          listening: false,
-          error: "",
-          jump: () => undefined,
-          jumpTo: () => undefined,
-          hear: () => undefined,
-          sayIt: () => undefined,
-          pace: "normal",
-          setPace: () => undefined,
-          session: emptySession(),
-          lineOutcome: null,
-          resetSession: () => undefined,
-        } as Parameters<typeof PracticePanel>[0])}
-      />,
-    );
-    expect(html.indexOf('id="streak-strip"')).toBeGreaterThan(-1);
-    expect(html.indexOf('id="streak-strip"')).toBeLessThan(html.indexOf('id="session-strip"'));
+  it("keeps the day streak in the card footer, and only after two successful sentences", () => {
+    const panel = (session: SessionTally) =>
+      renderToStaticMarkup(
+        <PracticePanel
+          {...({
+            lang: "en",
+            index: 0,
+            item,
+            pack: [item],
+            marks: null,
+            outcome: "idle",
+            heardPreview: "",
+            kicker: "Hello",
+            heard: "Hi",
+            score: "",
+            modelNote: "",
+            listening: false,
+            error: "",
+            jump: () => undefined,
+            jumpTo: () => undefined,
+            hear: () => undefined,
+            sayIt: () => undefined,
+            pace: "normal",
+            setPace: () => undefined,
+            session,
+            lineOutcome: null,
+            resetSession: () => undefined,
+          } as Parameters<typeof PracticePanel>[0])}
+        />,
+      );
+
+    const hidden = panel(emptySession());
+    expect(hidden).not.toContain('id="streak-strip"');
+    expect(hidden).not.toContain('id="streak-chrome"');
+    expect(hidden).not.toContain("Streak");
+    expect(hidden.indexOf('id="session-strip"')).toBeGreaterThan(-1);
+
+    const one = panel({ clear: 1, partial: 0, unsure: 0, streak: 1, started: true });
+    expect(one).not.toContain('id="streak-strip"');
+
+    const html = panel({ clear: 1, partial: 1, unsure: 0, streak: 1, started: true });
+    expect(html.indexOf('id="session-strip"')).toBeGreaterThan(-1);
+    expect(html.indexOf('id="streak-strip"')).toBeGreaterThan(html.indexOf('id="session-strip"'));
+    expect(html).toContain("streak-footer");
     expect(html).toContain('id="hear"');
     expect(html).toContain('id="say"');
     expect(html).not.toContain('id="reminder-control"');
@@ -220,8 +233,13 @@ describe("streak chrome wiring", () => {
       expect(src, file).not.toMatch(/Capacitor/);
     }
 
-    const idle = renderToStaticMarkup(<StreakChrome lang="en" />);
-    expect(idle).toContain('id="streak-strip"');
+    const idle = renderToStaticMarkup(<StreakChrome lang="en" session={emptySession()} />);
+    expect(idle).toBe("");
+    const shown = renderToStaticMarkup(
+      <StreakChrome lang="en" session={{ clear: 2, partial: 0, unsure: 0, streak: 2, started: true }} />,
+    );
+    expect(shown).toContain('id="streak-strip"');
+    expect(shown).toContain("streak-footer");
     expect(idle).not.toContain('id="reminder-time"');
     expect(idle).not.toContain('id="reminder-control"');
     expect(idle).not.toContain('id="milestone-toast"');

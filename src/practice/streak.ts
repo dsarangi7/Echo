@@ -23,14 +23,20 @@ export { SHANGHAI_TZ, shanghaiDateKey } from "./shanghai";
  *
  * localStorage key: `echo-practice-streak`
  * ```
- * { current, best, lastPracticeDay: "YYYY-MM-DD" | null, practiceDays: string[] }
+ * { current, best, lastPracticeDay: "YYYY-MM-DD" | null, practiceDays: string[], completed: number }
  * ```
  * Days are Asia/Shanghai calendar days. A day counts once, when Say it records
- * at least one Clear or Partial. Mic unsure / recognition_fail / miss do not count.
+ * at least one Clear or Partial. `completed` counts every Clear or Partial sentence.
+ * Mic unsure / recognition_fail / miss do not count.
+ * Older records omit `completed`; those fall back to `practiceDays.length`
+ * (one successful sentence per counted day).
  */
 export const STREAK_STORAGE_KEY = "echo-practice-streak";
 export const STREAK_CHANGED_EVENT = "echo-streak-changed";
 export const STREAK_MILESTONES = [3, 7, 14] as const;
+
+/** Hide the day streak until this many successful Say-it sentences, this session or ever. */
+export const STREAK_REVEAL_AFTER = 2;
 
 export type StreakMilestone = (typeof STREAK_MILESTONES)[number];
 
@@ -42,6 +48,8 @@ export type StreakRecord = {
   lastPracticeDay: string | null;
   /** Counted days, oldest first, capped at 400. */
   practiceDays: string[];
+  /** Successful Say-it sentences (Clear or Partial), including repeats on the same day. */
+  completed: number;
 };
 
 export type StreakView = {
@@ -49,6 +57,8 @@ export type StreakView = {
   best: number;
   lastPracticeDay: string | null;
   practiceDays: readonly string[];
+  /** Clear + Partial sentences ever. At least `practiceDays.length` for older records. */
+  completed: number;
   practicedToday: boolean;
   /** Counted days in the Shanghai week that contains `now` (Monday–Sunday). */
   daysThisWeek: number;
@@ -65,7 +75,17 @@ export type StreakUpdate = {
 };
 
 export function emptyStreak(): StreakRecord {
-  return { current: 0, best: 0, lastPracticeDay: null, practiceDays: [] };
+  return { current: 0, best: 0, lastPracticeDay: null, practiceDays: [], completed: 0 };
+}
+
+/** Clear and Partial lines in this session. Misses and mic-unsure do not count. */
+export function sessionSayItCompletions(session: { clear: number; partial: number }): number {
+  return countOf(session.clear) + countOf(session.partial);
+}
+
+/** The day streak stays hidden until two successful sentences this session, or two ever. */
+export function revealPracticeStreak(sessionCompletions: number, lifetimeCompletions: number): boolean {
+  return sessionCompletions >= STREAK_REVEAL_AFTER || lifetimeCompletions >= STREAK_REVEAL_AFTER;
 }
 
 export function practiceLocalStorage(): Storage | null {
@@ -97,6 +117,12 @@ function countOf(value: unknown): number {
   return Math.floor(n);
 }
 
+/** Missing `completed` means one sentence per counted day. Never under-count those days. */
+function lifetimeCompletions(stored: unknown, practiceDays: readonly string[]): number {
+  if (stored === undefined || stored === null) return practiceDays.length;
+  return Math.max(countOf(stored), practiceDays.length);
+}
+
 export function readStreakRecord(storage: Pick<Storage, "getItem"> | null): StreakRecord {
   if (!storage) return emptyStreak();
   try {
@@ -107,7 +133,8 @@ export function readStreakRecord(storage: Pick<Storage, "getItem"> | null): Stre
     const last = typeof parsed.lastPracticeDay === "string" && isShanghaiDayKey(parsed.lastPracticeDay) ? parsed.lastPracticeDay : null;
     const current = countOf(parsed.current);
     const best = Math.max(countOf(parsed.best), current);
-    return { current, best, lastPracticeDay: last, practiceDays };
+    const completed = lifetimeCompletions(parsed.completed, practiceDays);
+    return { current, best, lastPracticeDay: last, practiceDays, completed };
   } catch {
     return emptyStreak();
   }
@@ -124,6 +151,7 @@ export function viewStreak(record: StreakRecord, now: Date): StreakView {
     best,
     lastPracticeDay: record.lastPracticeDay,
     practiceDays: record.practiceDays,
+    completed: record.completed,
     practicedToday: record.lastPracticeDay === today || record.practiceDays.includes(today),
     daysThisWeek: daysPracticedThisWeek(record.practiceDays, now),
     milestone: milestoneForDays(current),
@@ -139,6 +167,7 @@ function writeRecord(storage: Pick<Storage, "setItem">, record: StreakRecord): b
         best: record.best,
         lastPracticeDay: record.lastPracticeDay,
         practiceDays: record.practiceDays,
+        completed: record.completed,
       }),
     );
     return true;
@@ -173,7 +202,8 @@ export function loadStreak(storage: Pick<Storage, "getItem" | "setItem"> | null,
 }
 
 /**
- * Count this Shanghai day toward the streak. Idempotent for the same day.
+ * Count this Shanghai day toward the streak. The day itself counts once.
+ * Every Clear or Partial still adds one to `completed`.
  * Call this only for a Clear or Partial Say-it outcome.
  */
 export function recordPracticeClearOrPartial(
@@ -185,14 +215,22 @@ export function recordPracticeClearOrPartial(
   if (!storage) return { view: beforeView, milestoneJustHit: null, recorded: false };
 
   const today = shanghaiDateKey(now);
+  const completed = before.completed + 1;
   if (before.lastPracticeDay === today) {
     const needsRepair = before.current < 1 || !before.practiceDays.includes(today);
-    if (!needsRepair) return { view: beforeView, milestoneJustHit: null, recorded: false };
+    if (!needsRepair) {
+      const sameDay: StreakRecord = { ...before, completed };
+      if (!writeRecord(storage, sameDay)) return { view: beforeView, milestoneJustHit: null, recorded: false };
+      const sameDayUpdate: StreakUpdate = { view: viewStreak(sameDay, now), milestoneJustHit: null, recorded: false };
+      emitStreakChanged(storage, sameDayUpdate);
+      return sameDayUpdate;
+    }
     const repaired: StreakRecord = {
       ...before,
       current: Math.max(1, before.current),
       best: Math.max(before.best, Math.max(1, before.current)),
       practiceDays: normalizePracticeDays([...before.practiceDays, today]),
+      completed,
     };
     if (!writeRecord(storage, repaired)) return { view: beforeView, milestoneJustHit: null, recorded: false };
     const repairedUpdate: StreakUpdate = { view: viewStreak(repaired, now), milestoneJustHit: null, recorded: false };
@@ -207,6 +245,7 @@ export function recordPracticeClearOrPartial(
     best: Math.max(before.best, beforeView.best, current),
     lastPracticeDay: today,
     practiceDays: normalizePracticeDays([...before.practiceDays, today]),
+    completed,
   };
   if (!writeRecord(storage, next)) return { view: beforeView, milestoneJustHit: null, recorded: false };
   const update: StreakUpdate = {

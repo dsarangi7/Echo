@@ -8,6 +8,9 @@ import {
   qualifiesForStreak,
   recordPracticeClearOrPartial,
   recordSayItOutcome,
+  revealPracticeStreak,
+  sessionSayItCompletions,
+  STREAK_REVEAL_AFTER,
   type StreakRecord,
 } from "../src/practice/streak";
 
@@ -56,7 +59,9 @@ describe("Shanghai practice streak", () => {
     const again = recordPracticeClearOrPartial(storage, at("2026-10-10", "23:30"));
     expect(again.recorded).toBe(false);
     expect(again.view.current).toBe(1);
+    expect(again.view.completed).toBe(2);
     expect(stored(storage).practiceDays).toEqual(["2026-10-10"]);
+    expect(stored(storage).completed).toBe(2);
 
     expect(recordSayItOutcome(storage, "recognition_fail", at("2026-10-11"))).toBeNull();
     expect(recordSayItOutcome(storage, "miss", at("2026-10-11"))).toBeNull();
@@ -113,6 +118,32 @@ describe("Shanghai practice streak", () => {
     expect(view.daysThisWeek).toBe(3);
     expect(view.practiceDays).toEqual(["2026-10-05", "2026-10-07", "2026-10-10"]);
     expect(loadStreak(storage, at("2026-10-12")).daysThisWeek).toBe(0);
+  });
+
+  it("reveals the day streak after two successful sentences this session or ever", () => {
+    expect(STREAK_REVEAL_AFTER).toBe(2);
+    expect(sessionSayItCompletions({ clear: 1, partial: 1 })).toBe(2);
+    expect(sessionSayItCompletions({ clear: 0, partial: 0 })).toBe(0);
+    expect(revealPracticeStreak(0, 0)).toBe(false);
+    expect(revealPracticeStreak(1, 0)).toBe(false);
+    expect(revealPracticeStreak(2, 0)).toBe(true);
+    expect(revealPracticeStreak(0, 2)).toBe(true);
+    expect(revealPracticeStreak(1, 1)).toBe(false);
+
+    const storage = memoryStorage({
+      [STREAK_STORAGE_KEY]: JSON.stringify({
+        current: 2,
+        best: 2,
+        lastPracticeDay: "2026-10-11",
+        practiceDays: ["2026-10-10", "2026-10-11"],
+      }),
+    });
+    const legacy = loadStreak(storage, at("2026-10-11"));
+    expect(legacy.completed).toBe(2);
+    expect(revealPracticeStreak(0, legacy.completed)).toBe(true);
+
+    const fresh = memoryStorage();
+    expect(revealPracticeStreak(0, loadStreak(fresh, at("2026-10-11")).completed)).toBe(false);
   });
 
   it("wires Clear and Partial into Say it without counting recognition_fail", () => {
