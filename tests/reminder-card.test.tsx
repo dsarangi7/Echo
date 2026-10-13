@@ -28,6 +28,15 @@ describe("settings reminder", () => {
     expect(html).not.toContain("A Shanghai day counts");
     expect(html).not.toContain("After the time passes, open Echo again");
     expect(html).not.toContain(SITE_DESCRIPTION_ZH);
+    expect(html.match(/id="theme-dark"/g)).toHaveLength(1);
+    expect(html.match(/id="theme-light"/g)).toHaveLength(1);
+    expect(html).toContain(">Dark<");
+    expect(html).toContain(">Light<");
+    expect(html).toContain("亮色");
+    const dark = html.slice(html.indexOf('id="theme-dark"'), html.indexOf('id="theme-light"'));
+    const light = html.slice(html.indexOf('id="theme-light"'));
+    expect(dark).toContain('aria-pressed="true"');
+    expect(light).toContain('aria-pressed="false"');
   });
 
   it("stays closed until Settings is opened, and does not sit on the practice card", () => {
@@ -38,8 +47,19 @@ describe("settings reminder", () => {
     const panel = readFileSync(new URL("../src/components/PracticePanel.tsx", import.meta.url), "utf8");
     expect(app).toContain("<SettingsSheet");
     expect(app).not.toContain("ReminderCard");
+    expect(app.match(/id="open-settings"/g)).toHaveLength(1);
+    expect(app).toContain('className="settings-gear"');
+    expect(app).toContain('aria-label="Settings. 设置"');
+    expect(app).not.toContain(">Settings<");
+    expect(app).not.toContain("Remind me daily");
+    expect(app).not.toContain('id="theme-dark"');
+    expect(app).not.toContain('id="reminder-toggle"');
+    expect(app).not.toContain('id="reminders"');
     expect(panel).not.toContain("ReminderControl");
     expect(panel).not.toContain("ReminderCard");
+    expect(panel).not.toContain("theme-dark");
+    expect(panel).not.toContain("reminder-toggle");
+    expect(panel).not.toContain("Reminders");
   });
 
   it("arms the Android shell only after permission, and keeps the website on enableDailyReminder", () => {

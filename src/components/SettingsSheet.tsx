@@ -13,6 +13,7 @@ import { localDateKey } from "../practice/shanghai";
 import { practiceLocalStorage } from "../practice/streak";
 import { useReminderSettings } from "../practice/usePracticeSignals";
 import { openReminderNote } from "../ui/streakCopy";
+import { useTheme } from "../ui/theme";
 import { ReminderControl } from "./ReminderControl";
 
 type Props = {
@@ -34,6 +35,7 @@ function alertCopy(result: SyncResult | null): { en: string; zh: string } | null
  */
 export function SettingsSheet({ open, onClose }: Props) {
   const reminder = useReminderSettings();
+  const { theme, setTheme } = useTheme();
   const panelRef = useRef<HTMLElement>(null);
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
@@ -145,6 +147,34 @@ export function SettingsSheet({ open, onClose }: Props) {
             <small>{alert.zh}</small>
           </p>
         ) : null}
+        <section className="theme-block" id="theme-control" aria-labelledby="theme-label">
+          <p className="theme-label" id="theme-label">
+            <b>Theme</b>
+            <small>外观</small>
+          </p>
+          <div className="theme-switch" role="group" aria-labelledby="theme-label">
+            <button
+              type="button"
+              id="theme-dark"
+              className={theme === "dark" ? "on" : undefined}
+              aria-pressed={theme === "dark"}
+              onClick={() => setTheme("dark")}
+            >
+              <span>Dark</span>
+              <small>深色</small>
+            </button>
+            <button
+              type="button"
+              id="theme-light"
+              className={theme === "light" ? "on" : undefined}
+              aria-pressed={theme === "light"}
+              onClick={() => setTheme("light")}
+            >
+              <span>Light</span>
+              <small>亮色</small>
+            </button>
+          </div>
+        </section>
       </section>
     </div>
   );

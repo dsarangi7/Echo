@@ -37,18 +37,6 @@ export function App() {
           </p>
         </div>
         <div className="top-actions">
-          <button
-            type="button"
-            className="settings-open"
-            id="open-settings"
-            aria-haspopup="dialog"
-            aria-expanded={settingsOpen}
-            aria-controls="settings-sheet"
-            onClick={() => setSettingsOpen(true)}
-          >
-            <span>Settings</span>
-            <small>设置</small>
-          </button>
           <div className="lang-switch" role="group" aria-label="Language to practice">
             <button
               type="button"
@@ -71,6 +59,34 @@ export function App() {
               <small>练中文</small>
             </button>
           </div>
+          <button
+            type="button"
+            className="settings-open"
+            id="open-settings"
+            aria-label="Settings. 设置"
+            aria-haspopup="dialog"
+            aria-expanded={settingsOpen}
+            aria-controls="settings-sheet"
+            onClick={() => setSettingsOpen(true)}
+          >
+            <svg className="settings-gear" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z"
+              />
+              <path
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinejoin="round"
+                d="M19.4 13.1a7.7 7.7 0 0 0 .1-2.2l1.7-1.3-1.8-3.1-2 .6a7.6 7.6 0 0 0-1.9-1.1L15.1 4h-3.6l-.4 2a7.6 7.6 0 0 0-1.9 1.1l-2-.6-1.8 3.1 1.7 1.3a7.7 7.7 0 0 0 0 2.2l-1.7 1.3 1.8 3.1 2-.6a7.6 7.6 0 0 0 1.9 1.1l.4 2h3.6l.4-2a7.6 7.6 0 0 0 1.9-1.1l2 .6 1.8-3.1-1.7-1.3Z"
+              />
+            </svg>
+          </button>
         </div>
       </header>
 
