@@ -255,8 +255,8 @@ export function PracticePanel(practice: Practice) {
           <p className="keys">左右滑动，或点两边的箭头。 Swipe, or ← →. arrow keys change the sentence</p>
         </>
       )}
-      <StreakChrome lang={lang} />
       <SessionStrip lang={lang} session={session ?? emptySession()} onReset={resetSession ?? (() => undefined)} />
+      <StreakChrome lang={lang} session={session ?? emptySession()} />
     </section>
   );
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { STREAK_CHANGED_EVENT, type StreakMilestone } from "../practice/streak";
+import { revealPracticeStreak, sessionSayItCompletions, STREAK_CHANGED_EVENT, type StreakMilestone } from "../practice/streak";
+import type { SessionTally } from "../practice/session";
 import type { Lang } from "../practice/types";
 import { usePracticeStreak } from "../practice/usePracticeSignals";
 import { milestoneJustHit } from "../ui/streakCopy";
@@ -8,28 +9,34 @@ import { StreakFlame } from "./StreakFlame";
 
 type Props = {
   lang: Lang;
+  session: SessionTally;
 };
 
 /**
- * Thin streak chip on the practice card.
+ * Quiet day-streak line under the session tally.
+ * Hidden until two Clear or Partial sentences this session, or two ever.
  * Numbers come from usePracticeStreak(). The toast opens from milestoneJustHit.
  * The daily reminder lives in Settings, not here.
  */
-export function StreakChrome({ lang }: Props) {
+export function StreakChrome({ lang, session }: Props) {
   const streak = usePracticeStreak();
   const [toast, setToast] = useState<StreakMilestone | null>(null);
+  const visible = revealPracticeStreak(sessionSayItCompletions(session), streak.completed);
 
   useEffect(() => {
+    if (!visible) return;
     const onStreak = (event: Event) => {
       const hit = milestoneJustHit(event);
       if (hit) setToast(hit);
     };
     window.addEventListener(STREAK_CHANGED_EVENT, onStreak);
     return () => window.removeEventListener(STREAK_CHANGED_EVENT, onStreak);
-  }, []);
+  }, [visible]);
+
+  if (!visible) return null;
 
   return (
-    <section className="streak-chrome" id="streak-chrome" aria-label="Practice streak. 连续练习">
+    <section className="streak-chrome streak-footer" id="streak-chrome" aria-label="Practice streak. 连续练习">
       <StreakFlame current={streak.current} best={streak.best} />
       {toast ? <MilestoneToast day={toast} lang={lang} onDismiss={() => setToast(null)} /> : null}
     </section>

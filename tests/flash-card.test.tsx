@@ -101,8 +101,10 @@ describe("flash card practice", () => {
     expect(html).toContain('id="legend-score"');
     expect(html).toContain("arrow keys change the sentence");
     expect(html).toMatch(/id="progress">\s*1 \/ 3\s*</);
-    expect(html).toContain('id="streak-strip"');
-    expect(html.indexOf('id="streak-strip"')).toBeLessThan(html.indexOf('id="session-strip"'));
+    expect(html).not.toContain('id="streak-strip"');
+    const earned = panel({ session: { clear: 2, partial: 0, unsure: 0, streak: 2, started: true } });
+    expect(earned.indexOf('id="session-strip"')).toBeGreaterThan(-1);
+    expect(earned.indexOf('id="session-strip"')).toBeLessThan(earned.indexOf('id="streak-strip"'));
 
     const second = panel({ lang: "en", index: 1, item: taxiNext });
     expect(second).toContain('data-card-tone="sage"');

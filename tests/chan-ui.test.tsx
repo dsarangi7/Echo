@@ -15,14 +15,7 @@ import {
   type SessionTally,
 } from "../src/practice/session";
 import { formatDownloadMeter, formatMegabytes } from "../src/speech/model";
-import {
-  FIRST_VISIT_TIP,
-  detectInAppBrowser,
-  inAppBannerCopy,
-  loadBrowserTipSeen,
-  pageHttpsUrl,
-  saveBrowserTipSeen,
-} from "../src/ui/inAppBrowser";
+import { detectInAppBrowser, inAppBannerCopy, pageHttpsUrl } from "../src/ui/inAppBrowser";
 import {
   INTERSTITIAL_BODY,
   INTERSTITIAL_TITLE,
@@ -227,11 +220,7 @@ describe("WeChat and WeCom banner", () => {
 
   it("puts Chinese first and does not claim the in-app mic will work", () => {
     const html = renderToStaticMarkup(
-      <BrowserBanner
-        ua="Mozilla/5.0 MicroMessenger/8.0.0"
-        href="https://dsarangi7.github.io/Echo/"
-        storage={memoryStorage()}
-      />,
+      <BrowserBanner ua="Mozilla/5.0 MicroMessenger/8.0.0" href="https://dsarangi7.github.io/Echo/" />,
     );
     const zh = html.indexOf("微信里打开时，麦克风可能用不了");
     const en = html.indexOf("The mic may not work in the WeChat in-app browser");
@@ -239,24 +228,22 @@ describe("WeChat and WeCom banner", () => {
     expect(en).toBeGreaterThan(zh);
     expect(html).toContain("https://dsarangi7.github.io/Echo/");
     expect(html).toContain("Copy link");
-    expect(html).toContain(FIRST_VISIT_TIP.zh);
-    expect(html).toContain(FIRST_VISIT_TIP.en);
+    expect(html).not.toContain("用 Safari 或 Chrome 最合适");
+    expect(html).not.toContain("Best on Safari or Chrome");
+    expect(html).not.toContain('id="browser-tip"');
     expect(html).not.toMatch(/will work|就能用麦克风|点菜单/i);
     expect(inAppBannerCopy("wecom").zh.startsWith("企业微信")).toBe(true);
     expect(inAppBannerCopy("wecom").en).toContain("WeCom");
 
     const http = renderToStaticMarkup(
-      <BrowserBanner ua="Mozilla/5.0 MicroMessenger/8.0.0" href="http://127.0.0.1:5173/" storage={memoryStorage()} />,
+      <BrowserBanner ua="Mozilla/5.0 MicroMessenger/8.0.0" href="http://127.0.0.1:5173/" />,
     );
     expect(http).not.toContain("Copy link");
 
-    const storage = memoryStorage();
-    saveBrowserTipSeen(storage);
-    expect(loadBrowserTipSeen(storage)).toBe(true);
-    const later = renderToStaticMarkup(
-      <BrowserBanner ua="Mozilla/5.0 Chrome/120.0" href="https://dsarangi7.github.io/Echo/" storage={storage} />,
+    const plain = renderToStaticMarkup(
+      <BrowserBanner ua="Mozilla/5.0 Chrome/120.0" href="https://dsarangi7.github.io/Echo/" />,
     );
-    expect(later).toBe("");
+    expect(plain).toBe("");
   });
 });
 
