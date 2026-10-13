@@ -4,7 +4,7 @@ Practice English or Chinese. The page opens on the cat and a short greeting, the
 
 English practice stays in the office: meetings, email, the factory, quality, and order documents. Chinese practice is for AYK work — orders, invoices, shipping documents, minutes, HR notices, drawings — plus Meituan delivery and Didi taxi rides.
 
-Hear it speaks the sentence. Say it listens, then marks the words you matched in English or the 字 you matched in Chinese. The score is a count, not an accent percentage.
+Chinese cards show tone-marked pinyin, one syllable at a time, so that is the line you read. English cards still show the English sentence. Hear it speaks the sentence — the Chinese clips are the characters. Say it listens, then marks the words you matched in English or the syllables you matched in Chinese. The score is still a count of those characters, not an accent percentage.
 
 The cat is an original mascot. Not Talking Tom, and not Talking Tat.
 
@@ -24,8 +24,10 @@ No paid API keys. Nothing is sent to Google Cloud, Azure, or OpenAI.
 - Transformers.js loads those files from this origin (`/Echo/models/...` on GitHub Pages, `/models/...` on Vercel) and stores them in the **Cache API** (`transformers-cache`). The next Say it reuses that cache, including after you install the app. Remote model hosts are disabled (`allowRemoteModels` is false).
 - The service worker does not precache the ONNX files. The decoder is about 29 MB, above the 12 MB precache cap, so a phone is not forced to download the model just to install the app.
 - The ONNX runtime is a single WASM thread, so GitHub Pages does not need cross-origin isolation. That is what lets Safari load it. The build copies `ort-wasm-simd.wasm` and `ort-wasm.wasm` (about 10 MB together) into the site.
-- Whisper tiny is the small multilingual model, on purpose, so phones can hold it. It will miss words, especially in Chinese. Misses are missing words or 字, not a fake accent score.
+- Whisper tiny is the small multilingual model, on purpose, so phones can hold it. It will miss words, especially in Chinese. Misses are missing words or 字, marked on the pinyin syllables, not a fake accent score.
 - If the copy on this site cannot be loaded, the status line says so in English and 中文 and says that Hear it still plays. Refresh and tap Say it to try again.
+
+Chinese pinyin is pack data, not something the page builds. Each line in `src/data/pack-zh.json` has `py` (what you read) and `zh` (the characters). Hear it plays the Piper clip for that line, and if the clip cannot play the device voice speaks `zh`. Say it asks Whisper to transcribe Chinese and compares that transcript to `zh`, then paints the matching pinyin syllables. The cat's Chinese greeting is the same: `py` on `src/data/intro.json` is what you read, and the spoken line stays `zh`. `npm run pinyin` rewrites `py` with pinyin-pro (tone marks, neutral tone, and 一/不 sandhi) after a sentence edit. A few office words are overridden in that script — 重开, 公差, 超差, 起订量, 零点一, 送货单一起, 课猫 — and 这儿 is written `zhèr`.
 
 **Hear it** plays a small pack of MP3s, about **2 MB for all 200 lines**. They were made with free [Piper](https://github.com/rhasspy/piper) voices:
 

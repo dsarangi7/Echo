@@ -9,6 +9,7 @@
     "build": "node scripts/copy-onnx.mjs && tsc --noEmit -p tsconfig.app.json && vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "pinyin": "node scripts/fill-pinyin.mjs",
     "build:android": "CAPACITOR=1 npm run build && npx cap sync android",
     "android:release": "npm run build:android && cd android && ./gradlew assembleRelease"
   },
@@ -26,6 +27,7 @@
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.3",
+    "pinyin-pro": "^3.29.5",
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
     "vite-plugin-pwa": "^2.0.0",

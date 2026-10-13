@@ -3,600 +3,700 @@
     "set": "POs & quotes",
     "zhSet": "订单和报价",
     "en": "Did you receive the purchase order?",
-    "zh": "采购订单收到了吗？"
+    "zh": "采购订单收到了吗？",
+    "py": "Cǎi gòu dìng dān shōu dào le ma?"
   },
   {
     "set": "POs & quotes",
     "zhSet": "订单和报价",
     "en": "Please use the price on the quote.",
-    "zh": "请按报价单上的价格做。"
+    "zh": "请按报价单上的价格做。",
+    "py": "Qǐng àn bào jià dān shàng de jià gé zuò."
   },
   {
     "set": "POs & quotes",
     "zhSet": "订单和报价",
     "en": "Does this unit price include tax?",
-    "zh": "这个单价含税吗？"
+    "zh": "这个单价含税吗？",
+    "py": "Zhè ge dān jià hán shuì ma?"
   },
   {
     "set": "POs & quotes",
     "zhSet": "订单和报价",
     "en": "Can you move the delivery up by a week?",
-    "zh": "交期能提前一周吗？"
+    "zh": "交期能提前一周吗？",
+    "py": "Jiāo qī néng tí qián yì zhōu ma?"
   },
   {
     "set": "POs & quotes",
     "zhSet": "订单和报价",
     "en": "Change the quantity to five hundred for now.",
-    "zh": "数量先改成五百件。"
+    "zh": "数量先改成五百件。",
+    "py": "Shù liàng xiān gǎi chéng wǔ bǎi jiàn."
   },
   {
     "set": "POs & quotes",
     "zhSet": "订单和报价",
     "en": "Please email the quote to me.",
-    "zh": "请把报价发到我邮箱。"
+    "zh": "请把报价发到我邮箱。",
+    "py": "Qǐng bǎ bào jià fā dào wǒ yóu xiāng."
   },
   {
     "set": "POs & quotes",
     "zhSet": "订单和报价",
     "en": "This quote is valid until the end of the month.",
-    "zh": "这版报价到月底有效。"
+    "zh": "这版报价到月底有效。",
+    "py": "Zhè bǎn bào jià dào yuè dǐ yǒu xiào."
   },
   {
     "set": "POs & quotes",
     "zhSet": "订单和报价",
     "en": "What is the minimum order quantity?",
-    "zh": "起订量是多少？"
+    "zh": "起订量是多少？",
+    "py": "Qǐ dìng liàng shì duō shǎo?"
   },
   {
     "set": "POs & quotes",
     "zhSet": "订单和报价",
     "en": "Please confirm the order number.",
-    "zh": "请帮我确认订单号。"
+    "zh": "请帮我确认订单号。",
+    "py": "Qǐng bāng wǒ què rèn dìng dān hào."
   },
   {
     "set": "POs & quotes",
     "zhSet": "订单和报价",
     "en": "The customer hasn't approved this order yet.",
-    "zh": "客户还没批准这个订单。"
+    "zh": "客户还没批准这个订单。",
+    "py": "Kè hù hái méi pī zhǔn zhè ge dìng dān."
   },
   {
     "set": "Finance & invoices",
     "zhSet": "财务和发票",
     "en": "Please issue a special VAT invoice.",
-    "zh": "请开增值税专用发票。"
+    "zh": "请开增值税专用发票。",
+    "py": "Qǐng kāi zēng zhí shuì zhuān yòng fā piào."
   },
   {
     "set": "Finance & invoices",
     "zhSet": "财务和发票",
     "en": "Use the full company name on the invoice.",
-    "zh": "发票抬头请写公司全称。"
+    "zh": "发票抬头请写公司全称。",
+    "py": "Fā piào tái tóu qǐng xiě gōng sī quán chēng."
   },
   {
     "set": "Finance & invoices",
     "zhSet": "财务和发票",
     "en": "I sent the tax ID on WeChat.",
-    "zh": "税号我发你微信了。"
+    "zh": "税号我发你微信了。",
+    "py": "Shuì hào wǒ fā nǐ wēi xìn le."
   },
   {
     "set": "Finance & invoices",
     "zhSet": "财务和发票",
     "en": "The amount on this invoice is wrong.",
-    "zh": "这张发票金额不对。"
+    "zh": "这张发票金额不对。",
+    "py": "Zhè zhāng fā piào jīn é bú duì."
   },
   {
     "set": "Finance & invoices",
     "zhSet": "财务和发票",
     "en": "Send the invoice with the delivery note.",
-    "zh": "发票和送货单一起寄来。"
+    "zh": "发票和送货单一起寄来。",
+    "py": "Fā piào hé sòng huò dān yì qǐ jì lái."
   },
   {
     "set": "Finance & invoices",
     "zhSet": "财务和发票",
     "en": "This payment is due before the end of the month.",
-    "zh": "这笔款月底前要付。"
+    "zh": "这笔款月底前要付。",
+    "py": "Zhè bǐ kuǎn yuè dǐ qián yào fù."
   },
   {
     "set": "Finance & invoices",
     "zhSet": "财务和发票",
     "en": "We paid thirty percent up front.",
-    "zh": "预付款付了百分之三十。"
+    "zh": "预付款付了百分之三十。",
+    "py": "Yù fù kuǎn fù le bǎi fēn zhī sān shí."
   },
   {
     "set": "Finance & invoices",
     "zhSet": "财务和发票",
     "en": "We'll pay the balance after acceptance.",
-    "zh": "尾款等验收后再付。"
+    "zh": "尾款等验收后再付。",
+    "py": "Wěi kuǎn děng yàn shōu hòu zài fù."
   },
   {
     "set": "Finance & invoices",
     "zhSet": "财务和发票",
     "en": "Please send me the statement.",
-    "zh": "请把对账单发我。"
+    "zh": "请把对账单发我。",
+    "py": "Qǐng bǎ duì zhàng dān fā wǒ."
   },
   {
     "set": "Finance & invoices",
     "zhSet": "财务和发票",
     "en": "This invoice needs to be reissued.",
-    "zh": "这张发票需要重开。"
+    "zh": "这张发票需要重开。",
+    "py": "Zhè zhāng fā piào xū yào chóng kāi."
   },
   {
     "set": "Packing & shipping",
     "zhSet": "装箱和出货",
     "en": "The packing list has to match the invoice.",
-    "zh": "装箱单和发票数量要对上。"
+    "zh": "装箱单和发票数量要对上。",
+    "py": "Zhuāng xiāng dān hé fā piào shù liàng yào duì shàng."
   },
   {
     "set": "Packing & shipping",
     "zhSet": "装箱和出货",
     "en": "Please send me the packing list to check.",
-    "zh": "请把装箱单发我核对。"
+    "zh": "请把装箱单发我核对。",
+    "py": "Qǐng bǎ zhuāng xiāng dān fā wǒ hé duì."
   },
   {
     "set": "Packing & shipping",
     "zhSet": "装箱和出货",
     "en": "Are the shipping marks on the outer cartons?",
-    "zh": "外箱唛头贴好了吗？"
+    "zh": "外箱唛头贴好了吗？",
+    "py": "Wài xiāng mài tóu tiē hǎo le ma?"
   },
   {
     "set": "Packing & shipping",
     "zhSet": "装箱和出货",
     "en": "Write both the gross weight and the net weight.",
-    "zh": "毛重和净重都要写上。"
+    "zh": "毛重和净重都要写上。",
+    "py": "Máo zhòng hé jìng zhòng dōu yào xiě shàng."
   },
   {
     "set": "Packing & shipping",
     "zhSet": "装箱和出货",
     "en": "Tell me when the bill of lading number is out.",
-    "zh": "提单号出来了告诉我。"
+    "zh": "提单号出来了告诉我。",
+    "py": "Tí dān hào chū lái le gào sù wǒ."
   },
   {
     "set": "Packing & shipping",
     "zhSet": "装箱和出货",
     "en": "Are the customs documents complete?",
-    "zh": "报关资料齐了吗？"
+    "zh": "报关资料齐了吗？",
+    "py": "Bào guān zī liào qí le ma?"
   },
   {
     "set": "Packing & shipping",
     "zhSet": "装箱和出货",
     "en": "Post the shipping photos in the group.",
-    "zh": "出货照片发到群里。"
+    "zh": "出货照片发到群里。",
+    "py": "Chū huò zhào piàn fā dào qún lǐ."
   },
   {
     "set": "Packing & shipping",
     "zhSet": "装箱和出货",
     "en": "This shipment goes by sea.",
-    "zh": "这票货走海运。"
+    "zh": "这票货走海运。",
+    "py": "Zhè piào huò zǒu hǎi yùn."
   },
   {
     "set": "Packing & shipping",
     "zhSet": "装箱和出货",
     "en": "Let me write down the tracking number.",
-    "zh": "快递单号我记一下。"
+    "zh": "快递单号我记一下。",
+    "py": "Kuài dì dān hào wǒ jì yí xià."
   },
   {
     "set": "Packing & shipping",
     "zhSet": "装箱和出货",
     "en": "Please scan the delivery receipt and send it back.",
-    "zh": "签收单请扫描回传。"
+    "zh": "签收单请扫描回传。",
+    "py": "Qiān shōu dān qǐng sǎo miáo huí chuán."
   },
   {
     "set": "Meeting minutes",
     "zhSet": "会议纪要",
     "en": "Who is writing the minutes today?",
-    "zh": "今天谁写会议纪要？"
+    "zh": "今天谁写会议纪要？",
+    "py": "Jīn tiān shuí xiě huì yì jì yào?"
   },
   {
     "set": "Meeting minutes",
     "zhSet": "会议纪要",
     "en": "I'll send the minutes to the group.",
-    "zh": "我把纪要发到群里。"
+    "zh": "我把纪要发到群里。",
+    "py": "Wǒ bǎ jì yào fā dào qún lǐ."
   },
   {
     "set": "Meeting minutes",
     "zhSet": "会议纪要",
     "en": "Each action needs an owner and a date.",
-    "zh": "待办要写负责人和日期。"
+    "zh": "待办要写负责人和日期。",
+    "py": "Dài bàn yào xiě fù zé rén hé rì qī."
   },
   {
     "set": "Meeting minutes",
     "zhSet": "会议纪要",
     "en": "Let's write this decision down.",
-    "zh": "这个结论我们记下来。"
+    "zh": "这个结论我们记下来。",
+    "py": "Zhè ge jié lùn wǒ men jì xià lái."
   },
   {
     "set": "Meeting minutes",
     "zhSet": "会议纪要",
     "en": "Is last meeting's action done?",
-    "zh": "上次的待办做完了吗？"
+    "zh": "上次的待办做完了吗？",
+    "py": "Shàng cì de dài bàn zuò wán le ma?"
   },
   {
     "set": "Meeting minutes",
     "zhSet": "会议纪要",
     "en": "Please add your comments.",
-    "zh": "请把你的意见补上。"
+    "zh": "请把你的意见补上。",
+    "py": "Qǐng bǎ nǐ de yì jiàn bǔ shàng."
   },
   {
     "set": "Meeting minutes",
     "zhSet": "会议纪要",
     "en": "Mark this point as not confirmed yet.",
-    "zh": "这一点先标成待确认。"
+    "zh": "这一点先标成待确认。",
+    "py": "Zhè yì diǎn xiān biāo chéng dài què rèn."
   },
   {
     "set": "Meeting minutes",
     "zhSet": "会议纪要",
     "en": "I'll send the minutes before I leave today.",
-    "zh": "纪要我下班前发出去。"
+    "zh": "纪要我下班前发出去。",
+    "py": "Jì yào wǒ xià bān qián fā chū qù."
   },
   {
     "set": "Meeting minutes",
     "zhSet": "会议纪要",
     "en": "If you have edits, change them in the document.",
-    "zh": "有修改就在文档里改。"
+    "zh": "有修改就在文档里改。",
+    "py": "Yǒu xiū gǎi jiù zài wén dàng lǐ gǎi."
   },
   {
     "set": "Meeting minutes",
     "zhSet": "会议纪要",
     "en": "The next meeting is Thursday afternoon.",
-    "zh": "下次会议定在周四下午。"
+    "zh": "下次会议定在周四下午。",
+    "py": "Xià cì huì yì dìng zài zhōu sì xià wǔ."
   },
   {
     "set": "Admin & HR",
     "zhSet": "行政和人事",
     "en": "Please turn in leave requests by Friday.",
-    "zh": "请在周五前把请假交上来。"
+    "zh": "请在周五前把请假交上来。",
+    "py": "Qǐng zài zhōu wǔ qián bǎ qǐng jià jiāo shàng lái."
   },
   {
     "set": "Admin & HR",
     "zhSet": "行政和人事",
     "en": "Fire drill tomorrow morning at nine.",
-    "zh": "明天上午九点消防演练。"
+    "zh": "明天上午九点消防演练。",
+    "py": "Míng tiān shàng wǔ jiǔ diǎn xiāo fáng yǎn liàn."
   },
   {
     "set": "Admin & HR",
     "zhSet": "行政和人事",
     "en": "Lost your badge? Get a new one from admin.",
-    "zh": "工牌丢了，请去行政补办。"
+    "zh": "工牌丢了，请去行政补办。",
+    "py": "Gōng pái diū le, qǐng qù xíng zhèng bǔ bàn."
   },
   {
     "set": "Admin & HR",
     "zhSet": "行政和人事",
     "en": "This month's payslip is in your email.",
-    "zh": "这个月工资条在邮箱里。"
+    "zh": "这个月工资条在邮箱里。",
+    "py": "Zhè ge yuè gōng zī tiáo zài yóu xiāng lǐ."
   },
   {
     "set": "Admin & HR",
     "zhSet": "行政和人事",
     "en": "Please update your emergency contact.",
-    "zh": "请更新紧急联系人。"
+    "zh": "请更新紧急联系人。",
+    "py": "Qǐng gēng xīn jǐn jí lián xì rén."
   },
   {
     "set": "Admin & HR",
     "zhSet": "行政和人事",
     "en": "Book the meeting room ahead of time.",
-    "zh": "会议室要提前预约。"
+    "zh": "会议室要提前预约。",
+    "py": "Huì yì shì yào tí qián yù yuē."
   },
   {
     "set": "Admin & HR",
     "zhSet": "行政和人事",
     "en": "The new colleague starts next Monday.",
-    "zh": "新同事下周一入职。"
+    "zh": "新同事下周一入职。",
+    "py": "Xīn tóng shì xià zhōu yī rù zhí."
   },
   {
     "set": "Admin & HR",
     "zhSet": "行政和人事",
     "en": "Tell your manager before you work overtime.",
-    "zh": "加班先跟主管说一声。"
+    "zh": "加班先跟主管说一声。",
+    "py": "Jiā bān xiān gēn zhǔ guǎn shuō yì shēng."
   },
   {
     "set": "Admin & HR",
     "zhSet": "行政和人事",
     "en": "Turn your medical report in to HR.",
-    "zh": "体检报告交到人事。"
+    "zh": "体检报告交到人事。",
+    "py": "Tǐ jiǎn bào gào jiāo dào rén shì."
   },
   {
     "set": "Admin & HR",
     "zhSet": "行政和人事",
     "en": "This notice is also on the bulletin board.",
-    "zh": "这条通知也贴在公告栏了。"
+    "zh": "这条通知也贴在公告栏了。",
+    "py": "Zhè tiáo tōng zhī yě tiē zài gōng gào lán le."
   },
   {
     "set": "Drawings & standards",
     "zhSet": "料号图纸标准",
     "en": "The last four digits of the part number are one zero four two.",
-    "zh": "料号末四位是幺零四二。"
+    "zh": "料号末四位是幺零四二。",
+    "py": "Liào hào mò sì wèi shì yāo líng sì èr."
   },
   {
     "set": "Drawings & standards",
     "zhSet": "料号图纸标准",
     "en": "Please make it to the latest drawing.",
-    "zh": "请按最新版图纸加工。"
+    "zh": "请按最新版图纸加工。",
+    "py": "Qǐng àn zuì xīn bǎn tú zhǐ jiā gōng."
   },
   {
     "set": "Drawings & standards",
     "zhSet": "料号图纸标准",
     "en": "This drawing is revision three.",
-    "zh": "这张图纸是第三版。"
+    "zh": "这张图纸是第三版。",
+    "py": "Zhè zhāng tú zhǐ shì dì sān bǎn."
   },
   {
     "set": "Drawings & standards",
     "zhSet": "料号图纸标准",
     "en": "This dimension is out of tolerance.",
-    "zh": "这个尺寸超差了。"
+    "zh": "这个尺寸超差了。",
+    "py": "Zhè ge chǐ cùn chāo chā le."
   },
   {
     "set": "Drawings & standards",
     "zhSet": "料号图纸标准",
     "en": "The tolerance is plus or minus zero point one millimeters.",
-    "zh": "公差是正负零点一毫米。"
+    "zh": "公差是正负零点一毫米。",
+    "py": "Gōng chā shì zhèng fù líng diǎn yī háo mǐ."
   },
   {
     "set": "Drawings & standards",
     "zhSet": "料号图纸标准",
     "en": "Please inspect it to the national standard.",
-    "zh": "请按国标来检验。"
+    "zh": "请按国标来检验。",
+    "py": "Qǐng àn guó biāo lái jiǎn yàn."
   },
   {
     "set": "Drawings & standards",
     "zhSet": "料号图纸标准",
     "en": "The drawing number is in the title block.",
-    "zh": "图号写在标题栏里。"
+    "zh": "图号写在标题栏里。",
+    "py": "Tú hào xiě zài biāo tí lán lǐ."
   },
   {
     "set": "Drawings & standards",
     "zhSet": "料号图纸标准",
     "en": "Don't mix up the left-hand and right-hand parts.",
-    "zh": "左右件不要装反。"
+    "zh": "左右件不要装反。",
+    "py": "Zuǒ yòu jiàn bú yào zhuāng fǎn."
   },
   {
     "set": "Drawings & standards",
     "zhSet": "料号图纸标准",
     "en": "Do the surface finish the way the drawing says.",
-    "zh": "表面处理按图纸要求做。"
+    "zh": "表面处理按图纸要求做。",
+    "py": "Biǎo miàn chǔ lǐ àn tú zhǐ yāo qiú zuò."
   },
   {
     "set": "Drawings & standards",
     "zhSet": "料号图纸标准",
     "en": "This standard part can be purchased outside.",
-    "zh": "这个标准件可以外购。"
+    "zh": "这个标准件可以外购。",
+    "py": "Zhè ge biāo zhǔn jiàn kě yǐ wài gòu."
   },
   {
     "set": "Delivery / Meituan",
     "zhSet": "外卖",
     "en": "To the rider: Just leave it at the door.",
-    "zh": "放门口就行。"
+    "zh": "放门口就行。",
+    "py": "Fàng mén kǒu jiù xíng."
   },
   {
     "set": "Delivery / Meituan",
     "zhSet": "外卖",
     "en": "To the rider: I'm home.",
-    "zh": "我在家。"
+    "zh": "我在家。",
+    "py": "Wǒ zài jiā."
   },
   {
     "set": "Delivery / Meituan",
     "zhSet": "外卖",
     "en": "To the rider: Call me when you arrive.",
-    "zh": "你到了给我打电话。"
+    "zh": "你到了给我打电话。",
+    "py": "Nǐ dào le gěi wǒ dǎ diàn huà."
   },
   {
     "set": "Delivery / Meituan",
     "zhSet": "外卖",
     "en": "To the rider: Put it in front of the door.",
-    "zh": "放在门前面就行。"
+    "zh": "放在门前面就行。",
+    "py": "Fàng zài mén qián miàn jiù xíng."
   },
   {
     "set": "Delivery / Meituan",
     "zhSet": "外卖",
     "en": "To the rider: No need to come up, thanks.",
-    "zh": "不用上来，谢谢。"
+    "zh": "不用上来，谢谢。",
+    "py": "Bú yòng shàng lái, xiè xiè."
   },
   {
     "set": "Delivery / Meituan",
     "zhSet": "外卖",
     "en": "To the rider: The address is wrong.",
-    "zh": "地址写错了。"
+    "zh": "地址写错了。",
+    "py": "Dì zhǐ xiě cuò le."
   },
   {
     "set": "Delivery / Meituan",
     "zhSet": "外卖",
     "en": "To the rider: Wait a minute.",
-    "zh": "请等我一下。"
+    "zh": "请等我一下。",
+    "py": "Qǐng děng wǒ yí xià."
   },
   {
     "set": "Delivery / Meituan",
     "zhSet": "外卖",
     "en": "To the rider: I'll come down and get it.",
-    "zh": "我马上下来拿。"
+    "zh": "我马上下来拿。",
+    "py": "Wǒ mǎ shàng xià lái ná."
   },
   {
     "set": "Delivery / Meituan",
     "zhSet": "外卖",
     "en": "To the rider: Just put it in the parcel locker.",
-    "zh": "放快递柜就行。"
+    "zh": "放快递柜就行。",
+    "py": "Fàng kuài dì guì jiù xíng."
   },
   {
     "set": "Delivery / Meituan",
     "zhSet": "外卖",
     "en": "To the rider: Tell me when the food arrives.",
-    "zh": "餐到了跟我说一声。"
+    "zh": "餐到了跟我说一声。",
+    "py": "Cān dào le gēn wǒ shuō yì shēng."
   },
   {
     "set": "Delivery / Meituan",
     "zhSet": "外卖",
     "en": "To the rider: I'll wait by the elevator.",
-    "zh": "我在电梯口等你。"
+    "zh": "我在电梯口等你。",
+    "py": "Wǒ zài diàn tī kǒu děng nǐ."
   },
   {
     "set": "Delivery / Meituan",
     "zhSet": "外卖",
     "en": "To the rider: I sent you the gate code.",
-    "zh": "门禁密码我发你了。"
+    "zh": "门禁密码我发你了。",
+    "py": "Mén jìn mì mǎ wǒ fā nǐ le."
   },
   {
     "set": "Delivery / Meituan",
     "zhSet": "外卖",
     "en": "To the rider: Don't knock. The baby is asleep.",
-    "zh": "别敲门，孩子在睡觉。"
+    "zh": "别敲门，孩子在睡觉。",
+    "py": "Bié qiāo mén, hái zi zài shuì jiào."
   },
   {
     "set": "Delivery / Meituan",
     "zhSet": "外卖",
     "en": "To the rider: I'm in a meeting. Message me on WeChat.",
-    "zh": "我在开会，微信跟我说。"
+    "zh": "我在开会，微信跟我说。",
+    "py": "Wǒ zài kāi huì, wēi xìn gēn wǒ shuō."
   },
   {
     "set": "Delivery / Meituan",
     "zhSet": "外卖",
     "en": "To the rider: Thanks. I appreciate it.",
-    "zh": "谢谢，辛苦了。"
+    "zh": "谢谢，辛苦了。",
+    "py": "Xiè xiè, xīn kǔ le."
   },
   {
     "set": "Rider phrases",
     "zhSet": "外卖骑手",
     "en": "Rider says: Hello, your delivery is here.",
-    "zh": "您好，外卖到了。"
+    "zh": "您好，外卖到了。",
+    "py": "Nín hǎo, wài mài dào le."
   },
   {
     "set": "Rider phrases",
     "zhSet": "外卖骑手",
     "en": "Rider says: I'm already downstairs.",
-    "zh": "我已经到楼下了。"
+    "zh": "我已经到楼下了。",
+    "py": "Wǒ yǐ jīng dào lóu xià le."
   },
   {
     "set": "Rider phrases",
     "zhSet": "外卖骑手",
     "en": "Rider says: Can you come down and pick it up?",
-    "zh": "您方便下来取一下吗？"
+    "zh": "您方便下来取一下吗？",
+    "py": "Nín fāng biàn xià lái qǔ yí xià ma?"
   },
   {
     "set": "Rider phrases",
     "zhSet": "外卖骑手",
     "en": "Rider says: I left it at the door.",
-    "zh": "我放在门口了。"
+    "zh": "我放在门口了。",
+    "py": "Wǒ fàng zài mén kǒu le."
   },
   {
     "set": "Rider phrases",
     "zhSet": "外卖骑手",
     "en": "Rider says: Please come out and get the food.",
-    "zh": "请您出来取餐。"
+    "zh": "请您出来取餐。",
+    "py": "Qǐng nín chū lái qǔ cān."
   },
   {
     "set": "Rider phrases",
     "zhSet": "外卖骑手",
     "en": "Rider says: I can't get through the gate.",
-    "zh": "门禁我进不去。"
+    "zh": "门禁我进不去。",
+    "py": "Mén jìn wǒ jìn bú qù."
   },
   {
     "set": "Rider phrases",
     "zhSet": "外卖骑手",
     "en": "Rider says: The address doesn't look right.",
-    "zh": "地址好像不太对。"
+    "zh": "地址好像不太对。",
+    "py": "Dì zhǐ hǎo xiàng bú tài duì."
   },
   {
     "set": "Rider phrases",
     "zhSet": "外卖骑手",
     "en": "Rider says: I'm waiting downstairs.",
-    "zh": "我在楼下等您。"
+    "zh": "我在楼下等您。",
+    "py": "Wǒ zài lóu xià děng nín."
   },
   {
     "set": "Rider phrases",
     "zhSet": "外卖骑手",
     "en": "Rider says: I left the food at the front desk.",
-    "zh": "餐我放前台了。"
+    "zh": "餐我放前台了。",
+    "py": "Cān wǒ fàng qián tái le."
   },
   {
     "set": "Rider phrases",
     "zhSet": "外卖骑手",
     "en": "Rider says: I can't reach you.",
-    "zh": "联系不上您。"
+    "zh": "联系不上您。",
+    "py": "Lián xì bú shàng nín."
   },
   {
     "set": "Rider phrases",
     "zhSet": "外卖骑手",
     "en": "Rider says: The elevator needs a card, so I can't come up.",
-    "zh": "电梯要刷卡，我上不去。"
+    "zh": "电梯要刷卡，我上不去。",
+    "py": "Diàn tī yào shuā kǎ, wǒ shàng bú qù."
   },
   {
     "set": "Rider phrases",
     "zhSet": "外卖骑手",
     "en": "Rider says: Please change the delivery address.",
-    "zh": "请您改一下收货地址。"
+    "zh": "请您改一下收货地址。",
+    "py": "Qǐng nín gǎi yí xià shōu huò dì zhǐ."
   },
   {
     "set": "Rider phrases",
     "zhSet": "外卖骑手",
     "en": "Rider says: The food is in the thermal bag. Please take it.",
-    "zh": "餐在保温箱里，请拿好。"
+    "zh": "餐在保温箱里，请拿好。",
+    "py": "Cān zài bǎo wēn xiāng lǐ, qǐng ná hǎo."
   },
   {
     "set": "Rider phrases",
     "zhSet": "外卖骑手",
     "en": "Rider says: Please tell me the last digits of your phone.",
-    "zh": "请说一下手机尾号。"
+    "zh": "请说一下手机尾号。",
+    "py": "Qǐng shuō yí xià shǒu jī wěi hào."
   },
   {
     "set": "Rider phrases",
     "zhSet": "外卖骑手",
     "en": "Rider says: Okay, I'll head off then.",
-    "zh": "好的，那我先走了。"
+    "zh": "好的，那我先走了。",
+    "py": "Hǎo de, nà wǒ xiān zǒu le."
   },
   {
     "set": "Taxi / Didi",
     "zhSet": "打车",
     "en": "I called you.",
-    "zh": "师傅，我打你电话了。"
+    "zh": "师傅，我打你电话了。",
+    "py": "Shī fu, wǒ dǎ nǐ diàn huà le."
   },
   {
     "set": "Taxi / Didi",
     "zhSet": "打车",
     "en": "I'm at the gate.",
-    "zh": "我在大门口。"
+    "zh": "我在大门口。",
+    "py": "Wǒ zài dà mén kǒu."
   },
   {
     "set": "Taxi / Didi",
     "zhSet": "打车",
     "en": "I'm at the pickup point by the north exit.",
-    "zh": "我在北门的上车点。"
+    "zh": "我在北门的上车点。",
+    "py": "Wǒ zài běi mén de shàng chē diǎn."
   },
   {
     "set": "Taxi / Didi",
     "zhSet": "打车",
     "en": "Please wait a moment.",
-    "zh": "师傅，等我一下。"
+    "zh": "师傅，等我一下。",
+    "py": "Shī fu, děng wǒ yí xià."
   },
   {
     "set": "Taxi / Didi",
     "zhSet": "打车",
     "en": "To Lujiazui.",
-    "zh": "去陆家嘴。"
+    "zh": "去陆家嘴。",
+    "py": "Qù lù jiā zuǐ."
   },
   {
     "set": "Taxi / Didi",
     "zhSet": "打车",
     "en": "Take the elevated road, not the highway.",
-    "zh": "走高架，别走高速。"
+    "zh": "走高架，别走高速。",
+    "py": "Zǒu gāo jià, bié zǒu gāo sù."
   },
   {
     "set": "Taxi / Didi",
     "zhSet": "打车",
     "en": "Stop here and open the trunk.",
-    "zh": "师傅，这儿停，开一下后备箱。"
+    "zh": "师傅，这儿停，开一下后备箱。",
+    "py": "Shī fu, zhèr tíng, kāi yí xià hòu bèi xiāng."
   },
   {
     "set": "Taxi / Didi",
     "zhSet": "打车",
     "en": "I've paid. Please confirm the order.",
-    "zh": "我付好了，订单确认一下。"
+    "zh": "我付好了，订单确认一下。",
+    "py": "Wǒ fù hǎo le, dìng dān què rèn yí xià."
   },
   {
     "set": "Taxi / Didi",
     "zhSet": "打车",
     "en": "That's the wrong car.",
-    "zh": "师傅，车牌不对。"
+    "zh": "师傅，车牌不对。",
+    "py": "Shī fu, chē pái bú duì."
   },
   {
     "set": "Taxi / Didi",
     "zhSet": "打车",
     "en": "Thanks, driver.",
-    "zh": "谢谢师傅，辛苦了。"
+    "zh": "谢谢师傅，辛苦了。",
+    "py": "Xiè xiè shī fu, xīn kǔ le."
   }
 ]

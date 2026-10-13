@@ -34,6 +34,7 @@ function micNote(kind: MicFailure): string {
 const PROMPT_EN = "Tap Hear it, then Say it. 先听一听，再说一说。";
 const PROMPT_ZH = "点「听一听」，再点「说一说」。 Hear it, then say it.";
 
+/** Spoken line for Hear it fallback and Say it. Chinese stays 汉字 so Piper and Whisper are unchanged. */
 function primaryText(lang: Lang, item: Sentence): string {
   return lang === "en" ? item.en : item.zh;
 }

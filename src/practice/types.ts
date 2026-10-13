@@ -7,6 +7,11 @@ export type Sentence = {
   zhSet: string;
   en: string;
   zh: string;
+  /**
+   * Tone-marked pinyin for Chinese practice. Learners read this.
+   * Hear it and Say it keep using `zh`.
+   */
+  py?: string;
 };
 
 export type Indexes = {

@@ -19,7 +19,7 @@ import {
   stopSpeaking,
   type HearFailReason,
 } from "../src/speech/tts";
-import { introClipUrl, introLine } from "../src/speech/intro";
+import { introClipUrl, introLine, introReading } from "../src/speech/intro";
 import {
   HEAR_PACE_LABEL,
   HEAR_PACE_RATE,
@@ -48,6 +48,10 @@ describe("Hear it engine", () => {
     expect(introLine("zh")).toContain("课猫");
     expect(introLine("zh")).toContain("听一听");
     expect(introLine("en")).not.toBe(introLine("zh"));
+    expect(introReading("en")).toBe(introLine("en"));
+    expect(introReading("zh")).toContain("Kè Māo");
+    expect(introReading("zh")).toContain("tīng");
+    expect(introReading("zh")).not.toMatch(/\p{Script=Han}/u);
     expect(introClipUrl("en", "/Echo/")).toBe("/Echo/audio/intro/en.mp3");
     expect(introClipUrl("zh", "/")).toBe("/audio/intro/zh.mp3");
     expect(statSync("public/audio/intro/en.mp3").size).toBeGreaterThan(5000);

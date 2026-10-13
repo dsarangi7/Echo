@@ -1,7 +1,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { pinyinMarkCount } from "../src/practice/pinyin";
+import { charsOf } from "../src/practice/score";
 
-type Row = { set: string; zhSet: string; en: string; zh: string };
+type Row = { set: string; zhSet: string; en: string; zh: string; py?: string };
 
 function load(name: string): Row[] {
   return JSON.parse(readFileSync(name, "utf8")) as Row[];
@@ -40,6 +42,7 @@ describe("English pack", () => {
     const text = pack.map((row) => row.en).join("\n");
     expect(text).toContain("Please send the purchase order today.");
     expect(text).not.toMatch(/milk aisle|cilantro|to go/i);
+    expect(pack.every((row) => !("py" in row))).toBe(true);
   });
 });
 
@@ -72,5 +75,27 @@ describe("Chinese pack", () => {
       expect(taxi).toContain(phrase);
     }
     expect(pack.map((row) => row.zh).join("\n")).not.toMatch(/西红柿|香菜|菜单|怎么卖/);
+    const byZh = new Map(pack.map((row) => [row.zh, row.py ?? ""]));
+    for (const row of pack) {
+      expect(row.py, row.zh).toBeTruthy();
+      expect(row.py).not.toMatch(/\p{Script=Han}/u);
+      expect(row.py).not.toMatch(/[？。，]/);
+      expect(row.py).toMatch(/[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/);
+      expect(pinyinMarkCount(row.py ?? "")).toBe(charsOf(row.zh).length);
+    }
+    const py = (zh: string) => (byZh.get(zh) ?? "").toLowerCase();
+    expect(py("这张发票需要重开。")).toContain("chóng kāi");
+    expect(py("公差是正负零点一毫米。")).toContain("gōng chā");
+    expect(py("公差是正负零点一毫米。")).toContain("yī");
+    expect(py("公差是正负零点一毫米。")).not.toContain("yì");
+    expect(py("这个尺寸超差了。")).toContain("chāo chā");
+    expect(py("起订量是多少？")).toContain("qǐ dìng liàng");
+    expect(py("发票和送货单一起寄来。")).toContain("yì qǐ");
+    expect(py("师傅，这儿停，开一下后备箱。")).toContain("zhèr");
+    expect(py("表面处理按图纸要求做。")).toContain("chǔ lǐ");
+    expect(py("表面处理按图纸要求做。")).toContain("yāo qiú");
+    expect(byZh.get("不用上来，谢谢。")).toMatch(/^Bú yòng /);
+    expect(py("新同事下周一入职。")).toContain("zhōu yī");
+    expect(py("放门口就行。")).toContain("xíng");
   });
 });

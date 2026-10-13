@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { stepWithinSet } from "../practice/cards";
+import { readingText } from "../practice/pinyin";
 import { HEAR_PACE_LABEL, HEAR_PACES } from "../practice/pace";
 import { emptySession } from "../practice/session";
 import { micHeardLine } from "../practice/score";
@@ -57,7 +58,7 @@ export function PracticePanel(practice: Practice) {
   while (setEnd < pack.length && pack[setEnd]?.set === item.set) setEnd += 1;
   const setCount = Math.max(1, setEnd - setStart);
   const setPos = Math.min(setCount, Math.max(1, index - setStart + 1));
-  const primary = lang === "en" ? item.en : item.zh;
+  const primary = readingText(lang, item);
   const meaning = lang === "en" ? item.zh : item.en;
   const setTitle = lang === "zh" ? item.zhSet : item.set;
   const setSub = lang === "zh" ? item.set : item.zhSet;
@@ -206,7 +207,7 @@ export function PracticePanel(practice: Practice) {
             ) : (
               <p className="legend" id="legend-match">
                 <span className="sw ok" />
-                对上了这个字 matched
+                对上了这个音节 matched
                 <span className="sw bad" />
                 没对上 missing
               </p>
@@ -217,7 +218,7 @@ export function PracticePanel(practice: Practice) {
               </p>
             ) : (
               <p className="legend" id="legend-score">
-                按字比对，不是口音分数。It checks characters, not an accent score.
+                按字比对，标在拼音上，不是口音分数。It checks characters and marks the pinyin, not an accent score.
               </p>
             )}
           </details>
