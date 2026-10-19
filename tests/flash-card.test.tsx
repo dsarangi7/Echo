@@ -111,7 +111,9 @@ describe("flash card practice", () => {
     expect(html).toContain('id="say"');
     expect(html).toContain('id="pace-slow"');
     expect(html).toContain('id="legend-score"');
-    expect(html).toContain("arrow keys change the sentence");
+    expect(html).toContain('id="match-tip"');
+    expect(html).not.toContain("arrow keys change the sentence");
+    expect(html).not.toContain("左右滑动");
     expect(html).toMatch(/id="progress">\s*1 \/ 3\s*</);
     expect(html).not.toContain('id="streak-strip"');
     const earned = panel({ session: { clear: 2, partial: 0, unsure: 0, streak: 2, started: true } });
