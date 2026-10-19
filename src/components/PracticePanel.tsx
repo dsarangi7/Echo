@@ -153,6 +153,36 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
 
       {picking ? null : (
         <div className="thumb-dock">
+          {quietStart ? null : (
+            <div className={outcome === "recognition_fail" ? "result recognition" : "result"} id="result" aria-live="polite">
+              <p className={outcome === "recognition_fail" ? "kicker mic-heard" : "kicker"} id="kicker">
+                {kicker}
+              </p>
+              <p id="heard" className={outcome === "recognition_fail" ? "fail-headline" : undefined}>
+                {heard}
+              </p>
+              {lineOutcome ? <FeedbackLines lang={lang} kind={lineOutcome} session={session ?? emptySession()} /> : null}
+              {outcome === "recognition_fail" ? (
+                <>
+                  <p id="heard-preview" className="heard-muted">
+                    {micHeardLine(lang, heardPreview)}
+                  </p>
+                  <div className="fail-actions">
+                    <button type="button" className="act primary" id="retry-hear" onClick={hear}>
+                      <b>Hear it</b>
+                      <small>听一听</small>
+                    </button>
+                    <button type="button" className="act ghost" id="retry-say" onClick={sayIt}>
+                      <b>Try again</b>
+                      <small>再说一次</small>
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <p id="score">{score}</p>
+              )}
+            </div>
+          )}
           <div className="pace">
             <p className="pace-label" id="pace-label">
               <b>Hear it pace</b>
@@ -225,36 +255,6 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
             )}
           </details>
 
-          {quietStart ? null : (
-          <div className={outcome === "recognition_fail" ? "result recognition" : "result"} id="result" aria-live="polite">
-            <p className={outcome === "recognition_fail" ? "kicker mic-heard" : "kicker"} id="kicker">
-              {kicker}
-            </p>
-            <p id="heard" className={outcome === "recognition_fail" ? "fail-headline" : undefined}>
-              {heard}
-            </p>
-            {lineOutcome ? <FeedbackLines lang={lang} kind={lineOutcome} session={session ?? emptySession()} /> : null}
-            {outcome === "recognition_fail" ? (
-              <>
-                <p id="heard-preview" className="heard-muted">
-                  {micHeardLine(lang, heardPreview)}
-                </p>
-                <div className="fail-actions">
-                  <button type="button" className="act primary" id="retry-hear" onClick={hear}>
-                    <b>Hear it</b>
-                    <small>听一听</small>
-                  </button>
-                  <button type="button" className="act ghost" id="retry-say" onClick={sayIt}>
-                    <b>Try again</b>
-                    <small>再说一次</small>
-                  </button>
-                </div>
-              </>
-            ) : (
-              <p id="score">{score}</p>
-            )}
-          </div>
-          )}
           <p className="keys">左右滑动，或点两边的箭头。 Swipe, or ← →. arrow keys change the sentence</p>
         </>
       )}
