@@ -13,8 +13,9 @@ import { StreakChrome } from "./StreakChrome";
 
 type Practice = ReturnType<typeof usePractice>;
 
-export function PracticePanel(practice: Practice) {
+export function PracticePanel(practice: Practice & { active?: boolean }) {
   const {
+    active = true,
     lang,
     index,
     item,
@@ -85,6 +86,7 @@ export function PracticePanel(practice: Practice) {
   );
 
   useEffect(() => {
+    if (!active) return;
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape" && picking) {
         event.preventDefault();
@@ -105,7 +107,7 @@ export function PracticePanel(practice: Practice) {
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [move, picking]);
+  }, [active, move, picking]);
 
   return (
     <section className="card practice-card" aria-label="Practice">

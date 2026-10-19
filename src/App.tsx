@@ -1,18 +1,23 @@
 import { useEffect, useState } from "react";
 import { BrowserBanner } from "./components/BrowserBanner";
 import { CatMascot } from "./components/CatMascot";
+import { ModeNav, type EchoMode } from "./components/ModeNav";
 import { ModelInterstitial } from "./components/ModelInterstitial";
 import { PracticePanel } from "./components/PracticePanel";
 import { SettingsSheet } from "./components/SettingsSheet";
+import { TranslatePanel } from "./components/TranslatePanel";
 import { syncNativeReminders } from "./native/syncReminders";
 import { startReminderRuntime } from "./practice/reminder-runtime";
 import { usePractice } from "./practice/usePractice";
 import { introLine, introReading } from "./speech/intro";
+import { useTranslate } from "./translate/useTranslate";
 
 export function App() {
   const practice = usePractice();
+  const translate = useTranslate();
   const { lang, setLanguage } = practice;
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [mode, setMode] = useState<EchoMode>("practice");
 
   useEffect(() => startReminderRuntime(), []);
 
@@ -22,11 +27,26 @@ export function App() {
 
   const greeting = introReading(lang);
   const greetingAside = introLine(lang === "en" ? "zh" : "en");
+  const catFromTranslate = translate.catMode !== "idle";
+
+  function selectMode(next: EchoMode) {
+    if (next === mode) return;
+    practice.quiet();
+    translate.quiet();
+    setMode(next);
+  }
 
   return (
     <div className="wrap">
       <header className="hello">
-        <CatMascot mode={practice.catMode} mouth={practice.mouth} onIntroduce={practice.introduce} />
+        <CatMascot
+          mode={catFromTranslate ? translate.catMode : practice.catMode}
+          mouth={catFromTranslate ? translate.mouth : practice.mouth}
+          onIntroduce={() => {
+            translate.quiet();
+            practice.introduce();
+          }}
+        />
         <div className="hello-copy">
           <h1>课猫 Echo</h1>
           <p className="meow" id="greeting">
@@ -90,8 +110,30 @@ export function App() {
         </div>
       </header>
 
+      <ModeNav mode={mode} onChange={selectMode} />
+
       <div className="stage">
-        <PracticePanel {...practice} />
+        <div hidden={mode !== "practice"}>
+          <PracticePanel {...practice} active={mode === "practice"} />
+        </div>
+        <div hidden={mode !== "translate"}>
+          <TranslatePanel
+            choice={translate.choice}
+            text={translate.text}
+            result={translate.result}
+            resultLang={translate.resultLang}
+            note={translate.note}
+            tone={translate.tone}
+            phase={translate.phase}
+            onChoice={translate.onChoice}
+            onText={translate.onText}
+            onSwap={translate.onSwap}
+            onTranslate={translate.onTranslate}
+            onSpeak={translate.onSpeak}
+            onHear={translate.onHear}
+            onCopy={translate.onCopy}
+          />
+        </div>
       </div>
       <section className="notices" aria-label="Notices. 提示">
         {practice.kicker === "Note" && practice.heard ? (

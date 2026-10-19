@@ -46,6 +46,14 @@ Piper is not run as WASM inside the page. A live Piper voice is about 60 MB per 
 
 To rebuild the clips after a sentence edit, install Piper and ffmpeg, then run `scripts/generate-audio.py`. The model files stay outside the repo.
 
+## Translate
+
+Translate sits beside Practice (翻译 / 练习), not inside Settings. Type a sentence or tap Speak. Speak uses the same on-device Whisper tiny microphone path as Say it. Hear it on the result uses the device voice (`speechSynthesis`) — the same fallback Hear it already uses when a Piper clip cannot play. The Piper files are only the 200 practice lines. If a translation happens to match one of those lines exactly, that clip plays instead.
+
+The engine is [MyMemory](https://mymemory.translated.net/doc/spec.php) (`api.mymemory.translated.net`). The page calls it from the browser, so GitHub Pages and Vercel both work with no API key and no serverless route. Nothing is sent to OpenAI. Anonymous use is about 5,000 characters a day per IP address. A busy office network can hit that limit; the screen says so. An optional build-time `VITE_MYMEMORY_CONTACT` email (one MyMemory already accepts) raises the quota. It is not required, and it is not a secret key.
+
+Direction starts on Auto. Chinese characters go 中文 → English, and Latin letters go English → 中文. EN → 中文 and 中文 → EN lock a direction. Swap exchanges the sentence and the translation. Lines stay at 500 characters, which is MyMemory's request limit. An empty Auto line is listened to as English until the text looks like 中文.
+
 ## Browsers
 
 | | Hear it | Say it |

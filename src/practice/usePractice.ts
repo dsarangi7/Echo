@@ -415,6 +415,15 @@ export function usePractice() {
     })();
   }, [clearTimers, noteFailure, recordOutcome]);
 
+  const quiet = useCallback(() => {
+    const live = captureRef.current != null;
+    stopAudio();
+    if (!live) return;
+    setKicker("Practice");
+    setScore("");
+    setHeard(langRef.current === "en" ? PROMPT_EN : PROMPT_ZH);
+  }, [stopAudio]);
+
   return {
     lang,
     index,
@@ -438,6 +447,7 @@ export function usePractice() {
     stepPack,
     hear,
     sayIt,
+    quiet,
     pace,
     setPace,
     session,
