@@ -8,15 +8,23 @@ import { SettingsSheet } from "./components/SettingsSheet";
 import { TranslatePanel } from "./components/TranslatePanel";
 import { syncNativeReminders } from "./native/syncReminders";
 import { startReminderRuntime } from "./practice/reminder-runtime";
+import type { CatMode } from "./practice/types";
 import { usePractice } from "./practice/usePractice";
 import { introLine, introReading } from "./speech/intro";
 import { useTranslate } from "./translate/useTranslate";
+
+const CAT_STATUS: Record<CatMode, string> = {
+  idle: "待命",
+  listen: "在听",
+  talk: "在说",
+};
 
 export function App() {
   const practice = usePractice();
   const translate = useTranslate();
   const { lang, setLanguage } = practice;
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [introOpen, setIntroOpen] = useState(false);
   const [mode, setMode] = useState<EchoMode>("practice");
 
   useEffect(() => startReminderRuntime(), []);
@@ -28,6 +36,7 @@ export function App() {
   const greeting = introReading(lang);
   const greetingAside = introLine(lang === "en" ? "zh" : "en");
   const catFromTranslate = translate.catMode !== "idle";
+  const catMode = catFromTranslate ? translate.catMode : practice.catMode;
 
   function selectMode(next: EchoMode) {
     if (next === mode) return;
@@ -38,23 +47,45 @@ export function App() {
 
   return (
     <div className="wrap">
-      <header className="hello">
-        <CatMascot
-          mode={catFromTranslate ? translate.catMode : practice.catMode}
-          mouth={catFromTranslate ? translate.mouth : practice.mouth}
-          onIntroduce={() => {
-            translate.quiet();
-            practice.introduce();
-          }}
-        />
-        <div className="hello-copy">
-          <h1>课猫 Echo</h1>
-          <p className="meow" id="greeting">
-            <b className={lang === "zh" ? "pinyin" : undefined} lang={lang === "zh" ? "zh-Latn" : "en"}>
-              {greeting}
-            </b>
-            <small lang={lang === "en" ? "zh-CN" : "en"}>{greetingAside}</small>
-          </p>
+      <header className={introOpen ? "hello intro-open" : "hello"}>
+        <button
+          type="button"
+          className={`intro-toggle ${catMode}`}
+          id="intro-toggle"
+          aria-expanded={introOpen}
+          aria-controls="hello-intro"
+          aria-label={introOpen ? "Hide introduction. 收起介绍" : "Show introduction. 展开介绍"}
+          onClick={() => setIntroOpen((open) => !open)}
+        >
+          <span className="intro-mark" aria-hidden="true">
+            猫
+          </span>
+          <span className="intro-copy">
+            <b>课猫</b>
+            <small>{CAT_STATUS[catMode]}</small>
+          </span>
+          <svg className="intro-chevron" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+            <path d="M3 5.2 L7 9 L11 5.2" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+        <div className="hello-intro" id="hello-intro">
+          <CatMascot
+            mode={catMode}
+            mouth={catFromTranslate ? translate.mouth : practice.mouth}
+            onIntroduce={() => {
+              translate.quiet();
+              practice.introduce();
+            }}
+          />
+          <div className="hello-copy">
+            <h1>课猫 Echo</h1>
+            <p className="meow" id="greeting">
+              <b className={lang === "zh" ? "pinyin" : undefined} lang={lang === "zh" ? "zh-Latn" : "en"}>
+                {greeting}
+              </b>
+              <small lang={lang === "en" ? "zh-CN" : "en"}>{greetingAside}</small>
+            </p>
+          </div>
         </div>
         <div className="top-actions">
           <div className="lang-switch" role="group" aria-label="Language to practice">

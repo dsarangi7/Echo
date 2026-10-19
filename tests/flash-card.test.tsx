@@ -164,6 +164,32 @@ describe("flash card practice", () => {
     expect(practice).toBeLessThan(banner);
     expect(banner).toBeLessThan(model);
     expect(app).toContain('id="greeting"');
+    expect(app).toContain('id="intro-toggle"');
+    expect(app).toContain('id="hello-intro"');
     expect(app).not.toContain("<footer");
+    const css = readFileSync("src/index.css", "utf8");
+    expect(css).toContain(".hello:not(.intro-open) .hello-intro");
+    expect(css).toContain("max-width: 520px");
+  });
+
+  it("keeps the score with Hear it and Say it so a phone dock can show it", () => {
+    const html = panel({
+      outcome: "scored",
+      kicker: "Heard",
+      heard: "师傅我打你电话了",
+      score: "8 of 8 字",
+      lineOutcome: "clear",
+    });
+    const dock = html.indexOf('class="thumb-dock"');
+    const score = html.indexOf('id="score"');
+    const hear = html.indexOf('id="hear"');
+    const say = html.indexOf('id="say"');
+    expect(dock).toBeGreaterThan(-1);
+    expect(score).toBeGreaterThan(dock);
+    expect(hear).toBeGreaterThan(score);
+    expect(say).toBeGreaterThan(hear);
+    expect(html).toContain("8 of 8 字");
+    expect(html).toContain(">Shī</span>");
+    expect(html).not.toContain("<span>师</span>");
   });
 });
