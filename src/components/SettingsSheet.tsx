@@ -19,6 +19,7 @@ import { ReminderControl } from "./ReminderControl";
 type Props = {
   open: boolean;
   onClose: () => void;
+  onShowLanding?: () => void;
 };
 
 function alertCopy(result: SyncResult | null): { en: string; zh: string } | null {
@@ -33,7 +34,7 @@ function alertCopy(result: SyncResult | null): { en: string; zh: string } | null
  * Web delivery stays on enableDailyReminder / disableDailyReminder.
  * The Android shell stays on armNativeReminder, which asks before it schedules.
  */
-export function SettingsSheet({ open, onClose }: Props) {
+export function SettingsSheet({ open, onClose, onShowLanding }: Props) {
   const reminder = useReminderSettings();
   const { theme, setTheme } = useTheme();
   const panelRef = useRef<HTMLElement>(null);
@@ -175,6 +176,18 @@ export function SettingsSheet({ open, onClose }: Props) {
             </button>
           </div>
         </section>
+        {onShowLanding ? (
+          <section className="theme-block" id="landing-replay" aria-labelledby="landing-replay-label">
+            <p className="theme-label" id="landing-replay-label">
+              <b>Introduction</b>
+              <small>课猫介绍</small>
+            </p>
+            <button type="button" className="act ghost landing-replay" id="show-landing" onClick={onShowLanding}>
+              <b>Show Echo again</b>
+              <small>再看课猫</small>
+            </button>
+          </section>
+        ) : null}
       </section>
     </div>
   );
