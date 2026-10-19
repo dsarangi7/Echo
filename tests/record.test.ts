@@ -244,6 +244,8 @@ describe("Say it page", () => {
     expect(app).not.toMatch(/Talking Tom|课堂演示|Class demo|<footer/);
     expect(css).not.toMatch(/footer\.note/);
     expect(panel).toContain('id="legend-score"');
-    expect(panel).toContain("arrow keys change the sentence");
+    expect(panel).toContain('id="match-tip"');
+    expect(panel).not.toContain("arrow keys change the sentence");
+    expect(panel).not.toContain("左右滑动");
   });
 });

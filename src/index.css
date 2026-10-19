@@ -702,8 +702,6 @@ button.act:disabled,
 }
 #score:empty { display: none; margin: 0; min-height: 0; }
 
-.keys { margin: 14px 0 0; color: var(--faint); font-size: 12px; }
-
 #err { color: var(--bad); margin: 8px 0 0; }
 #err:empty { display: none; }
 
@@ -1425,8 +1423,6 @@ button.session-count.unsure:focus-visible,
   .reminder-card .reminder-row input[type="time"] { font-size: 16px; }
   .reminder-card .reminder-row input[type="checkbox"] { width: 22px; height: 22px; }
   button.act { max-width: 100%; }
-
-  .keys { overflow-wrap: anywhere; }
 }
 
 @media (max-width: 720px) and (max-height: 560px) {
@@ -1722,8 +1718,28 @@ button.session-count.unsure:focus-visible,
 
 #model-note:empty { display: none; margin: 0; }
 
-.match-notes { margin-top: 8px; }
-.match-notes summary,
+.match-tip {
+  margin: 8px 0 0;
+  padding: 8px 12px 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+}
+
+.match-tip-kicker {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+}
+
+.match-tip .legend {
+  margin: 6px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 .session-more summary {
   cursor: pointer;
   color: var(--muted);
@@ -1735,7 +1751,6 @@ button.session-count.unsure:focus-visible,
   gap: 8px;
 }
 
-.match-notes summary::-webkit-details-marker,
 .session-more summary::-webkit-details-marker { display: none; }
 
 .practice-card .result {
@@ -1770,16 +1785,15 @@ button.session-count.unsure:focus-visible,
 @media (min-width: 720px) {
   .pack-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .deck-well, .flash-card { min-height: 320px; }
-  /* Score stays under the matching notes. The phone dock reparents it visually. */
+  /* Score stays under the card. The phone dock reparents it visually. */
   .practice-card { display: flex; flex-direction: column; }
   .practice-card .deck-bar,
   .practice-card .deck-stage,
   .practice-card .pack-step,
   .practice-card .pace,
   .practice-card .actions,
-  .practice-card .match-notes { order: 1; }
+  .practice-card .match-tip { order: 1; }
   .practice-card .result { order: 2; }
-  .practice-card .keys,
   .practice-card .session-strip,
   .practice-card .streak-chrome { order: 3; }
 }
@@ -2167,8 +2181,8 @@ button.ghost:disabled:hover {
   .card-kicker { margin-bottom: 8px; }
   .flash-card .meaning { margin-top: 10px; padding-top: 8px; }
   .card-pos { margin-top: 10px; }
-  .match-notes { margin-top: 4px; }
-  .match-notes summary { min-height: 36px; }
+  .match-tip { margin-top: 6px; padding: 6px 10px 8px; }
+  .match-tip .legend { margin-top: 4px; }
 }
 
 @media (max-width: 720px) and (max-height: 560px) {

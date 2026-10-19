@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { stepWithinSet } from "../practice/cards";
 import { readingText } from "../practice/pinyin";
 import { HEAR_PACE_LABEL, HEAR_PACES } from "../practice/pace";
 import { emptySession } from "../practice/session";
 import { micHeardLine } from "../practice/score";
+import { practiceLocalStorage } from "../practice/streak";
 import type { usePractice } from "../practice/usePractice";
+import { MATCH_TIP_MS, readMatchTipSeen, writeMatchTipSeen } from "../ui/matchTip";
 import { FeedbackLines } from "./FeedbackLines";
 import { FlashCard } from "./FlashCard";
 import { PackPicker } from "./PackPicker";
@@ -38,6 +40,25 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
   } = practice;
   const stepPack = practice.stepPack;
   const [picking, setPicking] = useState(false);
+  const [tipSeen, setTipSeen] = useState(() => readMatchTipSeen(practiceLocalStorage()));
+  const tipIndex = useRef(index);
+
+  const dismissTip = useCallback(() => {
+    setTipSeen(true);
+    writeMatchTipSeen(practiceLocalStorage());
+  }, []);
+
+  useEffect(() => {
+    if (!active || tipSeen) return;
+    const id = window.setTimeout(dismissTip, MATCH_TIP_MS);
+    return () => window.clearTimeout(id);
+  }, [active, dismissTip, tipSeen]);
+
+  useEffect(() => {
+    if (tipIndex.current === index) return;
+    tipIndex.current = index;
+    dismissTip();
+  }, [dismissTip, index]);
 
   const sets = useMemo(() => {
     const names: string[] = [];
@@ -168,11 +189,11 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
                     {micHeardLine(lang, heardPreview)}
                   </p>
                   <div className="fail-actions">
-                    <button type="button" className="act primary" id="retry-hear" onClick={hear}>
+                    <button type="button" className="act primary" id="retry-hear" onClick={() => { dismissTip(); hear(); }}>
                       <b>Hear it</b>
                       <small>听一听</small>
                     </button>
-                    <button type="button" className="act ghost" id="retry-say" onClick={sayIt}>
+                    <button type="button" className="act ghost" id="retry-say" onClick={() => { dismissTip(); sayIt(); }}>
                       <b>Try again</b>
                       <small>再说一次</small>
                     </button>
@@ -206,11 +227,11 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
           </div>
 
           <div className="actions">
-            <button type="button" className="act primary" id="hear" onClick={hear}>
+            <button type="button" className="act primary" id="hear" onClick={() => { dismissTip(); hear(); }}>
               <b>Hear it</b>
               <small>听一听</small>
             </button>
-            <button type="button" className={listening ? "act primary live" : "act primary"} id="say" aria-pressed={listening} onClick={sayIt}>
+            <button type="button" className={listening ? "act primary live" : "act primary"} id="say" aria-pressed={listening} onClick={() => { dismissTip(); sayIt(); }}>
               <b>{listening ? "Stop" : "Say it"}</b>
               <small>{listening ? "点此结束" : "说一说"}</small>
             </button>
@@ -218,46 +239,43 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
         </div>
       )}
 
-      {picking ? null : (
-        <>
-          <details className="match-notes">
-            <summary>Matching · 怎么比对</summary>
-            {outcome === "recognition_fail" ? (
-              <p className="legend" id="legend-match">
-                <span className="sw unk" />
-                {lang === "zh"
-                  ? "没标成错。识别可能偏了，不是你说错。 Not marked wrong — recognition may be off."
-                  : "Not marked wrong — recognition may be off. 没标成错，可能是识别偏了。"}
-              </p>
-            ) : lang === "en" ? (
-              <p className="legend" id="legend-match">
-                <span className="sw ok" />
-                matched word
-                <span className="sw bad" />
-                missing word · 对上了 / 没对上
-              </p>
-            ) : (
-              <p className="legend" id="legend-match">
-                <span className="sw ok" />
-                对上了这个音节 matched
-                <span className="sw bad" />
-                没对上 missing
-              </p>
-            )}
-            {lang === "en" ? (
-              <p className="legend" id="legend-score">
-                It checks words, not an accent score. 按词比对，不是口音分数。
-              </p>
-            ) : (
-              <p className="legend" id="legend-score">
-                按字比对，标在拼音上，不是口音分数。It checks characters and marks the pinyin, not an accent score.
-              </p>
-            )}
-          </details>
-
-          <p className="keys">左右滑动，或点两边的箭头。 Swipe, or ← →. arrow keys change the sentence</p>
-        </>
-      )}
+      {!picking && outcome !== "recognition_fail" && !tipSeen ? (
+        <div className="match-tip" id="match-tip" role="status">
+          <p className="match-tip-kicker">Matching · 怎么比对</p>
+          {lang === "en" ? (
+            <p className="legend" id="legend-match">
+              <span className="sw ok" />
+              matched word
+              <span className="sw bad" />
+              missing word · 对上了 / 没对上
+            </p>
+          ) : (
+            <p className="legend" id="legend-match">
+              <span className="sw ok" />
+              对上了这个音节 matched
+              <span className="sw bad" />
+              没对上 missing
+            </p>
+          )}
+          {lang === "en" ? (
+            <p className="legend" id="legend-score">
+              It checks words, not an accent score. 按词比对，不是口音分数。
+            </p>
+          ) : (
+            <p className="legend" id="legend-score">
+              按字比对，标在拼音上，不是口音分数。It checks characters and marks the pinyin, not an accent score.
+            </p>
+          )}
+        </div>
+      ) : null}
+      {!picking && outcome === "recognition_fail" ? (
+        <p className="match-tip" id="legend-match">
+          <span className="sw unk" />
+          {lang === "zh"
+            ? "没标成错。识别可能偏了，不是你说错。 Not marked wrong — recognition may be off."
+            : "Not marked wrong — recognition may be off. 没标成错，可能是识别偏了。"}
+        </p>
+      ) : null}
       <SessionStrip lang={lang} session={session ?? emptySession()} onReset={resetSession ?? (() => undefined)} />
       <StreakChrome lang={lang} session={session ?? emptySession()} />
     </section>

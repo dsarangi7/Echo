@@ -132,7 +132,7 @@ export function App() {
 
       <div className="stage">
         <div hidden={mode !== "practice"}>
-          <PracticePanel {...practice} active={mode === "practice"} />
+          <PracticePanel {...practice} active={mode === "practice" && !showLanding} />
         </div>
         <div hidden={mode !== "translate"}>
           <TranslatePanel
