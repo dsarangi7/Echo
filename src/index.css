@@ -640,9 +640,17 @@ button.act:focus-visible,
 .settings-open:focus-visible,
 .settings-close:focus-visible,
 .theme-switch button:focus-visible,
-.pace-switch button:focus-visible {
+.pace-switch button:focus-visible,
+.mode-switch button:focus-visible {
   outline: 2px solid var(--neon);
   outline-offset: 2px;
+}
+
+button.act:disabled,
+.pace-switch button:disabled {
+  opacity: 0.45;
+  cursor: default;
+  filter: none;
 }
 
 .status-note { margin: 14px 0 0; color: var(--neon); font-size: 14px; line-height: 1.45; }
@@ -1912,4 +1920,197 @@ button.session-count.unsure:focus-visible,
   }
   .hello .lang-switch { flex: 1 1 auto; }
   .hello .settings-open { margin-left: auto; align-self: center; }
+}
+
+.mode-nav { margin: 0 0 16px; }
+
+.mode-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--edge);
+  border-radius: 16px;
+  background: var(--chip);
+  padding: 4px;
+}
+
+.mode-switch button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 750;
+  font-size: 16px;
+  line-height: 1.15;
+}
+
+.mode-switch button small {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 650;
+  opacity: 0.72;
+}
+
+.mode-switch button.on {
+  background: var(--neon);
+  color: var(--ink);
+}
+
+.mode-switch button.on small { color: var(--neon-ink); opacity: 0.85; }
+
+.translate-dir {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.translate-dir .pace-label { flex: 1 1 100%; }
+
+.translate-switch {
+  flex: 1 1 280px;
+  display: flex;
+}
+
+.translate-switch button { flex: 1 1 0; min-width: 0; }
+
+button.primary:disabled:hover { filter: none; }
+
+button.ghost:disabled:hover {
+  filter: none;
+  color: var(--text);
+  border-color: var(--edge);
+}
+
+.translate-swap { flex: 0 0 auto; min-width: 84px; }
+
+.translate-hint {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.translate-hint b {
+  color: var(--text);
+  margin-left: 6px;
+  font-weight: 750;
+}
+
+.translate-mismatch {
+  margin: 8px 0 0;
+  color: var(--amber-ink);
+  background: var(--amber-panel);
+  border: 1px solid var(--amber-line);
+  border-radius: 12px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.translate-label {
+  display: block;
+  margin-top: 14px;
+  line-height: 1.15;
+}
+
+.translate-label b { font-size: 14px; font-weight: 750; }
+
+.translate-label small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.translate-field {
+  display: block;
+  width: 100%;
+  min-height: 128px;
+  margin-top: 8px;
+  padding: 14px;
+  resize: vertical;
+  border-radius: 16px;
+  border: 1px solid var(--edge);
+  background: var(--field);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.45;
+  font-weight: 600;
+}
+
+.translate-field:focus {
+  outline: 2px solid var(--neon);
+  outline-offset: 1px;
+}
+
+.translate-field:disabled { opacity: 0.7; }
+
+.translate-count {
+  margin: 6px 0 0;
+  text-align: right;
+  color: var(--faint);
+  font-size: 12px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.translate-count.warn { color: var(--amber); }
+
+.translate-live { margin-top: 12px; }
+
+.translate-status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.translate-note { margin-top: 0; }
+
+.translate-out {
+  padding: 16px 16px 12px;
+  border-radius: 16px;
+  background: var(--inset);
+  border: 1px solid var(--line);
+}
+
+.translate-kicker {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.translate-kicker b { color: var(--text); font-size: 13px; }
+
+.translate-line {
+  margin: 8px 0 0;
+  font-size: clamp(26px, 4vw, 40px);
+  font-weight: 650;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+
+.translate-card .actions .act { flex: 1 1 140px; }
+
+@media (min-width: 721px) {
+  .translate-field { font-size: 18px; }
+}
+
+@media (max-width: 720px) {
+  .translate-switch { flex-basis: 100%; }
+  .translate-switch button { padding-left: 8px; padding-right: 8px; }
+  .mode-nav { margin-bottom: 12px; }
 }

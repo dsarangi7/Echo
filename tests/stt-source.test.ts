@@ -65,7 +65,7 @@ describe("Say it does not use Google speech recognition", () => {
     expect(readFileSync("src/components/PracticePanel.tsx", "utf8")).toContain("Try again");
     expect(readFileSync("src/components/PracticePanel.tsx", "utf8")).toContain("recognition_fail");
     expect(readFileSync("src/components/TargetSentence.tsx", "utf8")).toContain('"unk"');
-    expect(readFileSync("src/App.tsx", "utf8")).toContain('onIntroduce={practice.introduce}');
+    expect(readFileSync("src/App.tsx", "utf8")).toContain("practice.introduce()");
     expect(readFileSync("src/components/CatMascot.tsx", "utf8")).toContain('id="cat-intro"');
   });
 });

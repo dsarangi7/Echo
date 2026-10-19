@@ -387,3 +387,22 @@ export function speakLine(lang: Lang, index: number, text: string, handlers: Spe
 export function speakIntro(lang: Lang, handlers: SpeakHandlers, rate = 1) {
   speakClip(lang, introClipUrl(lang), introLine(lang), handlers, rate);
 }
+
+/**
+ * Device voice for a line that has no Piper clip, such as a translation.
+ * Pack clips stay the 200 practice sentences. This is the same speechSynthesis path Hear it uses
+ * when a clip cannot play.
+ */
+export function speakPlain(lang: Lang, text: string, handlers: SpeakHandlers, rate = 1) {
+  stopSpeaking();
+  speakingRate = Number.isFinite(rate) && rate > 0 ? rate : 1;
+  const token = utteranceToken;
+  preferSpeakerPlayback(
+    typeof navigator === "undefined" ? undefined : (navigator as { audioSession?: { type: string } }),
+  );
+  if (!text.trim() || !synthesisAvailable()) {
+    handlers.onUnavailable("synth");
+    return;
+  }
+  speakWithSynthesis(lang, text, handlers, token, "other");
+}
