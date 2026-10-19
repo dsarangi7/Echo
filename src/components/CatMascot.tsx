@@ -5,6 +5,7 @@ type Props = {
   mode: CatMode;
   mouth: number;
   onIntroduce: () => void;
+  label?: string;
 };
 
 const MODE_LABEL: Record<CatMode, string> = {
@@ -13,7 +14,7 @@ const MODE_LABEL: Record<CatMode, string> = {
   talk: "在说 · speaking",
 };
 
-export function CatMascot({ mode, mouth, onIntroduce }: Props) {
+export function CatMascot({ mode, mouth, onIntroduce, label }: Props) {
   const reduce = useReducedMotion();
   const calm = Boolean(reduce);
   const listening = mode === "listen";
@@ -22,7 +23,7 @@ export function CatMascot({ mode, mouth, onIntroduce }: Props) {
   return (
     <section className={`card cat-card ${mode}`} id="cat-card">
       <div className="stage-light" aria-hidden="true" />
-      <button type="button" className="cat-hit" id="cat-intro" onClick={onIntroduce} aria-label="Play Echo's introduction. 播放课猫的自我介绍。">
+      <button type="button" className="cat-hit" id="cat-intro" onClick={onIntroduce} aria-label={label ?? "Play Echo's introduction. 播放课猫的自我介绍。"}>
       <motion.svg
         className="cat-svg"
         viewBox="0 0 320 400"
