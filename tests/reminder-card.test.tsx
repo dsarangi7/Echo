@@ -33,6 +33,12 @@ describe("settings reminder", () => {
     expect(html).toContain(">Dark<");
     expect(html).toContain(">Light<");
     expect(html).toContain("亮色");
+    expect(html).toContain('id="help"');
+    expect(html).toContain("Help");
+    expect(html).toContain("帮助");
+    expect(html).toContain("微信里打开时，麦克风可能用不了");
+    expect(html).toContain('href="mailto:dsarangi7@gmail.com"');
+    expect(html).toContain("dsarangi7@gmail.com");
     const dark = html.slice(html.indexOf('id="theme-dark"'), html.indexOf('id="theme-light"'));
     const light = html.slice(html.indexOf('id="theme-light"'));
     expect(dark).toContain('aria-pressed="true"');
@@ -53,6 +59,9 @@ describe("settings reminder", () => {
     expect(app).not.toContain(">Settings<");
     expect(app).not.toContain("Remind me daily");
     expect(app).not.toContain('id="theme-dark"');
+    expect(app).not.toContain("wechat-banner");
+    expect(app).not.toContain("HelpBlock");
+    expect(panel).not.toContain("wechat-banner");
     expect(app).not.toContain('id="reminder-toggle"');
     expect(app).not.toContain('id="reminders"');
     expect(panel).not.toContain("ReminderControl");

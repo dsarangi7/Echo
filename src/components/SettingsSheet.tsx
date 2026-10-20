@@ -14,6 +14,7 @@ import { practiceLocalStorage } from "../practice/streak";
 import { useReminderSettings } from "../practice/usePracticeSignals";
 import { openReminderNote } from "../ui/streakCopy";
 import { useTheme } from "../ui/theme";
+import { HelpBlock } from "./HelpBlock";
 import { ReminderControl } from "./ReminderControl";
 
 type Props = {
@@ -188,6 +189,7 @@ export function SettingsSheet({ open, onClose, onShowLanding }: Props) {
             </button>
           </section>
         ) : null}
+        <HelpBlock />
       </section>
     </div>
   );

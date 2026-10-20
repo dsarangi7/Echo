@@ -161,13 +161,13 @@ describe("flash card practice", () => {
     expect(hook).toContain("stepWithinSet");
     const landing = app.indexOf("<Landing");
     const practice = app.indexOf("<PracticePanel");
-    const banner = app.indexOf("<BrowserBanner");
     const model = app.indexOf("<ModelInterstitial");
     const landingSrc = readFileSync("src/components/Landing.tsx", "utf8");
     expect(landing).toBeGreaterThan(-1);
     expect(landing).toBeLessThan(practice);
-    expect(practice).toBeLessThan(banner);
-    expect(banner).toBeLessThan(model);
+    expect(practice).toBeLessThan(model);
+    expect(app).not.toContain("BrowserBanner");
+    expect(app).not.toContain("wechat-banner");
     expect(landingSrc).toContain("<CatMascot");
     expect(landingSrc).toContain('id="greeting"');
     expect(landingSrc).toContain('id="landing-start"');

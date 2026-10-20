@@ -2229,6 +2229,23 @@ button.ghost:disabled:hover {
 
 .landing-replay { width: 100%; margin-top: 0; }
 
+.help-block { margin-top: 16px; }
+.help-block .browser-banner { margin: 0; }
+.help-mail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin: 12px 0 0;
+}
+.help-mail b { font-size: 15px; }
+.help-mail small { color: var(--muted); font-size: 13px; font-weight: 650; }
+.help-mail a {
+  color: inherit;
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+
 .landing {
   position: fixed;
   inset: 0;
