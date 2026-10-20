@@ -70,7 +70,7 @@ export default defineConfig(({ command }) => ({
               // The Whisper onnx files are ~10 MB and ~29 MB. Leave them out of the
               // precache (the cap is 12 MB). Say it fetches them from this origin and
               // Transformers.js stores them in the Cache API.
-              globPatterns: ["**/*.{js,css,html,svg,png,webmanifest,mp3,wasm}"],
+              globPatterns: ["**/*.{js,css,html,svg,png,webmanifest,mp3,wav,wasm}"],
               globIgnores: ["**/models/**"],
               navigateFallback: "index.html",
               maximumFileSizeToCacheInBytes: 12 * 1024 * 1024,

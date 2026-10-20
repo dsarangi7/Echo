@@ -50,7 +50,7 @@ export const DEFAULT_REMINDER_TIME = "20:00";
  */
 export const REMINDER_CAPABILITIES = {
   streak:
-    "Current and best streak live in localStorage on this device. A day is a calendar day in Asia/Shanghai, and it counts when Say it records at least one Clear or Partial.",
+    "Current and best streak live in localStorage on this device. A day is a calendar day in Asia/Shanghai, and it counts after five Clear matches. Partial does not count.",
   androidChromeInstalled:
     "An installed Android Chrome PWA can register Periodic Background Sync. Chrome may wake the service worker about every 12 hours or later, and the nudge is shown then if this device's clock is already past the chosen time. That is not an exact alarm.",
   androidChromeTab:

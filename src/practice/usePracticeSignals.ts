@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { REMINDER_CHANGED_EVENT, loadReminder, type ReminderState } from "./reminder";
-import { STREAK_CHANGED_EVENT, loadStreak, practiceLocalStorage, type StreakView } from "./streak";
+import { DAILY_CLEAR_GOAL, STREAK_CHANGED_EVENT, loadStreak, practiceLocalStorage, type StreakView } from "./streak";
 
 function zeroStreak(): StreakView {
   return {
@@ -9,6 +9,9 @@ function zeroStreak(): StreakView {
     lastPracticeDay: null,
     practiceDays: [],
     completed: 0,
+    todayClears: 0,
+    goal: DAILY_CLEAR_GOAL,
+    dayComplete: false,
     practicedToday: false,
     daysThisWeek: 0,
     milestone: null,

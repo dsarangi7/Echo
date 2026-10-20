@@ -4,8 +4,32 @@ export type FeedbackKind = "start" | "clear" | "partial" | "miss" | "recognition
 
 export type FeedbackLines = { en: string[]; zh: string[] };
 
+/** Today's clear-match progress. Omit it and the clear line stays the short praise. */
+export type DayProgress = {
+  clears: number;
+  goal: number;
+  complete: boolean;
+};
+
+function clearFeedback(day?: DayProgress | null): FeedbackLines {
+  if (!day || day.goal < 1) {
+    return { en: ["Nice — clear match."], zh: ["很棒，对上了。"] };
+  }
+  if (day.complete) {
+    return {
+      en: ["Nice — clear match. 🔥 Day complete."],
+      zh: ["很棒，对上了。🔥 今天完成。"],
+    };
+  }
+  const shown = Math.min(Math.max(0, Math.floor(day.clears)), day.goal);
+  return {
+    en: [`Nice — clear match. ${shown}/${day.goal} today.`],
+    zh: [`很棒，对上了。今天 ${shown}/${day.goal}。`],
+  };
+}
+
 /** Hero copy. Stars are encouragement for clear lines. Mic unsure is not a miss. */
-export function feedbackLines(kind: FeedbackKind, tally: SessionTally): FeedbackLines {
+export function feedbackLines(kind: FeedbackKind, tally: SessionTally, day?: DayProgress | null): FeedbackLines {
   switch (kind) {
     case "start":
       return {
@@ -16,24 +40,21 @@ export function feedbackLines(kind: FeedbackKind, tally: SessionTally): Feedback
         zh: ["开始练习吧——想先听也可以。", "星星只记听清说对的句子；识别不准不算你的错。"],
       };
     case "clear":
-      return {
-        en: [`Nice — clear match. Streak ×${tally.streak}.`],
-        zh: [`很棒，对上了。连续 ×${tally.streak}。`],
-      };
+      return clearFeedback(day);
     case "partial":
       return {
-        en: ["Partly there — Hear it, then try again.", "Streak holds."],
-        zh: ["对上一部分了——先听一遍，再试一次。", "连击还在。"],
+        en: ["Partly there — Hear it, then try again.", "Only a full clear counts today."],
+        zh: ["对上一部分了——先听一遍，再试一次。", "只有全部对上才算今天。"],
       };
     case "miss":
       return {
-        en: ["Not quite — Hear it once, then Say it again.", "Streak resets; that's okay."],
-        zh: ["还差一点——先听，再说一次。", "连击重置没关系。"],
+        en: ["Not quite — Hear it once, then Say it again.", "A full clear is what counts today."],
+        zh: ["还差一点——先听，再说一次。", "今天要的是整句听清。"],
       };
     case "recognition_fail":
       return {
-        en: ["Mic may have misheard — not on you.", "Hear it, then Say it again. Streak safe."],
-        zh: ["可能是识别听错了——不是你的问题。", "连击保留。"],
+        en: ["Mic may have misheard — not on you.", "Hear it, then Say it again."],
+        zh: ["可能是识别听错了——不是你的问题。", "先听一听，再说一次。"],
       };
     case "end":
       return {

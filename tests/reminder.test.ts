@@ -16,8 +16,8 @@ import {
   weeklyNudgeCopy,
   type SyncSnapshot,
 } from "../src/practice/reminder";
-import { addShanghaiDays, localMinutes, shanghaiInstant, shanghaiWeekStart } from "../src/practice/shanghai";
-import { STREAK_STORAGE_KEY, recordPracticeClearOrPartial } from "../src/practice/streak";
+import { addShanghaiDays, localMinutes, shanghaiDateKey, shanghaiInstant, shanghaiWeekStart } from "../src/practice/shanghai";
+import { DAILY_CLEAR_GOAL, STREAK_STORAGE_KEY, recordClearMatch } from "../src/practice/streak";
 
 function memoryStorage(): Storage {
   const map = new Map<string, string>();
@@ -92,13 +92,22 @@ describe("daily reminder", () => {
     expect(dueNotices(state, [], atLocal("2026-10-08", "20:00")).map((notice) => notice.kind)).toEqual(["daily"]);
   });
 
-  it("skips the daily nudge after a Clear or Partial that same Shanghai day", () => {
+  it("skips the daily nudge only after five Clears on that Shanghai day", () => {
     const storage = memoryStorage();
-    saveReminderSettings(storage, { enabled: true, time: "20:00" }, at("2026-10-08", "09:00"));
-    recordPracticeClearOrPartial(storage, at("2026-10-08", "18:00"));
+    const morning = atLocal("2026-10-08", "09:00");
+    const evening = atLocal("2026-10-08", "20:30");
+    saveReminderSettings(storage, { enabled: true, time: "20:00" }, morning);
+    for (let i = 0; i < DAILY_CLEAR_GOAL - 1; i += 1) recordClearMatch(storage, evening);
+    const early = loadReminder(storage);
+    const partialDays = JSON.parse(storage.getItem(STREAK_STORAGE_KEY) ?? "{}").practiceDays as string[];
+    expect(partialDays).toEqual([]);
+    expect(dueNotices(early, partialDays, evening).map((notice) => notice.kind)).toEqual(["daily"]);
+
+    recordClearMatch(storage, evening);
     const state = loadReminder(storage);
     const days = JSON.parse(storage.getItem(STREAK_STORAGE_KEY) ?? "{}").practiceDays as string[];
-    expect(dueNotices(state, days, at("2026-10-08", "20:30"))).toEqual([]);
+    expect(days).toEqual([shanghaiDateKey(evening)]);
+    expect(dueNotices(state, days, evening)).toEqual([]);
   });
 
   it("rejects a clock time that is not a real minute", () => {
@@ -114,9 +123,9 @@ describe("weekly nudge", () => {
   it("summarizes the completed Shanghai week once, in both languages", () => {
     const storage = memoryStorage();
     saveReminderSettings(storage, { enabled: true, time: "20:00" }, at("2026-10-07", "09:00"));
-    recordPracticeClearOrPartial(storage, at("2026-10-05"));
-    recordPracticeClearOrPartial(storage, at("2026-10-07"));
-    recordPracticeClearOrPartial(storage, at("2026-10-11"));
+    for (const day of ["2026-10-05", "2026-10-07", "2026-10-11"]) {
+      for (let i = 0; i < DAILY_CLEAR_GOAL; i += 1) recordClearMatch(storage, at(day));
+    }
     const state = loadReminder(storage);
     const days = JSON.parse(storage.getItem(STREAK_STORAGE_KEY) ?? "{}").practiceDays as string[];
 

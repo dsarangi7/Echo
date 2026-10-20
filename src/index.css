@@ -1763,6 +1763,34 @@ button.session-count.unsure:focus-visible,
   border-radius: 16px;
 }
 
+.day-task {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 6px 12px;
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+}
+
+.day-task b {
+  font-size: 15px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.day-task span { font-size: 13px; font-weight: 700; }
+.day-task small { color: var(--muted); font-size: 12px; }
+.day-task.is-complete b { color: #c45a12; }
+.thumb-dock .day-task {
+  margin: 0 0 6px;
+  width: auto;
+  border-radius: 12px;
+}
+
 .practice-card .session-strip { margin: 10px 0 0; }
 .practice-card .streak-chrome { margin: 6px 2px 0; }
 .practice-card .streak-footer .streak-strip {
@@ -1793,7 +1821,8 @@ button.session-count.unsure:focus-visible,
   .practice-card .pace,
   .practice-card .actions,
   .practice-card .match-tip { order: 1; }
-  .practice-card .result { order: 2; }
+  .practice-card .result,
+  .practice-card .day-task { order: 2; }
   .practice-card .session-strip,
   .practice-card .streak-chrome { order: 3; }
 }
@@ -1825,8 +1854,14 @@ button.session-count.unsure:focus-visible,
   .thumb-dock .actions { grid-template-columns: 1fr 1fr; }
   .thumb-dock #hear,
   .thumb-dock #say { order: 0; }
+  .wrap:has(.thumb-dock .day-task) {
+    --dock-space: calc(164px + env(safe-area-inset-bottom, 0px));
+  }
   .wrap:has(.thumb-dock .result) {
     --dock-space: calc(228px + env(safe-area-inset-bottom, 0px));
+  }
+  .wrap:has(.thumb-dock .result):has(.thumb-dock .day-task) {
+    --dock-space: calc(260px + env(safe-area-inset-bottom, 0px));
   }
   .thumb-dock .result {
     display: grid;
