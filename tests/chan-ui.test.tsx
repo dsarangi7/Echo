@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { BrowserBanner } from "../src/components/BrowserBanner";
+import { HelpBlock } from "../src/components/HelpBlock";
 import { ModelInterstitialCard } from "../src/components/ModelInterstitial";
 import { SessionStrip } from "../src/components/SessionStrip";
 import { TargetSentence } from "../src/components/TargetSentence";
@@ -217,7 +217,7 @@ describe("download interstitial", () => {
   });
 });
 
-describe("WeChat and WeCom banner", () => {
+describe("WeChat and WeCom help", () => {
   it("detects in-app browsers and keeps the https link copyable", () => {
     expect(detectInAppBrowser("Mozilla/5.0 MicroMessenger/8.0.1")).toBe("wechat");
     expect(detectInAppBrowser("Mozilla/5.0 wxwork/4.1 MicroMessenger/7.0")).toBe("wecom");
@@ -227,16 +227,20 @@ describe("WeChat and WeCom banner", () => {
     expect(pageHttpsUrl("http://localhost:5173/Echo/")).toBeNull();
   });
 
-  it("puts Chinese first and does not claim the in-app mic will work", () => {
+  it("keeps the mic tip and feedback address in Help, not only inside WeChat", () => {
     const html = renderToStaticMarkup(
-      <BrowserBanner ua="Mozilla/5.0 MicroMessenger/8.0.0" href="https://dsarangi7.github.io/Echo/" />,
+      <HelpBlock ua="Mozilla/5.0 MicroMessenger/8.0.0" href="https://dsarangi7.github.io/Echo/" />,
     );
     const zh = html.indexOf("微信里打开时，麦克风可能用不了");
     const en = html.indexOf("The mic may not work in the WeChat in-app browser");
+    expect(html).toContain('id="help"');
     expect(zh).toBeGreaterThan(-1);
     expect(en).toBeGreaterThan(zh);
     expect(html).toContain("https://dsarangi7.github.io/Echo/");
     expect(html).toContain("Copy link");
+    expect(html).toContain('href="mailto:dsarangi7@gmail.com"');
+    expect(html).toContain("Feedback");
+    expect(html).toContain("建议");
     expect(html).not.toContain("用 Safari 或 Chrome 最合适");
     expect(html).not.toContain("Best on Safari or Chrome");
     expect(html).not.toContain('id="browser-tip"');
@@ -245,14 +249,22 @@ describe("WeChat and WeCom banner", () => {
     expect(inAppBannerCopy("wecom").en).toContain("WeCom");
 
     const http = renderToStaticMarkup(
-      <BrowserBanner ua="Mozilla/5.0 MicroMessenger/8.0.0" href="http://127.0.0.1:5173/" />,
+      <HelpBlock ua="Mozilla/5.0 MicroMessenger/8.0.0" href="http://127.0.0.1:5173/" />,
     );
     expect(http).not.toContain("Copy link");
+    expect(http).toContain("mailto:dsarangi7@gmail.com");
 
     const plain = renderToStaticMarkup(
-      <BrowserBanner ua="Mozilla/5.0 Chrome/120.0" href="https://dsarangi7.github.io/Echo/" />,
+      <HelpBlock ua="Mozilla/5.0 Chrome/120.0" href="https://dsarangi7.github.io/Echo/" />,
     );
-    expect(plain).toBe("");
+    expect(plain).toContain("微信里打开时，麦克风可能用不了");
+    expect(plain).toContain('id="help"');
+
+    const wecom = renderToStaticMarkup(
+      <HelpBlock ua="Mozilla/5.0 wxwork/4.1 MicroMessenger/7.0" href="https://dsarangi7.github.io/Echo/" />,
+    );
+    expect(wecom.indexOf("企业微信")).toBeGreaterThan(-1);
+    expect(wecom.indexOf("企业微信")).toBeLessThan(wecom.indexOf("WeCom"));
   });
 });
 

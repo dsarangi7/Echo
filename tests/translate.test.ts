@@ -229,7 +229,7 @@ describe("Translate screen", () => {
     expect(app).toContain("<ModeNav");
     expect(app).toContain("<TranslatePanel");
     expect(app).toContain("<PracticePanel");
-    expect(app.indexOf("<PracticePanel")).toBeLessThan(app.indexOf("<BrowserBanner"));
+    expect(app).not.toContain("<BrowserBanner");
     expect(app.match(/id="open-settings"/g)).toHaveLength(1);
     expect(app).not.toContain("Remind me daily");
 

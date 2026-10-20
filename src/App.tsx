@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { BrowserBanner } from "./components/BrowserBanner";
 import { Landing } from "./components/Landing";
 import { ModeNav, type EchoMode } from "./components/ModeNav";
 import { ModelInterstitial } from "./components/ModelInterstitial";
@@ -159,7 +158,6 @@ export function App() {
             {practice.heard}
           </p>
         ) : null}
-        <BrowserBanner />
         <ModelInterstitial onHearFirst={practice.hear} />
         <p className="status-note" id="model-note" aria-live="polite">
           {practice.modelNote}

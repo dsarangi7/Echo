@@ -6,11 +6,13 @@ type Props = {
   href?: string;
 };
 
-export function BrowserBanner({ ua, href }: Props) {
+/** Mic guidance and a feedback address. Lives in Settings, not on the practice page. */
+export function HelpBlock({ ua, href }: Props) {
   const agent = ua ?? (typeof navigator === "undefined" ? "" : navigator.userAgent);
   const page = href ?? (typeof location === "undefined" ? "" : location.href);
   const inApp = detectInAppBrowser(agent);
   const httpsUrl = pageHttpsUrl(page);
+  const banner = inAppBannerCopy(inApp ?? "wechat");
   const [copied, setCopied] = useState(false);
 
   async function copyUrl() {
@@ -23,11 +25,12 @@ export function BrowserBanner({ ua, href }: Props) {
     }
   }
 
-  if (!inApp) return null;
-  const banner = inAppBannerCopy(inApp);
-
   return (
-    <div className="browser-stack">
+    <section className="help-block" id="help" aria-labelledby="help-title">
+      <p className="theme-label" id="help-title">
+        <b>Help</b>
+        <small>帮助</small>
+      </p>
       <aside className="browser-banner" id="wechat-banner" role="note">
         <p className="zh">{banner.zh}</p>
         <p className="en">{banner.en}</p>
@@ -43,6 +46,13 @@ export function BrowserBanner({ ua, href }: Props) {
           </div>
         ) : null}
       </aside>
-    </div>
+      <p className="help-mail" id="help-feedback">
+        <b>Feedback</b>
+        <small>建议</small>
+        <a id="help-email" href="mailto:dsarangi7@gmail.com">
+          dsarangi7@gmail.com
+        </a>
+      </p>
+    </section>
   );
 }
