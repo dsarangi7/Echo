@@ -61,7 +61,15 @@ function streakFromDays(days: readonly string[]): StreakRecord {
     best = Math.max(best, run);
     prev = day;
   }
-  return { current, best: Math.max(best, current), lastPracticeDay, practiceDays, completed: practiceDays.length };
+  return {
+    current,
+    best: Math.max(best, current),
+    lastPracticeDay,
+    practiceDays,
+    completed: practiceDays.length,
+    todayKey: null,
+    todayClears: 0,
+  };
 }
 
 function legacyDays(raw: string | null): string[] {

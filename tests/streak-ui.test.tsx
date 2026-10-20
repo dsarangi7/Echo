@@ -138,7 +138,7 @@ describe("streak chrome copy", () => {
     }
   });
 
-  it("keeps the day streak in the card footer, and only after two successful sentences", () => {
+  it("keeps the day streak out of the card until a stored day task exists", () => {
     const panel = (session: SessionTally) =>
       renderToStaticMarkup(
         <PracticePanel
@@ -177,11 +177,12 @@ describe("streak chrome copy", () => {
 
     const one = panel({ clear: 1, partial: 0, unsure: 0, streak: 1, started: true });
     expect(one).not.toContain('id="streak-strip"');
+    expect(one).not.toMatch(/Streak ×/);
 
     const html = panel({ clear: 1, partial: 1, unsure: 0, streak: 1, started: true });
     expect(html.indexOf('id="session-strip"')).toBeGreaterThan(-1);
-    expect(html.indexOf('id="streak-strip"')).toBeGreaterThan(html.indexOf('id="session-strip"'));
-    expect(html).toContain("streak-footer");
+    expect(html).not.toContain('id="streak-strip"');
+    expect(html).not.toContain("streak-footer");
     expect(html).toContain('id="hear"');
     expect(html).toContain('id="say"');
     expect(html).not.toContain('id="reminder-control"');
@@ -238,8 +239,7 @@ describe("streak chrome wiring", () => {
     const shown = renderToStaticMarkup(
       <StreakChrome lang="en" session={{ clear: 2, partial: 0, unsure: 0, streak: 2, started: true }} />,
     );
-    expect(shown).toContain('id="streak-strip"');
-    expect(shown).toContain("streak-footer");
+    expect(shown).not.toContain('id="streak-strip"');
     expect(idle).not.toContain('id="reminder-time"');
     expect(idle).not.toContain('id="reminder-control"');
     expect(idle).not.toContain('id="milestone-toast"');

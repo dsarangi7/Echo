@@ -116,9 +116,11 @@ describe("flash card practice", () => {
     expect(html).not.toContain("左右滑动");
     expect(html).toMatch(/id="progress">\s*1 \/ 3\s*</);
     expect(html).not.toContain('id="streak-strip"');
+    expect(html).not.toContain('id="day-task"');
     const earned = panel({ session: { clear: 2, partial: 0, unsure: 0, streak: 2, started: true } });
     expect(earned.indexOf('id="session-strip"')).toBeGreaterThan(-1);
-    expect(earned.indexOf('id="session-strip"')).toBeLessThan(earned.indexOf('id="streak-strip"'));
+    expect(earned).not.toContain('id="streak-strip"');
+    expect(earned).not.toMatch(/Streak ×/);
 
     const second = panel({ lang: "en", index: 1, item: taxiNext });
     expect(second).toContain('data-card-tone="sage"');

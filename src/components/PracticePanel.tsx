@@ -5,8 +5,10 @@ import { HEAR_PACE_LABEL, HEAR_PACES } from "../practice/pace";
 import { emptySession } from "../practice/session";
 import { micHeardLine } from "../practice/score";
 import { practiceLocalStorage } from "../practice/streak";
+import { usePracticeStreak } from "../practice/usePracticeSignals";
 import type { usePractice } from "../practice/usePractice";
 import { MATCH_TIP_MS, readMatchTipSeen, writeMatchTipSeen } from "../ui/matchTip";
+import { DayTask } from "./DayTask";
 import { FeedbackLines } from "./FeedbackLines";
 import { FlashCard } from "./FlashCard";
 import { PackPicker } from "./PackPicker";
@@ -40,6 +42,7 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
   } = practice;
   const stepPack = practice.stepPack;
   const [picking, setPicking] = useState(false);
+  const day = usePracticeStreak();
   const [tipSeen, setTipSeen] = useState(() => readMatchTipSeen(practiceLocalStorage()));
   const tipIndex = useRef(index);
 
@@ -182,7 +185,14 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
               <p id="heard" className={outcome === "recognition_fail" ? "fail-headline" : undefined}>
                 {heard}
               </p>
-              {lineOutcome ? <FeedbackLines lang={lang} kind={lineOutcome} session={session ?? emptySession()} /> : null}
+              {lineOutcome ? (
+                <FeedbackLines
+                  lang={lang}
+                  kind={lineOutcome}
+                  session={session ?? emptySession()}
+                  day={{ clears: day.todayClears, goal: day.goal, complete: day.dayComplete }}
+                />
+              ) : null}
               {outcome === "recognition_fail" ? (
                 <>
                   <p id="heard-preview" className="heard-muted">
@@ -204,6 +214,7 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
               )}
             </div>
           )}
+          <DayTask view={day} />
           <div className="pace">
             <p className="pace-label" id="pace-label">
               <b>Hear it pace</b>

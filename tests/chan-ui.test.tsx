@@ -102,19 +102,28 @@ describe("hero copy", () => {
       ],
       zh: ["开始练习吧——想先听也可以。", "星星只记听清说对的句子；识别不准不算你的错。"],
     });
-    expect(feedbackLines("clear", tally).en[0]).toBe("Nice — clear match. Streak ×3.");
-    expect(feedbackLines("clear", tally).zh[0]).toBe("很棒，对上了。连续 ×3。");
+    expect(feedbackLines("clear", tally).en[0]).toBe("Nice — clear match.");
+    expect(feedbackLines("clear", tally).zh[0]).toBe("很棒，对上了。");
+    expect(feedbackLines("clear", tally, { clears: 2, goal: 5, complete: false })).toEqual({
+      en: ["Nice — clear match. 2/5 today."],
+      zh: ["很棒，对上了。今天 2/5。"],
+    });
+    expect(feedbackLines("clear", tally, { clears: 5, goal: 5, complete: true })).toEqual({
+      en: ["Nice — clear match. 🔥 Day complete."],
+      zh: ["很棒，对上了。🔥 今天完成。"],
+    });
+    expect(feedbackLines("clear", tally).en[0]).not.toMatch(/Streak/);
     expect(feedbackLines("partial", tally)).toEqual({
-      en: ["Partly there — Hear it, then try again.", "Streak holds."],
-      zh: ["对上一部分了——先听一遍，再试一次。", "连击还在。"],
+      en: ["Partly there — Hear it, then try again.", "Only a full clear counts today."],
+      zh: ["对上一部分了——先听一遍，再试一次。", "只有全部对上才算今天。"],
     });
     expect(feedbackLines("miss", tally)).toEqual({
-      en: ["Not quite — Hear it once, then Say it again.", "Streak resets; that's okay."],
-      zh: ["还差一点——先听，再说一次。", "连击重置没关系。"],
+      en: ["Not quite — Hear it once, then Say it again.", "A full clear is what counts today."],
+      zh: ["还差一点——先听，再说一次。", "今天要的是整句听清。"],
     });
     expect(feedbackLines("recognition_fail", tally)).toEqual({
-      en: ["Mic may have misheard — not on you.", "Hear it, then Say it again. Streak safe."],
-      zh: ["可能是识别听错了——不是你的问题。", "连击保留。"],
+      en: ["Mic may have misheard — not on you.", "Hear it, then Say it again."],
+      zh: ["可能是识别听错了——不是你的问题。", "先听一听，再说一次。"],
     });
     expect(feedbackLines("end", tally)).toEqual({
       en: ["Session: 3 clear · 2 partial · 1 mic unsure.", "No accent score — just word/字 matches."],

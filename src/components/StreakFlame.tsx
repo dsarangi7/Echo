@@ -1,6 +1,9 @@
 type Props = {
   current: number;
   best: number;
+  todayClears?: number;
+  goal?: number;
+  dayComplete?: boolean;
 };
 
 function Flame({ lit }: { lit: boolean }) {
@@ -22,18 +25,22 @@ function Flame({ lit }: { lit: boolean }) {
   );
 }
 
-/** Current streak and best streak. Numbers come from usePracticeStreak(). */
-export function StreakFlame({ current, best }: Props) {
-  const lit = current > 0;
-  const label = `Current streak ${current}, best streak ${best}. 当前连续 ${current}，最佳连续 ${best}。`;
+/** Day streak and today's clear-match progress. Numbers come from usePracticeStreak(). */
+export function StreakFlame({ current, best, todayClears = 0, goal = 5, dayComplete = false }: Props) {
+  const lit = dayComplete || current > 0;
+  const shown = Math.min(todayClears, goal);
+  const showToday = !dayComplete && todayClears > 0;
+  const label = showToday
+    ? `${shown} of ${goal} today. Streak ${current}, best ${best}. 今天 ${shown}/${goal}。连续 ${current}，最佳 ${best}。`
+    : `Streak ${current}, best ${best}. 连续 ${current}，最佳 ${best}。${dayComplete ? " Day complete. 今天完成。" : ""}`;
 
   return (
     <div className={lit ? "streak-strip" : "streak-strip is-quiet"} id="streak-strip" aria-label={label}>
       <Flame lit={lit} />
       <span className="streak-count" id="streak-current">
-        <b>{current}</b>
-        <span>Streak</span>
-        <small>连续</small>
+        <b>{showToday ? `${shown}/${goal}` : `${current}`}</b>
+        <span>{showToday ? "Today" : "Streak"}</span>
+        <small>{showToday ? "今天" : "连续"}</small>
       </span>
       <span className="streak-count streak-best" id="streak-best">
         <b>{best}</b>
