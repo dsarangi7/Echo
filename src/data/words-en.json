@@ -1,0 +1,340 @@
+[
+  {
+    "id": "meeting",
+    "en": "meeting",
+    "zh": "会议",
+    "example": "The meeting starts at three.",
+    "exampleZh": "会议三点开始。"
+  },
+  {
+    "id": "agenda",
+    "en": "agenda",
+    "zh": "议程",
+    "example": "I sent the agenda this morning.",
+    "exampleZh": "议程我早上发了。"
+  },
+  {
+    "id": "minutes",
+    "en": "minutes",
+    "zh": "会议纪要",
+    "example": "Please share the minutes today.",
+    "exampleZh": "请今天发会议纪要。"
+  },
+  {
+    "id": "meeting-room",
+    "en": "meeting room",
+    "zh": "会议室",
+    "example": "Is the meeting room free?",
+    "exampleZh": "会议室有空吗？"
+  },
+  {
+    "id": "deadline",
+    "en": "deadline",
+    "zh": "截止日期",
+    "example": "The deadline is Friday.",
+    "exampleZh": "截止日期是周五。"
+  },
+  {
+    "id": "overtime",
+    "en": "overtime",
+    "zh": "加班",
+    "example": "I'm working overtime until seven.",
+    "exampleZh": "我加班到七点。"
+  },
+  {
+    "id": "leave",
+    "en": "leave",
+    "zh": "请假",
+    "example": "I need to ask for leave tomorrow.",
+    "exampleZh": "我明天要请假。"
+  },
+  {
+    "id": "available",
+    "en": "available",
+    "zh": "有空",
+    "example": "Are you available at four?",
+    "exampleZh": "你四点有空吗？"
+  },
+  {
+    "id": "out-of-office",
+    "en": "out of office",
+    "zh": "不在办公室",
+    "example": "I'm out of office on Friday.",
+    "exampleZh": "周五我不在办公室。"
+  },
+  {
+    "id": "urgent",
+    "en": "urgent",
+    "zh": "紧急",
+    "example": "This request is urgent.",
+    "exampleZh": "这个请求比较紧急。"
+  },
+  {
+    "id": "colleague",
+    "en": "colleague",
+    "zh": "同事",
+    "example": "A colleague will join us.",
+    "exampleZh": "一位同事会一起参加。"
+  },
+  {
+    "id": "manager",
+    "en": "manager",
+    "zh": "经理",
+    "example": "I'll ask my manager.",
+    "exampleZh": "我问一下经理。"
+  },
+  {
+    "id": "client",
+    "en": "client",
+    "zh": "客户",
+    "example": "The client wants an update.",
+    "exampleZh": "客户要进度。"
+  },
+  {
+    "id": "follow-up",
+    "en": "follow up",
+    "zh": "跟进",
+    "example": "I'll follow up tomorrow.",
+    "exampleZh": "我明天跟进。"
+  },
+  {
+    "id": "action-item",
+    "en": "action item",
+    "zh": "待办",
+    "example": "This action item is mine.",
+    "exampleZh": "这条待办是我的。"
+  },
+  {
+    "id": "schedule",
+    "en": "schedule",
+    "zh": "排期",
+    "example": "Can we schedule a call?",
+    "exampleZh": "我们排个电话可以吗？"
+  },
+  {
+    "id": "postpone",
+    "en": "postpone",
+    "zh": "推迟",
+    "example": "Let's postpone it to Monday.",
+    "exampleZh": "推迟到周一吧。"
+  },
+  {
+    "id": "conference-call",
+    "en": "conference call",
+    "zh": "电话会议",
+    "example": "Join the conference call at two.",
+    "exampleZh": "两点进电话会议。"
+  },
+  {
+    "id": "mute",
+    "en": "mute",
+    "zh": "静音",
+    "example": "Please mute when you're not speaking.",
+    "exampleZh": "不说话时请静音。"
+  },
+  {
+    "id": "screen-share",
+    "en": "screen share",
+    "zh": "共享屏幕",
+    "example": "I'll share my screen.",
+    "exampleZh": "我来共享屏幕。"
+  },
+  {
+    "id": "cc",
+    "en": "CC",
+    "say": "carbon copy",
+    "zh": "抄送",
+    "example": "Please CC me on that email.",
+    "exampleZh": "这封邮件请抄送我。"
+  },
+  {
+    "id": "attachment",
+    "en": "attachment",
+    "zh": "附件",
+    "example": "The quote is in the attachment.",
+    "exampleZh": "报价在附件里。"
+  },
+  {
+    "id": "inbox",
+    "en": "inbox",
+    "zh": "收件箱",
+    "example": "It's in my inbox.",
+    "exampleZh": "在我收件箱里。"
+  },
+  {
+    "id": "reply-all",
+    "en": "reply all",
+    "zh": "回复全部",
+    "example": "Please don't reply all.",
+    "exampleZh": "请不要回复全部。"
+  },
+  {
+    "id": "forward",
+    "en": "forward",
+    "zh": "转发",
+    "example": "Could you forward this to the team?",
+    "exampleZh": "能把这封转发给团队吗？"
+  },
+  {
+    "id": "subject",
+    "en": "subject",
+    "zh": "主题",
+    "example": "Put the order number in the subject.",
+    "exampleZh": "把订单号写在主题里。"
+  },
+  {
+    "id": "printer",
+    "en": "printer",
+    "zh": "打印机",
+    "example": "The printer is out of paper.",
+    "exampleZh": "打印机没纸了。"
+  },
+  {
+    "id": "badge",
+    "en": "badge",
+    "zh": "工牌",
+    "example": "I left my badge at home.",
+    "exampleZh": "我工牌落家里了。"
+  },
+  {
+    "id": "shared-drive",
+    "en": "shared drive",
+    "zh": "共享盘",
+    "example": "The file is on the shared drive.",
+    "exampleZh": "文件在共享盘上。"
+  },
+  {
+    "id": "reception",
+    "en": "reception",
+    "zh": "前台",
+    "example": "Please wait at reception.",
+    "exampleZh": "请在前台等。"
+  },
+  {
+    "id": "visitor",
+    "en": "visitor",
+    "zh": "访客",
+    "example": "A visitor is at reception.",
+    "exampleZh": "前台有访客。"
+  },
+  {
+    "id": "canteen",
+    "en": "canteen",
+    "zh": "食堂",
+    "example": "Let's talk in the canteen.",
+    "exampleZh": "我们去食堂说。"
+  },
+  {
+    "id": "supplier",
+    "en": "supplier",
+    "zh": "供应商",
+    "example": "The supplier confirmed the date.",
+    "exampleZh": "供应商确认日期了。"
+  },
+  {
+    "id": "purchase-order",
+    "en": "purchase order",
+    "zh": "采购单",
+    "example": "Please send the purchase order.",
+    "exampleZh": "请把采购单发来。"
+  },
+  {
+    "id": "invoice",
+    "en": "invoice",
+    "zh": "发票",
+    "example": "We still need the invoice.",
+    "exampleZh": "发票还没到。"
+  },
+  {
+    "id": "delivery",
+    "en": "delivery",
+    "zh": "送货",
+    "example": "Delivery is this afternoon.",
+    "exampleZh": "今天下午送货。"
+  },
+  {
+    "id": "warehouse",
+    "en": "warehouse",
+    "zh": "仓库",
+    "example": "It's already in the warehouse.",
+    "exampleZh": "已经在仓库了。"
+  },
+  {
+    "id": "shipment",
+    "en": "shipment",
+    "zh": "出货",
+    "example": "The shipment leaves Friday.",
+    "exampleZh": "周五出货。"
+  },
+  {
+    "id": "quality",
+    "en": "quality",
+    "zh": "质量",
+    "example": "Quality approved this batch.",
+    "exampleZh": "质量部这批过了。"
+  },
+  {
+    "id": "sample",
+    "en": "sample",
+    "zh": "样品",
+    "example": "Can you send a sample?",
+    "exampleZh": "能寄个样品吗？"
+  },
+  {
+    "id": "report",
+    "en": "report",
+    "zh": "报告",
+    "example": "I'll send the report today.",
+    "exampleZh": "报告我今天发。"
+  },
+  {
+    "id": "approve",
+    "en": "approve",
+    "zh": "批准",
+    "example": "My manager has to approve it.",
+    "exampleZh": "这要经理批准。"
+  },
+  {
+    "id": "feedback",
+    "en": "feedback",
+    "zh": "反馈",
+    "example": "Thanks for the feedback.",
+    "exampleZh": "谢谢你的反馈。"
+  },
+  {
+    "id": "battery",
+    "en": "battery",
+    "zh": "电池",
+    "example": "This battery sample is for the client.",
+    "exampleZh": "这块电池样品是给客户的。"
+  },
+  {
+    "id": "prototype",
+    "en": "prototype",
+    "zh": "样机",
+    "example": "The prototype is ready.",
+    "exampleZh": "样机好了。"
+  },
+  {
+    "id": "drawing",
+    "en": "drawing",
+    "zh": "图纸",
+    "example": "Please check the latest drawing.",
+    "exampleZh": "请看最新图纸。"
+  },
+  {
+    "id": "specification",
+    "en": "specification",
+    "zh": "规格",
+    "example": "The specification changed.",
+    "exampleZh": "规格改了。"
+  },
+  {
+    "id": "rd",
+    "en": "R&D",
+    "say": "research and development",
+    "zh": "研发",
+    "example": "R&D asked for another sample.",
+    "exampleZh": "研发还要一个样品。"
+  }
+]

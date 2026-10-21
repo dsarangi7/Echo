@@ -25,12 +25,18 @@ import { resampleTo16k } from "../speech/resample";
 import { introLine } from "../speech/intro";
 import { DOWNLOAD_LABEL } from "../speech/model";
 import { ensureModel, subscribeModel, transcribe } from "../speech/stt";
-import { hearFailCopy, setSpeakingRate, speakIntro, speakLine, stopSpeaking } from "../speech/tts";
+import { hearFailCopy, setSpeakingRate, speakIntro, speakLine, speakPlain, stopSpeaking, type HearFailReason } from "../speech/tts";
 import type { CatMode, Lang, Sentence } from "./types";
 
 function micNote(kind: MicFailure): string {
   return micFailureMessage(kind, { secure: isSecurePage() });
 }
+
+/** A line that is not one of the 200 sentence clips. Office words use the device voice. */
+export type PracticeLine = {
+  text: string;
+  speak: "plain";
+};
 
 const PROMPT_EN = "Tap Hear it, then Say it. 先听一听，再说一说。";
 const PROMPT_ZH = "点「听一听」，再点「说一说」。 Hear it, then say it.";
@@ -57,8 +63,12 @@ export function usePractice() {
   const [runtimeError, setRuntimeError] = useState("");
   const [session, setSession] = useState<SessionTally>(readBrowserSession);
   const [lineOutcome, setLineOutcome] = useState<AttemptOutcome | null>(null);
+  const [gradedText, setGradedText] = useState("");
+  const [gradedPlain, setGradedPlain] = useState(false);
 
   const tokenRef = useRef(0);
+  const lineRef = useRef<PracticeLine | null>(null);
+  const ownStreakRef = useRef(false);
   const captureRef = useRef<CaptureHandle | null>(null);
   const langRef = useRef<Lang>(lang);
   const indexRef = useRef(0);
@@ -88,6 +98,8 @@ export function usePractice() {
     setOutcome("idle");
     setHeardPreview("");
     setLineOutcome(null);
+    setGradedText("");
+    setGradedPlain(false);
     setKicker("Practice");
     setScore("");
     setHeard(langRef.current === "en" ? PROMPT_EN : PROMPT_ZH);
@@ -100,7 +112,7 @@ export function usePractice() {
     setLineOutcome(outcome);
     writeBrowserSession(next);
     if (outcome === "clear") {
-      recordClearMatch(practiceLocalStorage(), new Date());
+      if (!ownStreakRef.current) recordClearMatch(practiceLocalStorage(), new Date());
       playVictory();
     }
     if (outcome === "clear" || outcome === "partial") {
@@ -114,6 +126,8 @@ export function usePractice() {
     sessionRef.current = next;
     setSession(next);
     setLineOutcome(null);
+    setGradedText("");
+    setGradedPlain(false);
     setMarks(null);
     setOutcome("idle");
     setHeardPreview("");
@@ -121,6 +135,10 @@ export function usePractice() {
     setScore("");
     setHeard(langRef.current === "en" ? PROMPT_EN : PROMPT_ZH);
     writeBrowserSession(next);
+  }, []);
+
+  const setOwnStreak = useCallback((on: boolean) => {
+    ownStreakRef.current = on;
   }, []);
 
   const stopAudio = useCallback(() => {
@@ -133,6 +151,18 @@ export function usePractice() {
     setMouth(0);
     setCatMode("idle");
   }, [clearTimers]);
+
+  const setPracticeLine = useCallback(
+    (line: PracticeLine | null) => {
+      const prev = lineRef.current?.text ?? "";
+      const next = line?.text ?? "";
+      lineRef.current = line;
+      if (prev === next) return;
+      stopAudio();
+      resetPractice();
+    },
+    [resetPractice, stopAudio],
+  );
 
   useEffect(() => {
     saveIndexes(indexes);
@@ -286,13 +316,14 @@ export function usePractice() {
     setListening(false);
     clearTimers();
     const currentLang = langRef.current;
-    const line = primaryText(currentLang, packs[currentLang][indexRef.current]);
-    speakLine(currentLang, indexRef.current, line, {
+    const override = lineRef.current;
+    const line = override?.text ?? primaryText(currentLang, packs[currentLang][indexRef.current]);
+    const handlers = {
       onStart: () => {
         if (token !== tokenRef.current) return;
         setCatMode("talk");
       },
-      onMouth: (open) => {
+      onMouth: (open: number) => {
         if (token !== tokenRef.current) return;
         setMouth(open);
       },
@@ -302,11 +333,14 @@ export function usePractice() {
         setMouth(0);
         setCatMode("idle");
       },
-      onUnavailable: (reason) => {
+      onUnavailable: (reason: HearFailReason) => {
         if (token !== tokenRef.current) return;
         noteFailure(hearFailCopy(reason));
       },
-    }, hearPaceRate(paceRef.current[currentLang]));
+    };
+    const rate = hearPaceRate(paceRef.current[currentLang]);
+    if (override?.speak === "plain") speakPlain(currentLang, line, handlers, rate);
+    else speakLine(currentLang, indexRef.current, line, handlers, rate);
   }, [clearTimers, noteFailure]);
 
   const setPace = useCallback((next: HearPace) => {
@@ -352,7 +386,8 @@ export function usePractice() {
     );
 
     const targetLang = langRef.current;
-    const targetLine = primaryText(targetLang, packs[targetLang][indexRef.current]);
+    const plainLine = lineRef.current?.speak === "plain";
+    const targetLine = lineRef.current?.text ?? primaryText(targetLang, packs[targetLang][indexRef.current]);
     const capture = startCapture(audioCtx, streamPromise, {
       maxMs: 15000,
       silenceMs: 900,
@@ -388,6 +423,8 @@ export function usePractice() {
         const attempt = classifyLine(graded, spoken);
         setCatMode("idle");
         setHeardPreview(graded.heardPreview);
+        setGradedText(targetLine);
+        setGradedPlain(plainLine);
         if (graded.outcome === "recognition_fail") {
           setMarks(null);
           setOutcome("recognition_fail");
@@ -411,6 +448,8 @@ export function usePractice() {
         setKicker(targetLang === "zh" ? "识别" : "Recognition");
         setHeard(recognitionFailHeadline(targetLang));
         setScore("");
+        setGradedText(targetLine);
+        setGradedPlain(plainLine);
         setCatMode("idle");
         setListening(false);
         setMouth(0);
@@ -452,6 +491,10 @@ export function usePractice() {
     hear,
     sayIt,
     quiet,
+    setPracticeLine,
+    setOwnStreak,
+    gradedText,
+    gradedPlain,
     pace,
     setPace,
     session,
