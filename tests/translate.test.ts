@@ -215,10 +215,10 @@ describe("Translate screen", () => {
     expect(html).toContain('disabled=""');
   });
 
-  it("puts Translate next to Practice and leaves Settings as the gear", () => {
+  it("puts Translate before Practice and leaves Settings as the gear", () => {
     const nav = renderToStaticMarkup(createElement(ModeNav, { mode: "practice", onChange: () => undefined }));
-    expect(nav).toContain('id="mode-practice"');
-    expect(nav).toContain('id="mode-translate"');
+    expect(nav.indexOf('id="mode-translate"')).toBeLessThan(nav.indexOf('id="mode-practice"'));
+    expect(nav).not.toContain('id="mode-words"');
     expect(nav).toContain(">Practice<");
     expect(nav).toContain(">练习<");
     expect(nav).toContain(">Translate<");

@@ -4,7 +4,7 @@ import type { Lang } from "./types";
 import wordsEn from "../data/words-en.json";
 
 /**
- * Office words sit beside the English sentence packs.
+ * Office words are an English word deck opened from the Word decks nav, not a sentence pack.
  * A Shanghai day opens `DAILY_WORD_COUNT` cards: due reviews first, then new words.
  * The first clear Say it or correct meaning each day counts once toward the day streak.
  */
@@ -35,7 +35,7 @@ export type WordMemory = {
 };
 
 export type WordDeckState = {
-  /** English pack picker is on this deck. */
+  /** Word decks mode is showing this deck. */
   open: boolean;
   /** Ids in the order they were first put on a daily bite. */
   introduced: string[];
@@ -241,31 +241,35 @@ export function saveWordDeck(storage: StorageLike, state: WordDeckState): void {
   }
 }
 
-/** Sentence groups, plus the Office words tile at the top of English. */
-export function practicePacks(lang: Lang, pack: readonly { set: string; zhSet: string }[]): ListedPack[] {
+export type WordDeckChoice = {
+  id: string;
+  name: string;
+  zh: string;
+  lang: Lang;
+};
+
+/** Top-nav word decks. Chinese has none yet, so the Word decks tab stays hidden in 中文. */
+export const WORD_DECKS: readonly WordDeckChoice[] = [
+  { id: "office", name: WORD_PACK_NAME, zh: WORD_PACK_ZH, lang: "en" },
+];
+
+export function wordDecksFor(lang: Lang): WordDeckChoice[] {
+  return WORD_DECKS.filter((deck) => deck.lang === lang);
+}
+
+/** Sentence groups for the Practice pack picker. Word decks are not packs. */
+export function practicePacks(pack: readonly { set: string; zhSet: string }[]): ListedPack[] {
   const names: string[] = [];
   for (const row of pack) {
     if (!names.includes(row.set)) names.push(row.set);
   }
-  const sets = names.map((name) => {
+  return names.map((name) => {
     const first = pack.find((row) => row.set === name)!;
     const at = pack.findIndex((row) => row.set === name);
     let count = 0;
     for (const row of pack) if (row.set === name) count += 1;
     return { name, zhSet: first.zhSet, at, count };
   });
-  if (lang !== "en") return sets;
-  return [
-    {
-      name: WORD_PACK_NAME,
-      zhSet: WORD_PACK_ZH,
-      at: -1,
-      count: officeWords.length,
-      unit: "词",
-      detail: `每天 ${DAILY_WORD_COUNT} · ${officeWords.length} 词`,
-    },
-    ...sets,
-  ];
 }
 
 /** Empty when the deck is a usable daily set. Shown with the sentence pack check. */

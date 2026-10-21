@@ -20,11 +20,19 @@ function firstUndone(state: WordDeckState): number {
   return idx < 0 ? 0 : idx;
 }
 
+/** Show today's bite when Word decks mode is on. Otherwise leave the saved deck closed. */
+function presentedDeck(deck: WordDeckState, want: boolean, today: string): WordDeckState {
+  if (!want) return deck.open ? { ...deck, open: false } : deck;
+  const base = deck.open ? deck : { ...deck, open: true };
+  if (isTodayReady(officeWords, base, today)) return base;
+  return ensureToday(officeWords, base, today);
+}
+
 /**
- * Daily Office words for the English pack picker.
- * Sentence practice does not call `finish`, so its streak path stays on Say it.
+ * Daily Office words for the Word decks mode.
+ * Sentence practice passes `enabled` false, so its streak path stays on Say it.
  */
-export function useWordDeck(lang: Lang) {
+export function useWordDeck(lang: Lang, enabled = false) {
   const [deck, setDeck] = useState<WordDeckState>(() => loadWordDeck(practiceLocalStorage()));
   const [cursor, setCursor] = useState(() => firstUndone(loadWordDeck(practiceLocalStorage())));
   const [flipped, setFlipped] = useState(false);
@@ -32,12 +40,21 @@ export function useWordDeck(lang: Lang) {
   const counted = useRef(new Set<string>());
 
   const today = shanghaiDateKey(new Date());
-  const live =
-    lang === "en" && deck.open && !isTodayReady(officeWords, deck, today) ? ensureToday(officeWords, deck, today) : deck;
+  const want = enabled && lang === "en";
+  const live = presentedDeck(deck, want, today);
   if (live !== deck) {
+    const justOpened = want && !deck.open;
     setDeck(live);
-    setCursor(0);
-    setFlipped(false);
+    if (!want) {
+      setFlipped(false);
+    } else if (justOpened) {
+      const idx = live.todayIds.findIndex((id) => !live.todayDone.includes(id));
+      setCursor(idx < 0 ? 0 : idx);
+      setFlipped(false);
+    } else {
+      setCursor(0);
+      setFlipped(false);
+    }
   }
   deckRef.current = live;
 
@@ -46,7 +63,7 @@ export function useWordDeck(lang: Lang) {
     saveWordDeck(practiceLocalStorage(), deck);
   }, [deck]);
 
-  const wordMode = lang === "en" && live.open;
+  const wordMode = want && live.open;
   const words: OfficeWord[] = [];
   if (wordMode) {
     const byId = new Map(officeWords.map((word) => [word.id, word]));

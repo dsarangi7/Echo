@@ -13,6 +13,7 @@ import {
   officeWords,
   practicePacks,
   reviewGap,
+  wordDecksFor,
   saveWordDeck,
   spokenOf,
   wordDeckIssues,
@@ -71,20 +72,19 @@ describe("office word deck", () => {
     expect(officeWords.every((word) => word.en.split(/\s+/).length <= 4)).toBe(true);
   });
 
-  it("adds the daily tile only on the English pack list", () => {
+  it("keeps word decks out of the sentence pack list", () => {
     const sentences = [
       { set: "Office", zhSet: "办公室" },
       { set: "Office", zhSet: "办公室" },
       { set: "Meetings", zhSet: "开会" },
     ];
-    const en = practicePacks("en", sentences);
-    expect(en[0]).toMatchObject({ name: WORD_PACK_NAME, zhSet: "办公词汇", at: -1, unit: "词" });
-    expect(en[0].detail).toBe(`每天 ${DAILY_WORD_COUNT} · ${officeWords.length} 词`);
-    expect(en.slice(1).map((set) => [set.name, set.count])).toEqual([
+    expect(practicePacks(sentences).map((set) => [set.name, set.count])).toEqual([
       ["Office", 2],
       ["Meetings", 1],
     ]);
-    expect(practicePacks("zh", sentences).map((set) => set.name)).toEqual(["Office", "Meetings"]);
+    expect(practicePacks(sentences).some((set) => set.name === WORD_PACK_NAME)).toBe(false);
+    expect(wordDecksFor("en")).toEqual([{ id: "office", name: WORD_PACK_NAME, zh: "办公词汇", lang: "en" }]);
+    expect(wordDecksFor("zh")).toEqual([]);
   });
 });
 
@@ -185,5 +185,17 @@ describe("word practice wiring", () => {
     expect(panel).toContain('speak: "plain"');
     expect(panel).not.toMatch(/\blocalStorage\b/);
     expect(panel).not.toContain("recordPracticeClearOrPartial");
+    expect(panel).not.toContain("openPack");
+    expect(panel).not.toContain("closePack");
+    const app = readFileSync("src/App.tsx", "utf8");
+    expect(app).toContain("wordDecksFor");
+    expect(app).toContain('wordDeck={shownMode === "words"}');
+    const nav = readFileSync("src/components/ModeNav.tsx", "utf8");
+    const translateAt = nav.indexOf('id="mode-translate"');
+    const practiceAt = nav.indexOf('id="mode-practice"');
+    const wordsAt = nav.indexOf('id="mode-words"');
+    expect(translateAt).toBeGreaterThan(-1);
+    expect(translateAt).toBeLessThan(practiceAt);
+    expect(practiceAt).toBeLessThan(wordsAt);
   });
 });

@@ -1,13 +1,14 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { ModeNav } from "../src/components/ModeNav";
 import { PracticePanel } from "../src/components/PracticePanel";
 import { WordCard } from "../src/components/WordCard";
 import { PackPicker } from "../src/components/PackPicker";
 import { emptySession } from "../src/practice/session";
 import { shanghaiDateKey } from "../src/practice/shanghai";
 import type { Sentence } from "../src/practice/types";
-import { DAILY_WORD_COUNT, WORD_PACK_NAME, WORD_STORAGE_KEY, meaningChoices, officeWords, practicePacks } from "../src/practice/words";
+import { DAILY_WORD_COUNT, WORD_PACK_NAME, WORD_PACK_ZH, WORD_STORAGE_KEY, meaningChoices, officeWords, practicePacks, wordDecksFor } from "../src/practice/words";
 
 const line: Sentence = {
   set: "Office",
@@ -119,19 +120,52 @@ describe("office word card", () => {
     expect(back).toContain("Show the word · 看单词");
   });
 
-  it("lists Office words at the top of the English packs", () => {
+  it("keeps Office words out of the sentence pack picker", () => {
     const html = renderToStaticMarkup(
       createElement(PackPicker, {
         lang: "en",
-        active: WORD_PACK_NAME,
-        sets: practicePacks("en", [line]),
+        active: line.set,
+        sets: practicePacks([line]),
         onSelect: () => undefined,
       }),
     );
-    expect(html.indexOf("Office words")).toBeLessThan(html.indexOf("办公室"));
-    expect(html).toContain(`每天 ${DAILY_WORD_COUNT} · ${officeWords.length} 词`);
+    expect(html).not.toContain(WORD_PACK_NAME);
+    expect(html).not.toContain(WORD_PACK_ZH);
     expect(html).toContain("1 句");
+    expect(html).toContain(line.zhSet);
     expect(html).not.toContain(line.en);
+  });
+
+  it("lists Office words in the Word decks menu, and hides that tab in Chinese", () => {
+    const open = renderToStaticMarkup(
+      createElement(ModeNav, {
+        mode: "words",
+        decks: wordDecksFor("en"),
+        deckId: "office",
+        onChange: () => undefined,
+        onPickDeck: () => undefined,
+      }),
+    );
+    expect(open.indexOf('id="mode-translate"')).toBeLessThan(open.indexOf('id="mode-practice"'));
+    expect(open.indexOf('id="mode-practice"')).toBeLessThan(open.indexOf('id="mode-words"'));
+    expect(open).toContain(">Word decks<");
+    expect(open).toContain(">单词卡<");
+    expect(open).toContain('aria-haspopup="menu"');
+    expect(open).toContain('id="word-deck-office"');
+    expect(open).toContain(WORD_PACK_NAME);
+    expect(open).toContain(WORD_PACK_ZH);
+    expect(open).toContain('aria-checked="true"');
+    expect(open).toContain('hidden=""');
+
+    const chinese = renderToStaticMarkup(
+      createElement(ModeNav, {
+        mode: "practice",
+        decks: wordDecksFor("zh"),
+        onChange: () => undefined,
+      }),
+    );
+    expect(chinese).not.toContain('id="mode-words"');
+    expect(chinese).not.toContain(WORD_PACK_NAME);
   });
 });
 
@@ -145,6 +179,31 @@ describe("daily word practice", () => {
     expect(html).toContain('id="say"');
     expect(html).not.toContain('id="word-day"');
     expect(html).not.toContain('id="word-quiz"');
+  });
+
+  it("does not open Office words from a saved deck while Practice is showing sentences", () => {
+    const today = shanghaiDateKey(new Date());
+    const ids = officeWords.slice(0, DAILY_WORD_COUNT).map((word) => word.id);
+    vi.stubGlobal(
+      "localStorage",
+      memory({
+        [WORD_STORAGE_KEY]: JSON.stringify({
+          open: true,
+          introduced: ids,
+          memory: Object.fromEntries(ids.map((id) => [id, { box: 0, due: today }])),
+          todayKey: today,
+          todayIds: ids,
+          todayDone: [],
+        }),
+      }),
+    );
+    const html = panel();
+    expect(html).toContain(">printer</span>");
+    expect(html).toContain('id="pack-toggle"');
+    expect(html).toContain("Packs");
+    expect(html).not.toContain('id="word-quiz"');
+    expect(html).not.toContain(WORD_PACK_NAME);
+    expect(html).not.toContain(WORD_PACK_ZH);
   });
 
   it("shows today's five words, Hear it, and Say it", () => {
@@ -161,8 +220,10 @@ describe("daily word practice", () => {
       }),
     });
     vi.stubGlobal("localStorage", storage);
-    const html = panel();
+    const html = panel({ wordDeck: true });
     expect(html).toContain("Office words");
+    expect(html).not.toContain('id="pack-toggle"');
+    expect(html).not.toContain("Packs · 选一组");
     expect(html).toContain("办公词汇");
     expect(html).toContain(officeWords[1].en);
     expect(html).not.toContain(officeWords[0].example);
