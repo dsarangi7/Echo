@@ -39,14 +39,18 @@ describe("echo landing", () => {
     expect(readLandingDismissed(store)).toBe(false);
   });
 
-  it("remembers practice unless the last mode was translate", () => {
+  it("remembers practice, translate, and word decks", () => {
     const store = memory();
     expect(readAppMode(store)).toBe("practice");
     expect(readAppMode(null)).toBe("practice");
     writeAppMode(store, "translate");
     expect(store.getItem(APP_MODE_KEY)).toBe("translate");
     expect(readAppMode(store)).toBe("translate");
+    writeAppMode(store, "words");
+    expect(readAppMode(store)).toBe("words");
     writeAppMode(store, "practice");
+    expect(readAppMode(store)).toBe("practice");
+    store.setItem(APP_MODE_KEY, "nope");
     expect(readAppMode(store)).toBe("practice");
   });
 });

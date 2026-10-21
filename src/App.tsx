@@ -10,6 +10,7 @@ import { startReminderRuntime } from "./practice/reminder-runtime";
 import { practiceLocalStorage } from "./practice/streak";
 import { usePractice } from "./practice/usePractice";
 import { introLine, introReading } from "./speech/intro";
+import { wordDecksFor } from "./practice/words";
 import { useTranslate } from "./translate/useTranslate";
 import { clearLandingDismissed, readAppMode, readLandingDismissed, writeAppMode, writeLandingDismissed } from "./ui/landing";
 
@@ -20,6 +21,8 @@ export function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showLanding, setShowLanding] = useState(() => !readLandingDismissed(practiceLocalStorage()));
   const [mode, setMode] = useState<EchoMode>(() => readAppMode(practiceLocalStorage()));
+  const decks = wordDecksFor(lang);
+  const shownMode: EchoMode = mode === "words" && decks.length === 0 ? "practice" : mode;
 
   useEffect(() => startReminderRuntime(), []);
 
@@ -38,6 +41,11 @@ export function App() {
     translate.quiet();
     writeAppMode(practiceLocalStorage(), next);
     setMode(next);
+  }
+
+  function openWordDeck(id: string) {
+    if (!decks.some((deck) => deck.id === id)) return;
+    selectMode("words");
   }
 
   function dismissLanding() {
@@ -127,13 +135,19 @@ export function App() {
         </div>
       </header>
 
-      <ModeNav mode={mode} onChange={selectMode} />
+      <ModeNav
+        mode={shownMode}
+        decks={decks}
+        deckId={shownMode === "words" ? (decks[0]?.id ?? null) : null}
+        onChange={selectMode}
+        onPickDeck={openWordDeck}
+      />
 
       <div className="stage">
-        <div hidden={mode !== "practice"}>
-          <PracticePanel {...practice} active={mode === "practice" && !showLanding} />
+        <div hidden={shownMode === "translate"}>
+          <PracticePanel {...practice} active={shownMode !== "translate" && !showLanding} wordDeck={shownMode === "words"} />
         </div>
-        <div hidden={mode !== "translate"}>
+        <div hidden={shownMode !== "translate"}>
           <TranslatePanel
             choice={translate.choice}
             text={translate.text}

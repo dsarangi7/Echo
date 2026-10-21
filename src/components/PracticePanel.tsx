@@ -20,9 +20,10 @@ import { WordCard } from "./WordCard";
 
 type Practice = ReturnType<typeof usePractice>;
 
-export function PracticePanel(practice: Practice & { active?: boolean }) {
+export function PracticePanel(practice: Practice & { active?: boolean; wordDeck?: boolean }) {
   const {
     active = true,
+    wordDeck = false,
     lang,
     index,
     item,
@@ -48,7 +49,7 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
   const setOwnStreak = practice.setOwnStreak;
   const gradedText = practice.gradedText ?? "";
   const gradedPlain = practice.gradedPlain === true;
-  const words = useWordDeck(lang);
+  const words = useWordDeck(lang, wordDeck);
   const [picking, setPicking] = useState(false);
   const day = usePracticeStreak();
   const [tipSeen, setTipSeen] = useState(() => readMatchTipSeen(practiceLocalStorage()));
@@ -72,6 +73,7 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
   }, [dismissTip, index]);
 
   const wordMode = words.wordMode;
+  const showPacks = picking && !wordMode;
   const activeWord = words.word;
   const finishWord = words.finish;
 
@@ -94,7 +96,7 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
     finishWord(activeWord.id, false);
   }, [activeWord, finishWord, gradedPlain, gradedText, lineOutcome, wordMode]);
 
-  const sets = useMemo(() => practicePacks(lang, pack), [lang, pack]);
+  const sets = useMemo(() => practicePacks(pack), [pack]);
 
   const found = pack.findIndex((row) => row.set === item.set);
   const setStart = found < 0 ? 0 : found;
@@ -127,25 +129,24 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
   const choose = useCallback(
     (at: number, name: string) => {
       setPicking(false);
-      if (name === WORD_PACK_NAME) {
-        words.openPack();
-        return;
-      }
-      words.closePack();
       if (name !== item.set) jumpTo(at);
     },
-    [item.set, jumpTo, words],
+    [item.set, jumpTo],
   );
+
+  useEffect(() => {
+    if (wordMode) setPicking(false);
+  }, [wordMode]);
 
   useEffect(() => {
     if (!active) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && picking) {
+      if (event.key === "Escape" && showPacks) {
         event.preventDefault();
         setPicking(false);
         return;
       }
-      if (picking) return;
+      if (showPacks) return;
       if (event.altKey || event.ctrlKey || event.metaKey) return;
       const tag = (event.target as HTMLElement | null)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "BUTTON") return;
@@ -159,26 +160,34 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [active, move, picking]);
+  }, [active, move, showPacks]);
 
   return (
     <section className="card practice-card" aria-label="Practice">
       <div className="deck-bar">
-        <button
-          type="button"
-          id="pack-toggle"
-          className={picking ? "pack-toggle on" : "pack-toggle"}
-          aria-expanded={picking}
-          onClick={() => setPicking((open) => !open)}
-        >
-          <span className="pack-kicker">{picking ? "Card · 返回" : "Packs · 选一组"}</span>
-          <b id="setlabel">{setTitle}</b>
-          <small>
-            {wordMode
-              ? `${setSub} · ${words.cursor + 1} / ${Math.max(1, words.words.length)}`
-              : `${setSub} · ${setPos} / ${setCount}`}
-          </small>
-        </button>
+        {wordMode ? (
+          <div className="deck-current">
+            <span className="pack-kicker">Word deck · 单词卡</span>
+            <b id="setlabel">{setTitle}</b>
+            <small>
+              {setSub} · {words.cursor + 1} / {Math.max(1, words.words.length)}
+            </small>
+          </div>
+        ) : (
+          <button
+            type="button"
+            id="pack-toggle"
+            className={showPacks ? "pack-toggle on" : "pack-toggle"}
+            aria-expanded={showPacks}
+            onClick={() => setPicking((open) => !open)}
+          >
+            <span className="pack-kicker">{showPacks ? "Card · 返回" : "Packs · 选一组"}</span>
+            <b id="setlabel">{setTitle}</b>
+            <small>
+              {setSub} · {setPos} / {setCount}
+            </small>
+          </button>
+        )}
         <p
           id="progress"
           aria-label={wordMode ? `${words.doneCount} of ${DAILY_WORD_COUNT} words done today. 今天完成 ${words.doneCount} 个。` : undefined}
@@ -187,8 +196,8 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
         </p>
       </div>
 
-      {picking ? (
-        <PackPicker lang={lang} sets={sets} active={wordMode ? WORD_PACK_NAME : item.set} onSelect={choose} />
+      {showPacks ? (
+        <PackPicker lang={lang} sets={sets} active={item.set} onSelect={choose} />
       ) : wordMode && activeWord ? (
         <>
           <p
@@ -222,6 +231,10 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
             onJump={move}
           />
         </>
+      ) : wordMode ? (
+        <p className="status-note" role="status">
+          No words in this deck yet. 这组还没有词。
+        </p>
       ) : (
         <FlashCard
           index={index}
@@ -241,7 +254,7 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
         />
       )}
 
-      {picking ? null : (
+      {showPacks ? null : (
         <div className="thumb-dock">
           {quietStart ? null : (
             <div className={outcome === "recognition_fail" ? "result recognition" : "result"} id="result" aria-live="polite">
@@ -316,7 +329,7 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
         </div>
       )}
 
-      {!picking && !wordMode && outcome !== "recognition_fail" && !tipSeen ? (
+      {!showPacks && !wordMode && outcome !== "recognition_fail" && !tipSeen ? (
         <div className="match-tip" id="match-tip" role="status">
           <p className="match-tip-kicker">Matching · 怎么比对</p>
           {lang === "en" ? (
@@ -345,7 +358,7 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
           )}
         </div>
       ) : null}
-      {!picking && outcome === "recognition_fail" ? (
+      {!showPacks && outcome === "recognition_fail" ? (
         <p className="match-tip" id="legend-match">
           <span className="sw unk" />
           {lang === "zh"

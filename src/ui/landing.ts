@@ -3,7 +3,7 @@ import type { EchoMode } from "../components/ModeNav";
 /** Set after the cat landing is dismissed. Stays set across reloads. */
 export const LANDING_DISMISSED_KEY = "echo-landing-dismissed";
 
-/** Practice or Translate, so a later visit opens where they left off. */
+/** Practice, Translate, or Word decks, so a later visit opens where they left off. */
 export const APP_MODE_KEY = "echo-app-mode";
 
 type StorageLike = Pick<Storage, "getItem" | "setItem" | "removeItem"> | null;
@@ -34,7 +34,9 @@ export function clearLandingDismissed(storage: StorageLike): void {
 
 export function readAppMode(storage: StorageLike): EchoMode {
   try {
-    return storage?.getItem(APP_MODE_KEY) === "translate" ? "translate" : "practice";
+    const value = storage?.getItem(APP_MODE_KEY);
+    if (value === "translate" || value === "words") return value;
+    return "practice";
   } catch {
     return "practice";
   }

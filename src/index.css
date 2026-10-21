@@ -646,7 +646,8 @@ button.act:focus-visible,
 .settings-close:focus-visible,
 .theme-switch button:focus-visible,
 .pace-switch button:focus-visible,
-.mode-switch button:focus-visible {
+.mode-switch button:focus-visible,
+.mode-menu button:focus-visible {
   outline: 2px solid var(--neon);
   outline-offset: 2px;
 }
@@ -1466,8 +1467,8 @@ button.session-count.unsure:focus-visible,
   min-width: 0;
 }
 
-.pack-toggle {
-  appearance: none;
+.pack-toggle,
+.deck-current {
   flex: 1 1 auto;
   min-width: 0;
   text-align: left;
@@ -1476,11 +1477,16 @@ button.session-count.unsure:focus-visible,
   color: var(--text);
   border-radius: 16px;
   padding: 8px 12px;
-  cursor: pointer;
   min-height: 44px;
 }
 
-.pack-toggle .pack-kicker {
+.pack-toggle {
+  appearance: none;
+  cursor: pointer;
+}
+
+.pack-toggle .pack-kicker,
+.deck-current .pack-kicker {
   display: block;
   color: var(--muted);
   font-size: 11px;
@@ -1488,7 +1494,8 @@ button.session-count.unsure:focus-visible,
   letter-spacing: 0.04em;
 }
 
-.pack-toggle small {
+.pack-toggle small,
+.deck-current small {
   display: block;
   margin-top: 2px;
   color: var(--muted);
@@ -2007,11 +2014,15 @@ button.session-count.unsure:focus-visible,
 
 .mode-switch {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   border: 1px solid var(--edge);
   border-radius: 16px;
   background: var(--chip);
   padding: 4px;
+}
+
+.mode-switch.has-decks {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
 }
 
 .mode-switch button {
@@ -2025,6 +2036,83 @@ button.session-count.unsure:focus-visible,
   font-weight: 750;
   font-size: 16px;
   line-height: 1.15;
+  min-width: 0;
+}
+
+.mode-deck {
+  position: relative;
+  min-width: 0;
+  display: flex;
+}
+
+.mode-deck > button {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+}
+
+.mode-caret {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 5px;
+  vertical-align: 2px;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid currentColor;
+}
+
+.mode-caret.is-open {
+  transform: rotate(180deg);
+  vertical-align: 0;
+}
+
+.mode-menu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  right: 0;
+  left: auto;
+  width: max(100%, 168px);
+  max-width: calc(100vw - 32px);
+  margin: 0;
+  padding: 4px;
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+  background: var(--chip);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+}
+
+.mode-menu[hidden] { display: none; }
+
+.mode-switch .mode-menu button {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  text-align: left;
+  font-size: 15px;
+  line-height: 1.2;
+  white-space: normal;
+}
+
+.mode-switch .mode-menu button b {
+  display: block;
+  font-weight: 750;
+}
+
+.mode-switch .mode-menu button small {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 650;
+  opacity: 0.72;
+}
+
+.mode-switch .mode-menu button.on small {
+  color: var(--neon-ink);
+  opacity: 0.85;
 }
 
 .mode-switch button small {
@@ -2213,6 +2301,24 @@ button.ghost:disabled:hover {
     display: inline;
     margin-top: 0;
     font-size: 12px;
+  }
+  .mode-switch.has-decks > button,
+  .mode-switch.has-decks > .mode-deck > button {
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    padding: 5px 4px;
+    font-size: clamp(12px, 3.2vw, 15px);
+    letter-spacing: -0.02em;
+  }
+  .mode-switch.has-decks > button small,
+  .mode-switch.has-decks > .mode-deck > button small {
+    display: block;
+    margin-top: 0;
+    font-size: 11px;
+  }
+  .mode-switch.has-decks > .mode-deck > button span {
+    white-space: nowrap;
   }
 
   .deck-bar { margin-bottom: 8px; }
