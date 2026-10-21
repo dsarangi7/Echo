@@ -4,6 +4,8 @@ Practice English or Chinese. The first visit opens on the cat. Tap the cat or St
 
 English practice stays in the office: meetings, email, the factory, quality, and order documents. Chinese practice is for AYK work — orders, invoices, shipping documents, minutes, HR notices, drawings — plus Meituan delivery and Didi taxi rides.
 
+English also has an Office words pack (办公词汇) in the same pack picker. Each Shanghai day opens five words: due reviews first, then new ones, until the deck is in rotation. Flip a card for the Chinese meaning and one office example, tap Hear it (the device voice, since these are not sentence clips), say the word, or pick the meaning. The first time you finish a word that day — a clear Say it or the right meaning — it counts once toward the same five-clear day streak. Sentence packs are unchanged.
+
 Chinese cards show tone-marked pinyin, one syllable at a time, so that is the line you read. English cards still show the English sentence. Hear it speaks the sentence — the Chinese clips are the characters. Say it listens, then marks the words you matched in English or the syllables you matched in Chinese. The score is still a count of those characters, not an accent percentage.
 
 The cat is an original mascot. Not Talking Tom, and not Talking Tat.

@@ -6,6 +6,9 @@ export type PackChoice = {
   zhSet: string;
   at: number;
   count: number;
+  unit?: string;
+  /** Replaces the default “12 句” line when the pack is not a sentence set. */
+  detail?: string;
 };
 
 type Props = {
@@ -40,7 +43,7 @@ export function PackPicker({ lang, sets, active, onSelect }: Props) {
               <b>{title}</b>
               <small style={{ color: tone.soft }}>{sub}</small>
               <span className="pack-count" style={{ color: tone.soft }}>
-                {set.count} 句
+                {set.detail ?? `${set.count} ${set.unit ?? "句"}`}
               </span>
             </button>
           );

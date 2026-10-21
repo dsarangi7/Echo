@@ -6,7 +6,9 @@ import { emptySession } from "../practice/session";
 import { micHeardLine } from "../practice/score";
 import { practiceLocalStorage } from "../practice/streak";
 import { usePracticeStreak } from "../practice/usePracticeSignals";
+import { useWordDeck } from "../practice/useWordDeck";
 import type { usePractice } from "../practice/usePractice";
+import { DAILY_WORD_COUNT, WORD_PACK_NAME, WORD_PACK_ZH, meaningChoices, officeWords, practicePacks, spokenOf } from "../practice/words";
 import { MATCH_TIP_MS, readMatchTipSeen, writeMatchTipSeen } from "../ui/matchTip";
 import { DayTask } from "./DayTask";
 import { FeedbackLines } from "./FeedbackLines";
@@ -14,6 +16,7 @@ import { FlashCard } from "./FlashCard";
 import { PackPicker } from "./PackPicker";
 import { SessionStrip } from "./SessionStrip";
 import { StreakChrome } from "./StreakChrome";
+import { WordCard } from "./WordCard";
 
 type Practice = ReturnType<typeof usePractice>;
 
@@ -41,6 +44,11 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
     resetSession,
   } = practice;
   const stepPack = practice.stepPack;
+  const setPracticeLine = practice.setPracticeLine;
+  const setOwnStreak = practice.setOwnStreak;
+  const gradedText = practice.gradedText ?? "";
+  const gradedPlain = practice.gradedPlain === true;
+  const words = useWordDeck(lang);
   const [picking, setPicking] = useState(false);
   const day = usePracticeStreak();
   const [tipSeen, setTipSeen] = useState(() => readMatchTipSeen(practiceLocalStorage()));
@@ -63,19 +71,30 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
     dismissTip();
   }, [dismissTip, index]);
 
-  const sets = useMemo(() => {
-    const names: string[] = [];
-    for (const row of pack) {
-      if (!names.includes(row.set)) names.push(row.set);
+  const wordMode = words.wordMode;
+  const activeWord = words.word;
+  const finishWord = words.finish;
+
+  useEffect(() => {
+    setOwnStreak?.(wordMode);
+    return () => setOwnStreak?.(false);
+  }, [setOwnStreak, wordMode]);
+
+  useEffect(() => {
+    if (!wordMode || !activeWord) {
+      setPracticeLine?.(null);
+      return;
     }
-    return names.map((name) => {
-      const first = pack.find((row) => row.set === name)!;
-      const at = pack.findIndex((row) => row.set === name);
-      let count = 0;
-      for (const row of pack) if (row.set === name) count += 1;
-      return { name, zhSet: first.zhSet, at, count };
-    });
-  }, [pack]);
+    setPracticeLine?.({ text: spokenOf(activeWord), speak: "plain" });
+  }, [activeWord, setPracticeLine, wordMode]);
+
+  useEffect(() => {
+    if (!wordMode || !activeWord || lineOutcome !== "clear" || !gradedPlain) return;
+    if (gradedText !== spokenOf(activeWord)) return;
+    finishWord(activeWord.id, false);
+  }, [activeWord, finishWord, gradedPlain, gradedText, lineOutcome, wordMode]);
+
+  const sets = useMemo(() => practicePacks(lang, pack), [lang, pack]);
 
   const found = pack.findIndex((row) => row.set === item.set);
   const setStart = found < 0 ? 0 : found;
@@ -85,8 +104,8 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
   const setPos = Math.min(setCount, Math.max(1, index - setStart + 1));
   const primary = readingText(lang, item);
   const meaning = lang === "en" ? item.zh : item.en;
-  const setTitle = lang === "zh" ? item.zhSet : item.set;
-  const setSub = lang === "zh" ? item.set : item.zhSet;
+  const setTitle = wordMode ? WORD_PACK_NAME : lang === "zh" ? item.zhSet : item.set;
+  const setSub = wordMode ? WORD_PACK_ZH : lang === "zh" ? item.set : item.zhSet;
   const quietStart =
     (kicker === "Hello" || kicker === "Practice" || kicker === "Note") &&
     outcome !== "recognition_fail" &&
@@ -95,18 +114,27 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
 
   const move = useCallback(
     (delta: -1 | 1) => {
+      if (wordMode) {
+        words.move(delta);
+        return;
+      }
       if (typeof stepPack === "function") stepPack(delta);
       else jumpTo(stepWithinSet(pack, index, delta));
     },
-    [index, jumpTo, pack, stepPack],
+    [index, jumpTo, pack, stepPack, wordMode, words],
   );
 
   const choose = useCallback(
     (at: number, name: string) => {
       setPicking(false);
+      if (name === WORD_PACK_NAME) {
+        words.openPack();
+        return;
+      }
+      words.closePack();
       if (name !== item.set) jumpTo(at);
     },
-    [item.set, jumpTo],
+    [item.set, jumpTo, words],
   );
 
   useEffect(() => {
@@ -146,16 +174,54 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
           <span className="pack-kicker">{picking ? "Card · 返回" : "Packs · 选一组"}</span>
           <b id="setlabel">{setTitle}</b>
           <small>
-            {setSub} · {setPos} / {setCount}
+            {wordMode
+              ? `${setSub} · ${words.cursor + 1} / ${Math.max(1, words.words.length)}`
+              : `${setSub} · ${setPos} / ${setCount}`}
           </small>
         </button>
-        <p id="progress">
-          {index + 1} / {pack.length}
+        <p
+          id="progress"
+          aria-label={wordMode ? `${words.doneCount} of ${DAILY_WORD_COUNT} words done today. 今天完成 ${words.doneCount} 个。` : undefined}
+        >
+          {wordMode ? `${words.doneCount}/${DAILY_WORD_COUNT}` : `${index + 1} / ${pack.length}`}
         </p>
       </div>
 
       {picking ? (
-        <PackPicker lang={lang} sets={sets} active={item.set} onSelect={choose} />
+        <PackPicker lang={lang} sets={sets} active={wordMode ? WORD_PACK_NAME : item.set} onSelect={choose} />
+      ) : wordMode && activeWord ? (
+        <>
+          <p
+            id="word-day"
+            className={words.doneCount >= DAILY_WORD_COUNT ? "word-day is-complete" : "word-day"}
+            role="status"
+          >
+            <b>
+              {words.doneCount}/{DAILY_WORD_COUNT}
+            </b>
+            <span>{words.doneCount >= DAILY_WORD_COUNT ? "Today's words are done" : "Today's words"}</span>
+            <small>{words.doneCount >= DAILY_WORD_COUNT ? "今天的词完成了" : "今天的词"}</small>
+            <span className="word-pips" aria-hidden="true">
+              {words.words.map((entry) => (
+                <i key={entry.id} className={words.doneIds.includes(entry.id) ? "on" : undefined} />
+              ))}
+            </span>
+          </p>
+          <WordCard
+            index={words.cursor}
+            count={words.words.length}
+            word={activeWord}
+            flipped={words.flipped}
+            done={words.doneIds.includes(activeWord.id)}
+            choices={meaningChoices(officeWords, activeWord, words.todayKey ?? "")}
+            onFlip={() => words.setFlipped((open) => !open)}
+            onPick={(id) => {
+              words.finish(id, true);
+              words.setFlipped(true);
+            }}
+            onJump={move}
+          />
+        </>
       ) : (
         <FlashCard
           index={index}
@@ -250,7 +316,7 @@ export function PracticePanel(practice: Practice & { active?: boolean }) {
         </div>
       )}
 
-      {!picking && outcome !== "recognition_fail" && !tipSeen ? (
+      {!picking && !wordMode && outcome !== "recognition_fail" && !tipSeen ? (
         <div className="match-tip" id="match-tip" role="status">
           <p className="match-tip-kicker">Matching · 怎么比对</p>
           {lang === "en" ? (
