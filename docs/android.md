@@ -4,7 +4,7 @@ A Capacitor shell around the same Vite build as the website. Application id: `co
 
 The shell is Android-only. There is no iOS project in this change.
 
-Colleagues install a release-signed APK (sideload or an internal share). Version **1.0.3** (`versionCode` 4). It packages the current website: a dismissible cat landing, Translate, Chinese practice with pinyin first, swipeable sentence cards, compact phone chrome, a matching tip that shows once, a victory sound and day streak, Settings Help (microphone tip and feedback email), and the daily reminder inside Settings. Install it over 1.0.2. The phone delivers local notifications while the app is closed:
+Colleagues install a release-signed APK (sideload or an internal share). Version **1.0.4** (`versionCode` 5). It packages the current website: the phone header, settings sheet, and thumb dock sit below the status bar (Capacitor `--safe-area-inset-*`, with `env(safe-area-inset-*)` when those variables are absent), plus a dismissible cat landing, Translate, Chinese practice with pinyin first, swipeable sentence cards, compact phone chrome, a matching tip that shows once, a victory sound and day streak, Settings Help (microphone tip and feedback email), and the daily reminder inside Settings. Install it over 1.0.3. The phone delivers local notifications while the app is closed:
 
 - **Test meow** about one minute after the reminder is turned on, so a new install can be checked immediately.
 - **Daily reminder** at the saved **phone-local** time. Title `课猫 Echo`, body `Time to practice. 该练一句了。`
@@ -24,7 +24,7 @@ The 1.0.0 card saved `enabled: true` before `LocalNotifications.schedule` finish
 
 ## Install check
 
-1. This 1.0.3 APK is signed with the same `echo` certificate as 1.0.0, 1.0.1, and 1.0.2 (`SHA-256` `9E:AA:B4:7F:55:B6:83:5B:92:68:14:FF:3D:F2:3A:D0:ED:85:3C:34:10:EB:FD:1C:3F:CD:D1:31:1D:64:C4:AF`). Install over the existing app; do not uninstall first, or the reminder settings stored in the app are wiped.
+1. This 1.0.4 APK is signed with the same `echo` certificate as 1.0.0, 1.0.1, 1.0.2, and 1.0.3 (`SHA-256` `9E:AA:B4:7F:55:B6:83:5B:92:68:14:FF:3D:F2:3A:D0:ED:85:3C:34:10:EB:FD:1C:3F:CD:D1:31:1D:64:C4:AF`). Install over the existing app; do not uninstall first, or the reminder settings stored in the app are wiped.
 2. Open Settings (the header gear) and turn the daily reminder on. Allow notifications when Android asks.
 3. On Android 12+, if Alarms & reminders is off, the system page opens. Allow it, then turn the switch on again. The card stays off and explains this until that grant exists.
 4. About one minute later, a notification should meow: `Reminder is on. 提醒已打开。`
@@ -37,7 +37,7 @@ adb shell appops get com.ayk.echo SCHEDULE_EXACT_ALARM
 adb shell dumpsys notification --noredact | grep -A 20 com.ayk.echo
 ```
 
-`versionName` should be `1.0.3` and `versionCode` `4`. After the switch is on, a pending notification with id `91003` (the test), `91001` (daily), and `91002` (Monday) should be listed. If the meow never arrives, set Battery to Unrestricted for 课猫 Echo. Some OEM skins kill exact alarms otherwise.
+`versionName` should be `1.0.4` and `versionCode` `5`. After the switch is on, a pending notification with id `91003` (the test), `91001` (daily), and `91002` (Monday) should be listed. If the meow never arrives, set Battery to Unrestricted for 课猫 Echo. Some OEM skins kill exact alarms otherwise.
 
 The weekly alert repeats on the phone's Monday at that same time. Its count is the Shanghai week that will have just ended. The words are the same ones the website uses (`dailyNudgeCopy` / `weeklyNudgeCopy`).
 
@@ -140,7 +140,7 @@ Vault **both** the keystore file and the two passwords. The agent run that creat
 
 Store those in the vault, then delete extra copies you do not need. Do not commit either file.
 
-1.0.3 is signed with that same key. The published APK certificate SHA-256 is `9E:AA:B4:7F:55:B6:83:5B:92:68:14:FF:3D:F2:3A:D0:ED:85:3C:34:10:EB:FD:1C:3F:CD:D1:31:1D:64:C4:AF`, so an installed 1.0.0, 1.0.1, or 1.0.2 updates in place.
+1.0.4 is signed with that same key. The published APK certificate SHA-256 is `9E:AA:B4:7F:55:B6:83:5B:92:68:14:FF:3D:F2:3A:D0:ED:85:3C:34:10:EB:FD:1C:3F:CD:D1:31:1D:64:C4:AF`, so an installed 1.0.0, 1.0.1, 1.0.2, or 1.0.3 updates in place.
 
 Confirm a backup before you rely on it:
 
