@@ -6,7 +6,7 @@
  * the line Say it grades.
  *
  * pinyin-pro supplies tone marks, neutral tones, and 一/不 sandhi. The overrides
- * below correct readings the segmenter gets wrong for this office/taxi pack.
+ * below correct readings the segmenter gets wrong for this office, taxi, and class pack.
  * Syllables stay spaced so each tone can be marked on its own.
  *
  *   node scripts/fill-pinyin.mjs
@@ -22,6 +22,12 @@ customPinyin({
   送货单: "sòng huò dān",
   零点一: "líng diǎn yī",
   课猫: "Kè Māo",
+  // Class lines. 买东西 is "things" (neutral 西), not east-west.
+  买东西: "mǎi dōng xi",
+  裙子: "qún zi",
+  华为: "huá wéi",
+  试试: "shì shi",
+  点儿: "diǎn er",
 });
 
 const PUNCT = {

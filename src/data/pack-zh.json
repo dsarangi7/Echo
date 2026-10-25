@@ -698,5 +698,285 @@
     "en": "Thanks, driver.",
     "zh": "谢谢师傅，辛苦了。",
     "py": "Xiè xiè shī fu, xīn kǔ le."
+  },
+  {
+    "set": "Tea house / ordering",
+    "zhSet": "酒楼饮茶点餐",
+    "en": "We're going for morning tea (dim sum).",
+    "zh": "我们去喝早茶。",
+    "py": "Wǒ men qù hē zǎo chá."
+  },
+  {
+    "set": "Tea house / ordering",
+    "zhSet": "酒楼饮茶点餐",
+    "en": "We need to queue and get a number.",
+    "zh": "我们需要排队取号。",
+    "py": "Wǒ men xū yào pái duì qǔ hào."
+  },
+  {
+    "set": "Tea house / ordering",
+    "zhSet": "酒楼饮茶点餐",
+    "en": "Do you need to wait for a table?",
+    "zh": "您需要等位吗？",
+    "py": "Nín xū yào děng wèi ma?"
+  },
+  {
+    "set": "Tea house / ordering",
+    "zhSet": "酒楼饮茶点餐",
+    "en": "I've already got a queue number.",
+    "zh": "我已经取号了。",
+    "py": "Wǒ yǐ jīng qǔ hào le."
+  },
+  {
+    "set": "Tea house / ordering",
+    "zhSet": "酒楼饮茶点餐",
+    "en": "Waiter, please give me the menu.",
+    "zh": "服务员，请给我菜单。",
+    "py": "Fú wù yuán, qǐng gěi wǒ cài dān."
+  },
+  {
+    "set": "Tea house / ordering",
+    "zhSet": "酒楼饮茶点餐",
+    "en": "We're going to order.",
+    "zh": "我们去点餐。",
+    "py": "Wǒ men qù diǎn cān."
+  },
+  {
+    "set": "Tea house / ordering",
+    "zhSet": "酒楼饮茶点餐",
+    "en": "I have dietary restrictions.",
+    "zh": "我有忌口。",
+    "py": "Wǒ yǒu jì kǒu."
+  },
+  {
+    "set": "Tea house / ordering",
+    "zhSet": "酒楼饮茶点餐",
+    "en": "Please refill the tea.",
+    "zh": "请添茶。",
+    "py": "Qǐng tiān chá."
+  },
+  {
+    "set": "Tea house / ordering",
+    "zhSet": "酒楼饮茶点餐",
+    "en": "Do we need to pack leftovers?",
+    "zh": "我们需要打包吗？",
+    "py": "Wǒ men xū yào dǎ bāo ma?"
+  },
+  {
+    "set": "Tea house / ordering",
+    "zhSet": "酒楼饮茶点餐",
+    "en": "Check please. How much is the tea cover charge?",
+    "zh": "买单。茶位费多少？",
+    "py": "Mǎi dān. Chá wèi fèi duō shǎo?"
+  },
+  {
+    "set": "Online shopping",
+    "zhSet": "线上购物",
+    "en": "I want to shop online.",
+    "zh": "我想网购。",
+    "py": "Wǒ xiǎng wǎng gòu."
+  },
+  {
+    "set": "Online shopping",
+    "zhSet": "线上购物",
+    "en": "I buy things on Taobao.",
+    "zh": "我在淘宝上买东西。",
+    "py": "Wǒ zài táo bǎo shàng mǎi dōng xi."
+  },
+  {
+    "set": "Online shopping",
+    "zhSet": "线上购物",
+    "en": "I use my phone to search for products.",
+    "zh": "我用手机搜索商品。",
+    "py": "Wǒ yòng shǒu jī sōu suǒ shāng pǐn."
+  },
+  {
+    "set": "Online shopping",
+    "zhSet": "线上购物",
+    "en": "This product is relatively cheap.",
+    "zh": "这个商品比较便宜。",
+    "py": "Zhè ge shāng pǐn bǐ jiào pián yi."
+  },
+  {
+    "set": "Online shopping",
+    "zhSet": "线上购物",
+    "en": "Have you compared prices?",
+    "zh": "你比价了吗？",
+    "py": "Nǐ bǐ jià le ma?"
+  },
+  {
+    "set": "Online shopping",
+    "zhSet": "线上购物",
+    "en": "iPhones are more expensive than Huawei phones.",
+    "zh": "苹果手机比华为手机贵。",
+    "py": "Píng guǒ shǒu jī bǐ huá wéi shǒu jī guì."
+  },
+  {
+    "set": "Online shopping",
+    "zhSet": "线上购物",
+    "en": "I have a coupon.",
+    "zh": "我有优惠券。",
+    "py": "Wǒ yǒu yōu huì quàn."
+  },
+  {
+    "set": "Online shopping",
+    "zhSet": "线上购物",
+    "en": "Add to cart.",
+    "zh": "放进购物车。",
+    "py": "Fàng jìn gòu wù chē."
+  },
+  {
+    "set": "Online shopping",
+    "zhSet": "线上购物",
+    "en": "I got the parcel quickly.",
+    "zh": "我很快收到了快递。",
+    "py": "Wǒ hěn kuài shōu dào le kuài dì."
+  },
+  {
+    "set": "Online shopping",
+    "zhSet": "线上购物",
+    "en": "I’m asking customer service to return it.",
+    "zh": "我找客服退货。",
+    "py": "Wǒ zhǎo kè fú tuì huò."
+  },
+  {
+    "set": "In-store shopping",
+    "zhSet": "线下购物",
+    "en": "I want to buy clothes.",
+    "zh": "我想买衣服。",
+    "py": "Wǒ xiǎng mǎi yī fu."
+  },
+  {
+    "set": "In-store shopping",
+    "zhSet": "线下购物",
+    "en": "What do you think of this hoodie?",
+    "zh": "你觉得这件卫衣怎么样？",
+    "py": "Nǐ jué de zhè jiàn wèi yī zěn me yàng?"
+  },
+  {
+    "set": "In-store shopping",
+    "zhSet": "线下购物",
+    "en": "These sneakers are a little big.",
+    "zh": "这双运动鞋有点儿大。",
+    "py": "Zhè shuāng yùn dòng xié yǒu diǎn er dà."
+  },
+  {
+    "set": "In-store shopping",
+    "zhSet": "线下购物",
+    "en": "I want a medium.",
+    "zh": "我要中号的。",
+    "py": "Wǒ yào zhōng hào de."
+  },
+  {
+    "set": "In-store shopping",
+    "zhSet": "线下购物",
+    "en": "Do you have it in black?",
+    "zh": "有黑色的吗？",
+    "py": "Yǒu hēi sè de ma?"
+  },
+  {
+    "set": "In-store shopping",
+    "zhSet": "线下购物",
+    "en": "Can I try it on?",
+    "zh": "我可以试试吗？",
+    "py": "Wǒ kě yǐ shì shi ma?"
+  },
+  {
+    "set": "In-store shopping",
+    "zhSet": "线下购物",
+    "en": "Please help me try on this skirt.",
+    "zh": "请帮我试一下这条裙子。",
+    "py": "Qǐng bāng wǒ shì yí xià zhè tiáo qún zi."
+  },
+  {
+    "set": "In-store shopping",
+    "zhSet": "线下购物",
+    "en": "This size is a little small.",
+    "zh": "这个尺码有点儿小。",
+    "py": "Zhè ge chǐ mǎ yǒu diǎn er xiǎo."
+  },
+  {
+    "set": "In-store shopping",
+    "zhSet": "线下购物",
+    "en": "Can the price be a bit cheaper?",
+    "zh": "价格可以便宜一点儿吗？",
+    "py": "Jià gé kě yǐ pián yi yì diǎn er ma?"
+  },
+  {
+    "set": "In-store shopping",
+    "zhSet": "线下购物",
+    "en": "This item is on sale.",
+    "zh": "这件衣服在打折。",
+    "py": "Zhè jiàn yī fu zài dǎ zhé."
+  },
+  {
+    "set": "Supermarket",
+    "zhSet": "逛超市",
+    "en": "I’m going to the supermarket to buy things.",
+    "zh": "我去超市买东西。",
+    "py": "Wǒ qù chāo shì mǎi dōng xi."
+  },
+  {
+    "set": "Supermarket",
+    "zhSet": "逛超市",
+    "en": "Excuse me, where is the entrance?",
+    "zh": "请问入口在哪里？",
+    "py": "Qǐng wèn rù kǒu zài nǎ lǐ?"
+  },
+  {
+    "set": "Supermarket",
+    "zhSet": "逛超市",
+    "en": "Where is the fruit and vegetable section?",
+    "zh": "水果蔬菜区在哪里？",
+    "py": "Shuǐ guǒ shū cài qū zài nǎ lǐ?"
+  },
+  {
+    "set": "Supermarket",
+    "zhSet": "逛超市",
+    "en": "I buy fish in the seafood section.",
+    "zh": "我在海鲜区买鱼。",
+    "py": "Wǒ zài hǎi xiān qū mǎi yú."
+  },
+  {
+    "set": "Supermarket",
+    "zhSet": "逛超市",
+    "en": "How do I get to the snack section?",
+    "zh": "零食区怎么走？",
+    "py": "Líng shí qū zěn me zǒu?"
+  },
+  {
+    "set": "Supermarket",
+    "zhSet": "逛超市",
+    "en": "Please go straight, then turn right.",
+    "zh": "请直走，然后右转。",
+    "py": "Qǐng zhí zǒu, rán hòu yòu zhuǎn."
+  },
+  {
+    "set": "Supermarket",
+    "zhSet": "逛超市",
+    "en": "Try it first, then buy it.",
+    "zh": "先试吃，再买东西。",
+    "py": "Xiān shì chī, zài mǎi dōng xi."
+  },
+  {
+    "set": "Supermarket",
+    "zhSet": "逛超市",
+    "en": "I’m going to the checkout to pay.",
+    "zh": "我去收银台结账。",
+    "py": "Wǒ qù shōu yín tái jié zhàng."
+  },
+  {
+    "set": "Supermarket",
+    "zhSet": "逛超市",
+    "en": "The exit is on the left.",
+    "zh": "出口在左边。",
+    "py": "Chū kǒu zài zuǒ biān."
+  },
+  {
+    "set": "Supermarket",
+    "zhSet": "逛超市",
+    "en": "Where do you go to buy fruit?",
+    "zh": "你去哪里买水果？",
+    "py": "Nǐ qù nǎ lǐ mǎi shuǐ guǒ?"
   }
 ]
