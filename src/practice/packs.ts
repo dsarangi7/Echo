@@ -14,7 +14,8 @@ export const packs = {
 export function packError(): string {
   const err: string[] = [];
   if (packEn.length !== 100) err.push(`EN pack is ${packEn.length}`);
-  if (packZh.length !== 100) err.push(`ZH pack is ${packZh.length}`);
+  // 100 AYK / Meituan / Didi lines, plus 40 class sentences. Meituan and Rider stay.
+  if (packZh.length !== 140) err.push(`ZH pack is ${packZh.length}`);
   if (packZh.some((row) => !row.py?.trim())) err.push("ZH pack is missing pinyin");
   const words = wordDeckIssues(officeWords);
   if (words) err.push(words);

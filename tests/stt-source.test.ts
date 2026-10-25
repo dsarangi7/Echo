@@ -91,12 +91,14 @@ describe("vendored whisper tiny", () => {
 });
 
 describe("bundled voice pack", () => {
-  it("has 100 English and 100 Chinese clips", () => {
+  it("has 100 English and 140 Chinese clips", () => {
+    const expected: Record<string, number> = { en: 100, zh: 140 };
     for (const lang of ["en", "zh"]) {
+      const count = expected[lang];
       const names = readdirSync(`public/audio/${lang}`).filter((name) => name.endsWith(".mp3")).sort();
-      expect(names).toHaveLength(100);
+      expect(names).toHaveLength(count);
       expect(names[0]).toBe("000.mp3");
-      expect(names[99]).toBe("099.mp3");
+      expect(names[count - 1]).toBe(`${String(count - 1).padStart(3, "0")}.mp3`);
       // Near-empty Piper stubs were about 2–4 KB and under a second. Real 40 kbps lines are larger.
       for (const name of names) {
         expect(statSync(`public/audio/${lang}/${name}`).size, `${lang}/${name}`).toBeGreaterThan(5000);
