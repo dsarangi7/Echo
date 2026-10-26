@@ -29,8 +29,8 @@ function presentedDeck(deck: WordDeckState, want: boolean, today: string): WordD
 }
 
 /**
- * Daily Office words for the Word decks mode.
- * Sentence practice passes `enabled` false, so its streak path stays on Say it.
+ * Daily Office words for the English Word decks mode.
+ * Chinese family decks do not use this bite. Sentence practice passes `enabled` false.
  */
 export function useWordDeck(lang: Lang, enabled = false) {
   const [deck, setDeck] = useState<WordDeckState>(() => loadWordDeck(practiceLocalStorage()));

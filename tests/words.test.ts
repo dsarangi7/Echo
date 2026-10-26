@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { addShanghaiDays } from "../src/practice/shanghai";
+import { TIAN_DECK_ID, TIAN_DECK_NAME, TIAN_DECK_ZH, familyById, familyIssues, familyLessons, familyTitle } from "../src/practice/families";
 import {
   DAILY_WORD_COUNT,
   WORD_PACK_NAME,
@@ -14,6 +15,7 @@ import {
   practicePacks,
   reviewGap,
   wordDecksFor,
+  wordDeckById,
   saveWordDeck,
   spokenOf,
   wordDeckIssues,
@@ -83,8 +85,35 @@ describe("office word deck", () => {
       ["Meetings", 1],
     ]);
     expect(practicePacks(sentences).some((set) => set.name === WORD_PACK_NAME)).toBe(false);
-    expect(wordDecksFor("en")).toEqual([{ id: "office", name: WORD_PACK_NAME, zh: "办公词汇", lang: "en" }]);
-    expect(wordDecksFor("zh")).toEqual([]);
+    expect(wordDecksFor("en")).toEqual([{ id: "office", name: WORD_PACK_NAME, zh: "办公词汇", lang: "en", kind: "flash" }]);
+    expect(wordDecksFor("zh")).toEqual([{ id: TIAN_DECK_ID, name: TIAN_DECK_NAME, zh: TIAN_DECK_ZH, lang: "zh", kind: "family" }]);
+    expect(wordDeckById("office")?.kind).toBe("flash");
+    expect(wordDeckById(TIAN_DECK_ID)?.kind).toBe("family");
+    expect(wordDeckById(null)).toBeNull();
+  });
+});
+
+describe("天 family deck", () => {
+  it("anchors 今天 on a five-word timeline with tone-marked pinyin", () => {
+    expect(familyIssues(familyLessons, [TIAN_DECK_ID])).toBe("");
+    const lesson = familyById("tian");
+    expect(lesson?.deck).toBe(TIAN_DECK_ID);
+    expect(familyTitle(lesson!)).toBe("The 天 family, anchored on 今天");
+    expect(lesson?.earlier).toEqual({ en: "earlier", zh: "早" });
+    expect(lesson?.later).toEqual({ en: "later", zh: "晚" });
+    expect(lesson?.anchor).toBe("jintian");
+    expect(lesson?.members.map((member) => [member.zh, member.py, member.en])).toEqual([
+      ["前天", "qiántiān", "2 days ago"],
+      ["昨天", "zuótiān", "yesterday"],
+      ["今天", "jīntiān", "today"],
+      ["明天", "míngtiān", "tomorrow"],
+      ["后天", "hòutiān", "in 2 days"],
+    ]);
+  });
+
+  it("rejects a family with no anchor", () => {
+    const broken = familyLessons.map((lesson) => ({ ...lesson, anchor: "missing" }));
+    expect(familyIssues(broken, [TIAN_DECK_ID])).toContain("anchor missing");
   });
 });
 

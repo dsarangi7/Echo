@@ -1,0 +1,17 @@
+[
+  {
+    "id": "tian",
+    "deck": "tian",
+    "hanzi": "天",
+    "anchor": "jintian",
+    "earlier": { "en": "earlier", "zh": "早" },
+    "later": { "en": "later", "zh": "晚" },
+    "members": [
+      { "id": "qiantian", "zh": "前天", "py": "qiántiān", "en": "2 days ago" },
+      { "id": "zuotian", "zh": "昨天", "py": "zuótiān", "en": "yesterday" },
+      { "id": "jintian", "zh": "今天", "py": "jīntiān", "en": "today" },
+      { "id": "mingtian", "zh": "明天", "py": "míngtiān", "en": "tomorrow" },
+      { "id": "houtian", "zh": "后天", "py": "hòutiān", "en": "in 2 days" }
+    ]
+  }
+]

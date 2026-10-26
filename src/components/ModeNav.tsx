@@ -11,7 +11,7 @@ export type ModeDeck = {
 type Props = {
   mode: EchoMode;
   onChange: (mode: EchoMode) => void;
-  /** English word decks. Empty hides the tab (no Chinese decks yet). */
+  /** Word decks for the language being practiced. Empty hides the tab. */
   decks?: readonly ModeDeck[];
   deckId?: string | null;
   onPickDeck?: (id: string) => void;

@@ -6,9 +6,10 @@ import { emptySession } from "../practice/session";
 import { micHeardLine } from "../practice/score";
 import { practiceLocalStorage } from "../practice/streak";
 import { usePracticeStreak } from "../practice/usePracticeSignals";
+import { lessonsForDeck } from "../practice/families";
 import { useWordDeck } from "../practice/useWordDeck";
 import type { usePractice } from "../practice/usePractice";
-import { DAILY_WORD_COUNT, WORD_PACK_NAME, WORD_PACK_ZH, meaningChoices, officeWords, practicePacks, spokenOf } from "../practice/words";
+import { DAILY_WORD_COUNT, WORD_PACK_NAME, WORD_PACK_ZH, meaningChoices, officeWords, practicePacks, spokenOf, wordDeckById } from "../practice/words";
 import { MATCH_TIP_MS, readMatchTipSeen, writeMatchTipSeen } from "../ui/matchTip";
 import { DayTask } from "./DayTask";
 import { FeedbackLines } from "./FeedbackLines";
@@ -16,14 +17,16 @@ import { FlashCard } from "./FlashCard";
 import { PackPicker } from "./PackPicker";
 import { SessionStrip } from "./SessionStrip";
 import { StreakChrome } from "./StreakChrome";
+import { FamilyCard } from "./FamilyCard";
 import { WordCard } from "./WordCard";
 
 type Practice = ReturnType<typeof usePractice>;
 
-export function PracticePanel(practice: Practice & { active?: boolean; wordDeck?: boolean }) {
+export function PracticePanel(practice: Practice & { active?: boolean; wordDeck?: boolean; deckId?: string | null }) {
   const {
     active = true,
     wordDeck = false,
+    deckId = null,
     lang,
     index,
     item,
@@ -50,6 +53,8 @@ export function PracticePanel(practice: Practice & { active?: boolean; wordDeck?
   const gradedText = practice.gradedText ?? "";
   const gradedPlain = practice.gradedPlain === true;
   const words = useWordDeck(lang, wordDeck);
+  const chosenDeck = wordDeck ? wordDeckById(deckId) : null;
+  const familyLesson = chosenDeck?.kind === "family" ? (lessonsForDeck(chosenDeck.id)[0] ?? null) : null;
   const [picking, setPicking] = useState(false);
   const day = usePracticeStreak();
   const [tipSeen, setTipSeen] = useState(() => readMatchTipSeen(practiceLocalStorage()));
@@ -72,8 +77,8 @@ export function PracticePanel(practice: Practice & { active?: boolean; wordDeck?
     dismissTip();
   }, [dismissTip, index]);
 
-  const wordMode = words.wordMode;
-  const showPacks = picking && !wordMode;
+  const wordMode = words.wordMode && !familyLesson;
+  const showPacks = picking && !wordDeck;
   const activeWord = words.word;
   const finishWord = words.finish;
 
@@ -106,8 +111,8 @@ export function PracticePanel(practice: Practice & { active?: boolean; wordDeck?
   const setPos = Math.min(setCount, Math.max(1, index - setStart + 1));
   const primary = readingText(lang, item);
   const meaning = lang === "en" ? item.zh : item.en;
-  const setTitle = wordMode ? WORD_PACK_NAME : lang === "zh" ? item.zhSet : item.set;
-  const setSub = wordMode ? WORD_PACK_ZH : lang === "zh" ? item.set : item.zhSet;
+  const setTitle = wordDeck ? (chosenDeck?.name ?? WORD_PACK_NAME) : lang === "zh" ? item.zhSet : item.set;
+  const setSub = wordDeck ? (chosenDeck?.zh ?? WORD_PACK_ZH) : lang === "zh" ? item.set : item.zhSet;
   const quietStart =
     (kicker === "Hello" || kicker === "Practice" || kicker === "Note") &&
     outcome !== "recognition_fail" &&
@@ -116,6 +121,7 @@ export function PracticePanel(practice: Practice & { active?: boolean; wordDeck?
 
   const move = useCallback(
     (delta: -1 | 1) => {
+      if (familyLesson) return;
       if (wordMode) {
         words.move(delta);
         return;
@@ -123,7 +129,7 @@ export function PracticePanel(practice: Practice & { active?: boolean; wordDeck?
       if (typeof stepPack === "function") stepPack(delta);
       else jumpTo(stepWithinSet(pack, index, delta));
     },
-    [index, jumpTo, pack, stepPack, wordMode, words],
+    [familyLesson, index, jumpTo, pack, stepPack, wordMode, words],
   );
 
   const choose = useCallback(
@@ -135,8 +141,8 @@ export function PracticePanel(practice: Practice & { active?: boolean; wordDeck?
   );
 
   useEffect(() => {
-    if (wordMode) setPicking(false);
-  }, [wordMode]);
+    if (wordDeck) setPicking(false);
+  }, [wordDeck]);
 
   useEffect(() => {
     if (!active) return;
@@ -165,12 +171,12 @@ export function PracticePanel(practice: Practice & { active?: boolean; wordDeck?
   return (
     <section className="card practice-card" aria-label="Practice">
       <div className="deck-bar">
-        {wordMode ? (
-          <div className="deck-current">
+        {wordDeck ? (
+          <div className={familyLesson ? "deck-current is-family" : "deck-current"}>
             <span className="pack-kicker">Word deck · 单词卡</span>
             <b id="setlabel">{setTitle}</b>
             <small>
-              {setSub} · {words.cursor + 1} / {Math.max(1, words.words.length)}
+              {familyLesson ? setSub : `${setSub} · ${words.cursor + 1} / ${Math.max(1, words.words.length)}`}
             </small>
           </div>
         ) : (
@@ -188,16 +194,20 @@ export function PracticePanel(practice: Practice & { active?: boolean; wordDeck?
             </small>
           </button>
         )}
-        <p
-          id="progress"
-          aria-label={wordMode ? `${words.doneCount} of ${DAILY_WORD_COUNT} words done today. 今天完成 ${words.doneCount} 个。` : undefined}
-        >
-          {wordMode ? `${words.doneCount}/${DAILY_WORD_COUNT}` : `${index + 1} / ${pack.length}`}
-        </p>
+        {familyLesson ? null : (
+          <p
+            id="progress"
+            aria-label={wordMode ? `${words.doneCount} of ${DAILY_WORD_COUNT} words done today. 今天完成 ${words.doneCount} 个。` : undefined}
+          >
+            {wordMode ? `${words.doneCount}/${DAILY_WORD_COUNT}` : `${index + 1} / ${pack.length}`}
+          </p>
+        )}
       </div>
 
       {showPacks ? (
         <PackPicker lang={lang} sets={sets} active={item.set} onSelect={choose} />
+      ) : familyLesson ? (
+        <FamilyCard lesson={familyLesson} />
       ) : wordMode && activeWord ? (
         <>
           <p
@@ -231,7 +241,7 @@ export function PracticePanel(practice: Practice & { active?: boolean; wordDeck?
             onJump={move}
           />
         </>
-      ) : wordMode ? (
+      ) : wordDeck ? (
         <p className="status-note" role="status">
           No words in this deck yet. 这组还没有词。
         </p>
@@ -254,7 +264,7 @@ export function PracticePanel(practice: Practice & { active?: boolean; wordDeck?
         />
       )}
 
-      {showPacks ? null : (
+      {showPacks || familyLesson ? null : (
         <div className="thumb-dock">
           {quietStart ? null : (
             <div className={outcome === "recognition_fail" ? "result recognition" : "result"} id="result" aria-live="polite">
@@ -329,7 +339,7 @@ export function PracticePanel(practice: Practice & { active?: boolean; wordDeck?
         </div>
       )}
 
-      {!showPacks && !wordMode && outcome !== "recognition_fail" && !tipSeen ? (
+      {!showPacks && !wordDeck && outcome !== "recognition_fail" && !tipSeen ? (
         <div className="match-tip" id="match-tip" role="status">
           <p className="match-tip-kicker">Matching · 怎么比对</p>
           {lang === "en" ? (
@@ -358,7 +368,7 @@ export function PracticePanel(practice: Practice & { active?: boolean; wordDeck?
           )}
         </div>
       ) : null}
-      {!showPacks && outcome === "recognition_fail" ? (
+      {!showPacks && !familyLesson && outcome === "recognition_fail" ? (
         <p className="match-tip" id="legend-match">
           <span className="sw unk" />
           {lang === "zh"
@@ -366,8 +376,12 @@ export function PracticePanel(practice: Practice & { active?: boolean; wordDeck?
             : "Not marked wrong — recognition may be off. 没标成错，可能是识别偏了。"}
         </p>
       ) : null}
-      <SessionStrip lang={lang} session={session ?? emptySession()} onReset={resetSession ?? (() => undefined)} />
-      <StreakChrome lang={lang} session={session ?? emptySession()} />
+      {familyLesson ? null : (
+        <>
+          <SessionStrip lang={lang} session={session ?? emptySession()} onReset={resetSession ?? (() => undefined)} />
+          <StreakChrome lang={lang} session={session ?? emptySession()} />
+        </>
+      )}
     </section>
   );
 }
