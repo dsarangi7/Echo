@@ -2,6 +2,7 @@ import { addShanghaiDays, isShanghaiDayKey } from "./shanghai";
 import { DAILY_CLEAR_GOAL } from "./streak";
 import type { Lang } from "./types";
 import wordsEn from "../data/words-en.json";
+import { TIAN_DECK_ID, TIAN_DECK_NAME, TIAN_DECK_ZH } from "./families";
 
 /**
  * Office words are an English word deck opened from the Word decks nav, not a sentence pack.
@@ -241,20 +242,30 @@ export function saveWordDeck(storage: StorageLike, state: WordDeckState): void {
   }
 }
 
+export type WordDeckKind = "flash" | "family";
+
 export type WordDeckChoice = {
   id: string;
   name: string;
   zh: string;
   lang: Lang;
+  /** Flash cards (Office words) or a character-family timeline. */
+  kind: WordDeckKind;
 };
 
-/** Top-nav word decks. Chinese has none yet, so the Word decks tab stays hidden in 中文. */
+/** Top-nav word decks. Office flashcards in English. Character families in 中文. */
 export const WORD_DECKS: readonly WordDeckChoice[] = [
-  { id: "office", name: WORD_PACK_NAME, zh: WORD_PACK_ZH, lang: "en" },
+  { id: "office", name: WORD_PACK_NAME, zh: WORD_PACK_ZH, lang: "en", kind: "flash" },
+  { id: TIAN_DECK_ID, name: TIAN_DECK_NAME, zh: TIAN_DECK_ZH, lang: "zh", kind: "family" },
 ];
 
 export function wordDecksFor(lang: Lang): WordDeckChoice[] {
   return WORD_DECKS.filter((deck) => deck.lang === lang);
+}
+
+export function wordDeckById(id: string | null | undefined): WordDeckChoice | null {
+  if (!id) return null;
+  return WORD_DECKS.find((deck) => deck.id === id) ?? null;
 }
 
 /** Sentence groups for the Practice pack picker. Word decks are not packs. */

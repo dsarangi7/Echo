@@ -21,7 +21,9 @@ export function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showLanding, setShowLanding] = useState(() => !readLandingDismissed(practiceLocalStorage()));
   const [mode, setMode] = useState<EchoMode>(() => readAppMode(practiceLocalStorage()));
+  const [deckPick, setDeckPick] = useState<string | null>(null);
   const decks = wordDecksFor(lang);
+  const activeDeck = decks.find((deck) => deck.id === deckPick) ?? decks[0] ?? null;
   const shownMode: EchoMode = mode === "words" && decks.length === 0 ? "practice" : mode;
 
   useEffect(() => startReminderRuntime(), []);
@@ -45,7 +47,8 @@ export function App() {
 
   function openWordDeck(id: string) {
     if (!decks.some((deck) => deck.id === id)) return;
-    selectMode("words");
+    setDeckPick(id);
+    if (mode !== "words") selectMode("words");
   }
 
   function dismissLanding() {
@@ -138,14 +141,19 @@ export function App() {
       <ModeNav
         mode={shownMode}
         decks={decks}
-        deckId={shownMode === "words" ? (decks[0]?.id ?? null) : null}
+        deckId={shownMode === "words" ? (activeDeck?.id ?? null) : null}
         onChange={selectMode}
         onPickDeck={openWordDeck}
       />
 
       <div className="stage">
         <div hidden={shownMode === "translate"}>
-          <PracticePanel {...practice} active={shownMode !== "translate" && !showLanding} wordDeck={shownMode === "words"} />
+          <PracticePanel
+            {...practice}
+            active={shownMode !== "translate" && !showLanding}
+            wordDeck={shownMode === "words"}
+            deckId={shownMode === "words" ? (activeDeck?.id ?? null) : null}
+          />
         </div>
         <div hidden={shownMode !== "translate"}>
           <TranslatePanel

@@ -8,6 +8,7 @@ import { PackPicker } from "../src/components/PackPicker";
 import { emptySession } from "../src/practice/session";
 import { shanghaiDateKey } from "../src/practice/shanghai";
 import type { Sentence } from "../src/practice/types";
+import { TIAN_DECK_ID, TIAN_DECK_NAME, TIAN_DECK_ZH } from "../src/practice/families";
 import { DAILY_WORD_COUNT, WORD_PACK_NAME, WORD_PACK_ZH, WORD_STORAGE_KEY, meaningChoices, officeWords, practicePacks, wordDecksFor } from "../src/practice/words";
 
 const line: Sentence = {
@@ -136,7 +137,7 @@ describe("office word card", () => {
     expect(html).not.toContain(line.en);
   });
 
-  it("lists Office words in the Word decks menu, and hides that tab in Chinese", () => {
+  it("lists Office words in English and the 天 family when practicing 中文", () => {
     const open = renderToStaticMarkup(
       createElement(ModeNav, {
         mode: "words",
@@ -154,18 +155,27 @@ describe("office word card", () => {
     expect(open).toContain('id="word-deck-office"');
     expect(open).toContain(WORD_PACK_NAME);
     expect(open).toContain(WORD_PACK_ZH);
+    expect(open).not.toContain(TIAN_DECK_NAME);
     expect(open).toContain('aria-checked="true"');
     expect(open).toContain('hidden=""');
 
     const chinese = renderToStaticMarkup(
       createElement(ModeNav, {
-        mode: "practice",
+        mode: "words",
         decks: wordDecksFor("zh"),
+        deckId: TIAN_DECK_ID,
         onChange: () => undefined,
+        onPickDeck: () => undefined,
       }),
     );
-    expect(chinese).not.toContain('id="mode-words"');
+    expect(chinese.indexOf('id="mode-translate"')).toBeLessThan(chinese.indexOf('id="mode-practice"'));
+    expect(chinese.indexOf('id="mode-practice"')).toBeLessThan(chinese.indexOf('id="mode-words"'));
+    expect(chinese).toContain('id="mode-words"');
+    expect(chinese).toContain(`id="word-deck-${TIAN_DECK_ID}"`);
+    expect(chinese).toContain(TIAN_DECK_NAME);
+    expect(chinese).toContain(TIAN_DECK_ZH);
     expect(chinese).not.toContain(WORD_PACK_NAME);
+    expect(chinese).toContain('aria-checked="true"');
   });
 });
 
@@ -237,5 +247,53 @@ describe("daily word practice", () => {
     expect(html).not.toContain(line.en);
     expect(html).not.toContain(officeWords[1].exampleZh);
     expect(html.match(/class="word-pips"[\s\S]*?<\/span>/)?.[0].match(/<i/g)).toHaveLength(DAILY_WORD_COUNT);
+    expect(html).not.toContain('data-family="tian"');
+  });
+
+  it("keeps Chinese sentence practice when Words is closed", () => {
+    vi.stubGlobal("localStorage", memory());
+    const html = panel({ lang: "zh" });
+    expect(html).toContain('id="pack-toggle"');
+    expect(html).toContain('id="hear"');
+    expect(html).toContain('id="say"');
+    expect(html).not.toContain('data-family="tian"');
+    expect(html).not.toContain(TIAN_DECK_NAME);
+    expect(html).not.toContain('id="word-quiz"');
+  });
+
+  it("shows the 天 family timeline in Chinese word decks, not the office quiz", () => {
+    vi.stubGlobal("localStorage", memory());
+    const html = panel({ lang: "zh", wordDeck: true, deckId: TIAN_DECK_ID });
+    expect(html).toContain('data-family="tian"');
+    expect(html).toContain("family, anchored on");
+    expect(html).toContain("天 family");
+    expect(html).toContain(TIAN_DECK_ZH);
+    const nodes = html.slice(html.indexOf('class="family-nodes"'));
+    expect(nodes.indexOf("前天")).toBeGreaterThan(-1);
+    expect(nodes.indexOf("前天")).toBeLessThan(nodes.indexOf("昨天"));
+    expect(nodes.indexOf("昨天")).toBeLessThan(nodes.indexOf("今天"));
+    expect(nodes.indexOf("今天")).toBeLessThan(nodes.indexOf("明天"));
+    expect(nodes.indexOf("明天")).toBeLessThan(nodes.indexOf("后天"));
+    expect(html).toContain("qiántiān");
+    expect(html).toContain("zuótiān");
+    expect(html).toContain("jīntiān");
+    expect(html).toContain("míngtiān");
+    expect(html).toContain("hòutiān");
+    expect(html).toContain("2 days ago");
+    expect(html).toContain("yesterday");
+    expect(html).toContain("today");
+    expect(html).toContain("tomorrow");
+    expect(html).toContain("in 2 days");
+    expect(html).toContain("←");
+    expect(html).toContain("earlier");
+    expect(html).toContain("later");
+    expect(html.match(/is-anchor/g)).toHaveLength(1);
+    expect(html).not.toContain('id="word-quiz"');
+    expect(html).not.toContain('id="word-day"');
+    expect(html).not.toContain('id="pack-toggle"');
+    expect(html).not.toContain('id="hear"');
+    expect(html).not.toContain('id="say"');
+    expect(html).not.toContain(WORD_PACK_NAME);
+    expect(html).not.toContain(line.en);
   });
 });
