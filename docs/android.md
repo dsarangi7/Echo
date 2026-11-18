@@ -4,7 +4,7 @@ A Capacitor shell around the same Vite build as the website. Application id: `co
 
 The shell is Android-only. There is no iOS project in this change.
 
-Colleagues install a release-signed APK (sideload or an internal share). Version **1.0.5** (`versionCode` 6). It packages the current website: Word decks (单词卡) in the top nav, including the Office words deck (办公词汇), plus the phone header, settings sheet, and thumb dock sit below the status bar (Capacitor `--safe-area-inset-*`, with `env(safe-area-inset-*)` when those variables are absent), a dismissible cat landing, Translate, Chinese practice with pinyin first, swipeable sentence cards, compact phone chrome, a matching tip that shows once, a victory sound and day streak, Settings Help (microphone tip and feedback email), and the daily reminder inside Settings. Install it over 1.0.4. The phone delivers local notifications while the app is closed:
+Colleagues install a release-signed APK (sideload or an internal share). Version **1.0.6** (`versionCode` 7). It packages the current website: Word decks (单词卡) in the top nav, including the Office words deck (办公词汇), plus the phone header, settings sheet, and thumb dock sit below the status bar (Capacitor `--safe-area-inset-*`, with `env(safe-area-inset-*)` when those variables are absent), a dismissible cat landing, Translate, Chinese practice with pinyin first, swipeable sentence cards, compact phone chrome, a matching tip that shows once, a victory sound and day streak, Settings Help (microphone tip and feedback email), and the daily reminder inside Settings. Install it over 1.0.5. The phone delivers local notifications while the app is closed:
 
 - **Test meow** about one minute after the reminder is turned on, so a new install can be checked immediately.
 - **Daily reminder** at the saved **phone-local** time. Title `课猫 Echo`, body `Time to practice. 该练一句了。`
@@ -24,7 +24,7 @@ The 1.0.0 card saved `enabled: true` before `LocalNotifications.schedule` finish
 
 ## Install check
 
-1. This 1.0.5 APK is signed with the same `echo` certificate as 1.0.0, 1.0.1, 1.0.2, 1.0.3, and 1.0.4 (`SHA-256` `9E:AA:B4:7F:55:B6:83:5B:92:68:14:FF:3D:F2:3A:D0:ED:85:3C:34:10:EB:FD:1C:3F:CD:D1:31:1D:64:C4:AF`). Install over the existing app; do not uninstall first, or the reminder settings stored in the app are wiped.
+1. This 1.0.6 APK is signed with the same `echo` certificate as 1.0.0, 1.0.1, 1.0.2, 1.0.3, 1.0.4, and 1.0.5 (`SHA-256` `9E:AA:B4:7F:55:B6:83:5B:92:68:14:FF:3D:F2:3A:D0:ED:85:3C:34:10:EB:FD:1C:3F:CD:D1:31:1D:64:C4:AF`). Install over the existing app; do not uninstall first, or the reminder settings stored in the app are wiped.
 2. Open Settings (the header gear) and turn the daily reminder on. Allow notifications when Android asks.
 3. On Android 12+, if Alarms & reminders is off, the system page opens. Allow it, then turn the switch on again. The card stays off and explains this until that grant exists.
 4. About one minute later, a notification should meow: `Reminder is on. 提醒已打开。`
@@ -37,7 +37,7 @@ adb shell appops get com.ayk.echo SCHEDULE_EXACT_ALARM
 adb shell dumpsys notification --noredact | grep -A 20 com.ayk.echo
 ```
 
-`versionName` should be `1.0.5` and `versionCode` `6`. A build from this tree declares `SCHEDULE_EXACT_ALARM` and does not declare `USE_EXACT_ALARM` (the published 1.0.5 sideload APK still has `USE_EXACT_ALARM`). On Android 12+ the reminder stays off until the user allows Alarms & reminders. After the switch is on, a pending notification with id `91003` (the test), `91001` (daily), and `91002` (Monday) should be listed. If the meow never arrives, set Battery to Unrestricted for 课猫 Echo. Some OEM skins kill exact alarms otherwise.
+`versionName` should be `1.0.6` and `versionCode` `7`. A build from this tree declares `SCHEDULE_EXACT_ALARM` and does not declare `USE_EXACT_ALARM` (the published 1.0.5 sideload APK still has `USE_EXACT_ALARM`). On Android 12+ the reminder stays off until the user allows Alarms & reminders. After the switch is on, a pending notification with id `91003` (the test), `91001` (daily), and `91002` (Monday) should be listed. If the meow never arrives, set Battery to Unrestricted for 课猫 Echo. Some OEM skins kill exact alarms otherwise.
 
 The weekly alert repeats on the phone's Monday at that same time. Its count is the Shanghai week that will have just ended. The words are the same ones the website uses (`dailyNudgeCopy` / `weeklyNudgeCopy`).
 
@@ -102,7 +102,7 @@ For a Play App Bundle:
 npm run android:bundle
 ```
 
-That is the same web build and sync, then `./gradlew bundleRelease`. `applicationId` stays `com.ayk.echo`. `versionCode` is 6 and `versionName` is `1.0.5`.
+That is the same web build and sync, then `./gradlew bundleRelease`. `applicationId` stays `com.ayk.echo`. `versionCode` is 7 and `versionName` is `1.0.6`.
 
 Signing is applied only when both passwords are present (`ECHO_KEYSTORE_PASSWORD` and `ECHO_KEY_PASSWORD`, or the same fields in `keystore.properties`). If they are absent, Gradle warns and still produces an **unsigned** release. It does not create a keystore and it does not embed passwords. A missing keystore file while passwords are set fails the build, so a half-configured signing setup is not silent.
 
@@ -180,7 +180,7 @@ Vault **both** the keystore file and the two passwords. The agent run that creat
 
 Store those in the vault, then delete extra copies you do not need. Do not commit either file.
 
-1.0.5 is signed with that same key. The published APK certificate SHA-256 is `9E:AA:B4:7F:55:B6:83:5B:92:68:14:FF:3D:F2:3A:D0:ED:85:3C:34:10:EB:FD:1C:3F:CD:D1:31:1D:64:C4:AF`, so an installed 1.0.0, 1.0.1, 1.0.2, 1.0.3, or 1.0.4 updates in place.
+1.0.6 is signed with that same key. The published APK certificate SHA-256 is `9E:AA:B4:7F:55:B6:83:5B:92:68:14:FF:3D:F2:3A:D0:ED:85:3C:34:10:EB:FD:1C:3F:CD:D1:31:1D:64:C4:AF`, so an installed 1.0.0, 1.0.1, 1.0.2, 1.0.3, 1.0.4, or 1.0.5 updates in place.
 
 Confirm a backup before you rely on it:
 

@@ -36,7 +36,7 @@ describe("Play listing draft", () => {
   it("keeps the package and version and does not include a phone number", () => {
     expect(listing).toContain("com.ayk.echo");
     expect(listing).toContain("versionCode");
-    expect(listing).toContain("1.0.5");
+    expect(listing).toContain("1.0.6");
     expect(listing).toContain("https://dsarangi7.github.io/Echo/privacy/");
     expect(listing).toContain("https://dsarangi7.github.io/Echo/delete-data/");
     expect(listing).toContain("12 testers");
