@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#121212" />
+    <title>Privacy policy — 课猫 Echo</title>
+    <meta
+      name="description"
+      content="Privacy policy for 课猫 Echo, the English and Chinese practice app and website. What stays on the device, what Translate sends, and which Android permissions are used."
+    />
+    <link rel="canonical" href="https://dsarangi7.github.io/Echo/privacy/" />
+    <link rel="icon" href="../favicon.svg" />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #121212;
+        --card: #181818;
+        --line: #2c2c2c;
+        --text: #f5f5f2;
+        --muted: #b5b5ae;
+        --neon: #c8ff3d;
+        --ink: #121212;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 17px/1.55 "Iowan Old Style", Palatino, "Palatino Linotype", "Songti SC", "Noto Serif SC", serif;
+      }
+      a { color: var(--neon); }
+      header, main, footer { width: min(760px, calc(100% - 32px)); margin: 0 auto; }
+      header { padding: 28px 0 8px; }
+      header p { margin: 0; }
+      .kicker { color: var(--muted); font: 13px/1.4 ui-sans-serif, system-ui, sans-serif; letter-spacing: 0.04em; }
+      h1 { margin: 8px 0 0; font-size: 2rem; font-weight: 650; }
+      nav { display: flex; gap: 14px; margin-top: 14px; font: 15px/1.4 ui-sans-serif, system-ui, sans-serif; }
+      nav a { color: var(--text); text-decoration: none; border-bottom: 2px solid var(--neon); }
+      article {
+        margin: 22px 0;
+        padding: 8px 0 12px;
+        border-top: 1px solid var(--line);
+      }
+      h2 { margin: 1.4em 0 0.4em; font-size: 1.25rem; }
+      h2:first-child { margin-top: 0.6em; }
+      p, li { color: var(--text); }
+      ul { padding-left: 1.2em; }
+      table { width: 100%; border-collapse: collapse; font: 14px/1.45 ui-sans-serif, system-ui, sans-serif; margin: 12px 0 18px; }
+      th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+      th { color: var(--muted); font-weight: 650; }
+      code { font: 0.92em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--neon); }
+      footer { padding: 8px 0 40px; color: var(--muted); font: 14px/1.45 ui-sans-serif, system-ui, sans-serif; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <p class="kicker">课猫 Echo · com.ayk.echo</p>
+      <h1>Privacy policy</h1>
+      <p class="kicker">隐私政策 · Last updated 18 November 2026</p>
+      <nav>
+        <a href="#en">English</a>
+        <a href="#zh">中文</a>
+      </nav>
+    </header>
+    <main>
+      <article lang="en" id="en">
+        <h2>Who this is</h2>
+        <p>
+          课猫 Echo is an English and Chinese speaking-practice app made by Dibya Jyoti Sarangi
+          (Play Console developer name Physicist_who_develops). This policy covers the Android app
+          <code>com.ayk.echo</code> and the same app on the web at
+          <a href="https://dsarangi7.github.io/Echo/">dsarangi7.github.io/Echo</a> and
+          <a href="https://echo-psi-ashen.vercel.app/">echo-psi-ashen.vercel.app</a>.
+          Contact: <a href="mailto:dsarangi7@gmail.com">dsarangi7@gmail.com</a>.
+          Developer site: <a href="https://dibya-portfolio-jet.vercel.app/">dibya-portfolio-jet.vercel.app</a>.
+        </p>
+
+        <h2>What the app does not do</h2>
+        <p>There is no account, sign-in, or profile. The app does not show ads, and it does not include an analytics, advertising, or crash-reporting SDK. It does not ask for your name, email, phone number, contacts, photos, or location. It does not sell data. Practice audio is not uploaded.</p>
+
+        <h2>Data that stays on this device</h2>
+        <p>Progress is stored in the browser or WebView on the device, not on a server run by the developer. Clearing the site data, or uninstalling the Android app, deletes it. The keys are:</p>
+        <ul>
+          <li><code>echo-practice-lang</code> — English or 中文.</li>
+          <li><code>echo-practice-index</code> — which sentence card was open.</li>
+          <li><code>echo-hear-pace</code> — Hear it speed, per language.</li>
+          <li><code>echo-practice-streak</code> — current streak, best streak, and the Shanghai calendar days that counted.</li>
+          <li><code>echo-practice-reminder</code> — whether the reminder is on, and the clock time you picked (<code>HH:MM</code> on the device).</li>
+          <li><code>echo-office-words</code> — Office words review progress.</li>
+          <li><code>echo-color-theme</code>, <code>echo-landing-dismissed</code>, <code>echo-app-mode</code>, <code>echo-match-tip</code>, <code>echo-whisper-interstitial</code> — appearance and one-time notices.</li>
+          <li><code>echo-reminder-test-fired</code> — whether the one-minute test notification already ran.</li>
+          <li><code>echo-session-tally</code> in session storage — Clear / Partial / mic-unsure counts for the open visit. It is dropped when the tab or process closes.</li>
+          <li>IndexedDB database <code>echo-practice-sync</code> — a local copy of the streak and reminder so the website service worker can show a reminder. The Android app does not ship that service worker.</li>
+          <li>Cache API <code>transformers-cache</code> — the on-device speech model after it has been loaded. On the website the model is downloaded from this site (about 44 MB) on first use. The Android app includes those files in the package.</li>
+        </ul>
+        <p>Older builds used <code>echo-practice-days</code> and <code>echo-reminder-prefs</code>. If those are still present and the new keys are empty, the app copies them once and deletes the old keys.</p>
+        <p>
+          The Android app sets <code>android:allowBackup="true"</code>. If you have Android backup turned on,
+          Google may copy the app’s local data, including WebView storage, to your own Google account.
+          The developer does not receive that backup and cannot read it.
+        </p>
+
+        <h2>Microphone</h2>
+        <p>
+          Say it, and Speak on the Translate screen, use the microphone only after you tap the button.
+          The recording is turned into text on this device with Whisper tiny (the weights ship with the app;
+          remote model hosts are disabled). The samples stay in memory for that transcription. The app does
+          not save them as an audio file and does not send them to the developer or to a speech API.
+          Hear it plays included recordings or the device voice. It does not use the microphone.
+        </p>
+
+        <h2>Translate</h2>
+        <p>
+          Translate is optional. Practice and word decks do not call it. When you translate, the page sends
+          one HTTPS request from this device to MyMemory, operated by Translated:
+          <code>https://api.mymemory.translated.net/get</code>. The request contains the sentence (at most 500 characters)
+          and a language pair (<code>en|zh-CN</code> or <code>zh-CN|en</code>). Cookies are not sent
+          (<code>credentials: "omit"</code>). No MyMemory account is used.
+        </p>
+        <p>
+          The code can also send a developer contact email as MyMemory’s <code>de</code> parameter when the
+          site is built with <code>VITE_MYMEMORY_CONTACT</code>. That value would be the developer’s address,
+          not yours. The public website bundle and the Android build instructions do not set it, so current
+          builds do not send it.
+        </p>
+        <p>
+          MyMemory receives the sentence and, like any HTTPS server, the IP address of the connection.
+          Their terms say they collect segments submitted to the service and store them long term, and that
+          they may log IP address and visit data. This app does not get a copy of that log and cannot delete
+          it. Their terms: <a href="https://mymemory.translated.net/terms-and-conditions">mymemory.translated.net/terms-and-conditions</a>.
+          The developer does not use the sentence for advertising or to identify you.
+        </p>
+        <p>A spoken Translate line is transcribed on this device first. Only the resulting text is sent. The audio is not.</p>
+
+        <h2>Notifications</h2>
+        <p>
+          The daily reminder and the Monday streak summary are scheduled on the device. Nothing is sent to a
+          push service. The notification shows a fixed title (<code>课猫 Echo</code>) and a sentence that can
+          include how many Shanghai days you practiced. You choose the clock time. Leaving the switch off
+          schedules nothing. The website may also show a local notification through the browser’s service
+          worker. That still does not contact a developer server.
+        </p>
+
+        <h2>Android permissions</h2>
+        <p>The app does not declare location, contacts, camera, photos, SMS, phone, or an advertising ID.</p>
+        <table>
+          <thead>
+            <tr><th>Permission</th><th>Why it is there</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Internet</td><td>Translate calls MyMemory. The website also loads its own speech-model files on first use. The Android package already contains those files.</td></tr>
+            <tr><td>Microphone (<code>RECORD_AUDIO</code>)</td><td>Say it and Translate’s Speak button. A microphone is not required to install the app.</td></tr>
+            <tr><td>Modify audio settings</td><td>Switch Hear it to playback and Say it to play-and-record. The app does not record phone calls.</td></tr>
+            <tr><td>Notifications (<code>POST_NOTIFICATIONS</code>)</td><td>Show the reminder you turned on. Android 13+ asks you first.</td></tr>
+            <tr><td>Exact alarms (<code>SCHEDULE_EXACT_ALARM</code>)</td><td>Ring at the minute you picked. Android 12+ asks you under Alarms &amp; reminders. <code>USE_EXACT_ALARM</code> is not used.</td></tr>
+            <tr><td>Receive boot completed</td><td>Restore a reminder you already turned on after the phone restarts.</td></tr>
+            <tr><td>Wake lock</td><td>Let that scheduled reminder fire while the phone is idle.</td></tr>
+            <tr><td>Vibrate</td><td>The reminder channel may vibrate.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Children</h2>
+        <p>课猫 Echo is not directed at children under 13. It does not knowingly collect personal information from children. The sentences are office, shopping, taxi, and class phrases.</p>
+
+        <h2>Deletion and retention</h2>
+        <p>
+          The developer does not keep an account or a copy of your practice data. Delete on-device data by
+          clearing the site’s storage, or by uninstalling the Android app. Turn off Android backup if you do
+          not want Google to keep a backup in your Google account. For a Translate sentence already sent to
+          MyMemory, contact MyMemory; the developer cannot erase their logs. Steps:
+          <a href="../delete-data/">Delete your data</a>
+          (<a href="https://dsarangi7.github.io/Echo/delete-data/">dsarangi7.github.io/Echo/delete-data</a>).
+          Questions about this policy:
+          <a href="mailto:dsarangi7@gmail.com">dsarangi7@gmail.com</a>.
+        </p>
+
+        <h2>Changes</h2>
+        <p>If this policy changes, the page and the “Last updated” date will change. The current date is 18 November 2026.</p>
+      </article>
+
+      <article lang="zh-CN" id="zh">
+        <h2>这是谁</h2>
+        <p>
+          课猫 Echo 是 Dibya Jyoti Sarangi 做的英语和中文口语练习应用（Play 开发者名称 Physicist_who_develops）。
+          本政策适用于 Android 应用 <code>com.ayk.echo</code>，以及网站
+          <a href="https://dsarangi7.github.io/Echo/">dsarangi7.github.io/Echo</a> 和
+          <a href="https://echo-psi-ashen.vercel.app/">echo-psi-ashen.vercel.app</a>。
+          联系邮箱：<a href="mailto:dsarangi7@gmail.com">dsarangi7@gmail.com</a>。
+          开发者网站：<a href="https://dibya-portfolio-jet.vercel.app/">dibya-portfolio-jet.vercel.app</a>。
+        </p>
+
+        <h2>应用不做什么</h2>
+        <p>没有账号、登录或个人资料。没有广告，也没有统计、广告或崩溃上报组件。不会向你索取姓名、邮箱、电话、通讯录、照片或位置。不出售数据。练习时的录音不会上传。</p>
+
+        <h2>留在这台设备上的数据</h2>
+        <p>进度存在这台设备的浏览器或 WebView 里，不在开发者的服务器上。清除网站数据，或卸载 Android 应用，就会删掉。键名如下：</p>
+        <ul>
+          <li><code>echo-practice-lang</code> — 英语或中文。</li>
+          <li><code>echo-practice-index</code> — 当前句子卡片。</li>
+          <li><code>echo-hear-pace</code> — 每种语言的「听一听」语速。</li>
+          <li><code>echo-practice-streak</code> — 当前连续天数、最佳天数，以及按上海日历记下的练习日。</li>
+          <li><code>echo-practice-reminder</code> — 提醒是否打开，以及你选的设备本地时间（<code>HH:MM</code>）。</li>
+          <li><code>echo-office-words</code> — 办公词汇的复习进度。</li>
+          <li><code>echo-color-theme</code>、<code>echo-landing-dismissed</code>、<code>echo-app-mode</code>、<code>echo-match-tip</code>、<code>echo-whisper-interstitial</code> — 外观和一次性提示。</li>
+          <li><code>echo-reminder-test-fired</code> — 一分钟后的测试通知是否已经响过。</li>
+          <li>会话存储 <code>echo-session-tally</code> — 这一次打开期间的听清、部分、识别不准次数。关闭页面或进程后消失。</li>
+          <li>IndexedDB 数据库 <code>echo-practice-sync</code> — 连续天数和提醒的本地副本，供网站的 Service Worker 显示提醒。Android 安装包不包含这个 Service Worker。</li>
+          <li>Cache API <code>transformers-cache</code> — 加载后的本地语音模型。网站第一次使用时从本站下载（约 44 MB）。Android 应用把这些文件打进安装包。</li>
+        </ul>
+        <p>更早的版本用过 <code>echo-practice-days</code> 和 <code>echo-reminder-prefs</code>。如果旧键还在、新键仍是空的，应用会复制一次并删除旧键。</p>
+        <p>
+          Android 应用设置了 <code>android:allowBackup="true"</code>。如果你打开了 Android 备份，
+          Google 可能把应用的本地数据（包括 WebView 存储）备份到你自己的 Google 账号。
+          开发者收不到这份备份，也不能读取。
+        </p>
+
+        <h2>麦克风</h2>
+        <p>
+          「说一说」，以及翻译页的「说一句」，只在你点下按钮之后使用麦克风。
+          录音在这台设备上用 Whisper tiny 转成文字（模型随应用提供，不允许从远程模型站下载）。
+          采样只在这次识别的内存里。应用不会把它存成音频文件，也不会发给开发者或语音识别接口。
+          「听一听」播放自带录音或设备语音，不用麦克风。
+        </p>
+
+        <h2>翻译</h2>
+        <p>
+          翻译是可选的。练习和单词卡不会调用它。翻译时，页面从这台设备向 MyMemory（Translated 运营）发出一条 HTTPS 请求：
+          <code>https://api.mymemory.translated.net/get</code>。请求里是这一句（最多 500 字）和语言方向
+          （<code>en|zh-CN</code> 或 <code>zh-CN|en</code>）。不发送 Cookie（<code>credentials: "omit"</code>）。不使用 MyMemory 账号。
+        </p>
+        <p>
+          如果构建时设置了 <code>VITE_MYMEMORY_CONTACT</code>，代码还会把开发者的联系邮箱放进 MyMemory 的 <code>de</code> 参数。
+          那是开发者的邮箱，不是你的。当前公开网站包和 Android 构建步骤都没有设置它，所以现有构建不会发送。
+        </p>
+        <p>
+          MyMemory 会收到这一句，并且和任何 HTTPS 服务器一样能看到连接的 IP 地址。
+          他们的条款写明：提交到该服务的句段会被收集并长期保存，他们也可能记录 IP 和访问数据。
+          本应用拿不到那份日志，也不能删除。条款：
+          <a href="https://mymemory.translated.net/terms-and-conditions">mymemory.translated.net/terms-and-conditions</a>。
+          开发者不用这句话做广告，也不用它识别你是谁。
+        </p>
+        <p>用语音翻译时，先在本机转成文字，发出去的只是文字，不是录音。</p>
+
+        <h2>通知</h2>
+        <p>
+          每日提醒和周一的连续天数小结都排在这台设备上，不经过推送服务器。通知标题是固定的「课猫 Echo」，
+          正文里可以带上你在上海日历中练习了多少天。时间由你选定。开关关掉就不会安排。
+          网站也可能通过浏览器的 Service Worker 显示一条本地通知，同样不会联系开发者的服务器。
+        </p>
+
+        <h2>Android 权限</h2>
+        <p>应用不声明位置、通讯录、相机、照片、短信、电话或广告 ID。</p>
+        <table>
+          <thead>
+            <tr><th>权限</th><th>为什么需要</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>互联网</td><td>翻译会访问 MyMemory。网站第一次使用时还会从本站加载语音模型。Android 安装包里已经带有这些文件。</td></tr>
+            <tr><td>麦克风（<code>RECORD_AUDIO</code>）</td><td>「说一说」和翻译的「说一句」。没有麦克风也可以安装。</td></tr>
+            <tr><td>修改音频设置</td><td>让「听一听」走播放、「说一说」走录音。应用不会录电话。</td></tr>
+            <tr><td>通知（<code>POST_NOTIFICATIONS</code>）</td><td>显示你打开的提醒。Android 13 及以上会先询问。</td></tr>
+            <tr><td>精确闹钟（<code>SCHEDULE_EXACT_ALARM</code>）</td><td>在你选的那一分钟响。Android 12 及以上要在「闹钟和提醒」里允许。不使用 <code>USE_EXACT_ALARM</code>。</td></tr>
+            <tr><td>开机完成</td><td>手机重启后恢复你已经打开的提醒。</td></tr>
+            <tr><td>唤醒锁</td><td>让已经排好的提醒在手机空闲时仍能响起。</td></tr>
+            <tr><td>振动</td><td>提醒渠道可以振动。</td></tr>
+          </tbody>
+        </table>
+
+        <h2>儿童</h2>
+        <p>课猫 Echo 不以 13 岁以下儿童为对象，也不会故意收集儿童的个人信息。句子是办公、购物、打车和课堂用语。</p>
+
+        <h2>删除和保存期限</h2>
+        <p>
+          开发者不保存账号，也不留一份你的练习数据。清除网站存储，或卸载 Android 应用，即可删除设备上的数据。
+          如果不希望 Google 把备份留在你的 Google 账号里，请关闭 Android 备份。
+          已经发给 MyMemory 的句子，请联系 MyMemory；开发者无法删除他们的日志。
+          步骤：<a href="../delete-data/">删除数据</a>
+          （<a href="https://dsarangi7.github.io/Echo/delete-data/">dsarangi7.github.io/Echo/delete-data</a>）。
+          对本政策有问题：<a href="mailto:dsarangi7@gmail.com">dsarangi7@gmail.com</a>。
+        </p>
+
+        <h2>变更</h2>
+        <p>政策如果更改，本页和「最后更新」日期会一起改。当前日期是 2026 年 11 月 18 日。</p>
+      </article>
+    </main>
+    <footer>
+      <p>课猫 Echo · <a href="mailto:dsarangi7@gmail.com">dsarangi7@gmail.com</a></p>
+    </footer>
+  </body>
+</html>

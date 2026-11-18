@@ -18,7 +18,7 @@ The channel is `echo-practice-v2` (`IMPORTANCE_HIGH`, public visibility). 1.0.0 
 
 ## Why 1.0.0 stayed silent
 
-The 1.0.0 card saved `enabled: true` before `LocalNotifications.schedule` finished. If notification permission was missing, or Android 12+ refused exact alarms, `schedule` threw or fell back to an inexact alarm and the `catch` reported `"off"`. The card only turned the switch off for `"denied"`, so the reminder looked on and nothing rang. The manifest also did not declare `POST_NOTIFICATIONS`, `SCHEDULE_EXACT_ALARM`, or `USE_EXACT_ALARM` on the app itself (the plugin manifest is not a substitute when the schedule call is swallowed).
+The 1.0.0 card saved `enabled: true` before `LocalNotifications.schedule` finished. If notification permission was missing, or Android 12+ refused exact alarms, `schedule` threw or fell back to an inexact alarm and the `catch` reported `"off"`. The card only turned the switch off for `"denied"`, so the reminder looked on and nothing rang. The manifest also did not declare `POST_NOTIFICATIONS` or `SCHEDULE_EXACT_ALARM` on the app itself (the plugin manifest is not a substitute when the schedule call is swallowed). Sideload builds through 1.0.5 also declared `USE_EXACT_ALARM`. That permission is omitted now: Google Play allows it only for alarm-clock and calendar apps. The reminder still uses `SCHEDULE_EXACT_ALARM`, which the user grants under Alarms & reminders. `tools:node="remove"` keeps a plugin merge from adding `USE_EXACT_ALARM` back.
 
 1.0.1 asks for notification permission first. On Android 12+ it checks exact alarms and opens the system page when they are off. If either is denied, the switch stays **off** and the card says so in English and 中文, including where to turn it back on. Only a successful schedule sets `enabled: true`.
 
@@ -37,7 +37,7 @@ adb shell appops get com.ayk.echo SCHEDULE_EXACT_ALARM
 adb shell dumpsys notification --noredact | grep -A 20 com.ayk.echo
 ```
 
-`versionName` should be `1.0.5` and `versionCode` `6`. After the switch is on, a pending notification with id `91003` (the test), `91001` (daily), and `91002` (Monday) should be listed. If the meow never arrives, set Battery to Unrestricted for 课猫 Echo. Some OEM skins kill exact alarms otherwise.
+`versionName` should be `1.0.5` and `versionCode` `6`. A build from this tree declares `SCHEDULE_EXACT_ALARM` and does not declare `USE_EXACT_ALARM` (the published 1.0.5 sideload APK still has `USE_EXACT_ALARM`). On Android 12+ the reminder stays off until the user allows Alarms & reminders. After the switch is on, a pending notification with id `91003` (the test), `91001` (daily), and `91002` (Monday) should be listed. If the meow never arrives, set Battery to Unrestricted for 课猫 Echo. Some OEM skins kill exact alarms otherwise.
 
 The weekly alert repeats on the phone's Monday at that same time. Its count is the Shanghai week that will have just ended. The words are the same ones the website uses (`dailyNudgeCopy` / `weeklyNudgeCopy`).
 
@@ -88,7 +88,7 @@ Put the release keystore at `android/keystore/echo-release.keystore` and either:
 - copy `android/keystore/keystore.properties.example` to `android/keystore/keystore.properties` and fill the passwords, or
 - export the variables in the next section (they override the properties file).
 
-Then:
+Then, for a sideload APK:
 
 ```bash
 npm run android:release
@@ -96,7 +96,47 @@ npm run android:release
 
 That command builds the web app with `CAPACITOR=1` (base `/`, no service worker), syncs it into the Android project, and runs `./gradlew assembleRelease`.
 
-The signed APK is:
+For a Play App Bundle:
+
+```bash
+npm run android:bundle
+```
+
+That is the same web build and sync, then `./gradlew bundleRelease`. `applicationId` stays `com.ayk.echo`. `versionCode` is 6 and `versionName` is `1.0.5`.
+
+Signing is applied only when both passwords are present (`ECHO_KEYSTORE_PASSWORD` and `ECHO_KEY_PASSWORD`, or the same fields in `keystore.properties`). If they are absent, Gradle warns and still produces an **unsigned** release. It does not create a keystore and it does not embed passwords. A missing keystore file while passwords are set fails the build, so a half-configured signing setup is not silent.
+
+| Credentials | APK | AAB |
+| --- | --- | --- |
+| Present, keystore file found | `android/app/build/outputs/apk/release/app-release.apk` | `android/app/build/outputs/bundle/release/app-release.aab` |
+| Absent | `android/app/build/outputs/apk/release/app-release-unsigned.apk` | `android/app/build/outputs/bundle/release/app-release.aab` (unsigned; confirm with `jarsigner -verify`) |
+
+Play Console will not accept the unsigned bundle. Sign it later with the existing `echo` keystore, then upload. Do not generate a new key if an installed sideload of `com.ayk.echo` should update in place. The certificate SHA-256 to match is `9E:AA:B4:7F:55:B6:83:5B:92:68:14:FF:3D:F2:3A:D0:ED:85:3C:34:10:EB:FD:1C:3F:CD:D1:31:1D:64:C4:AF`.
+
+Owner machine, after the keystore and passwords are available:
+
+```bash
+export ECHO_KEYSTORE_FILE=keystore/echo-release.keystore
+export ECHO_KEYSTORE_PASSWORD='the store password'
+export ECHO_KEY_ALIAS=echo
+export ECHO_KEY_PASSWORD='the key password'
+npm run android:bundle
+jarsigner -verify -certs android/app/build/outputs/bundle/release/app-release.aab
+```
+
+To sign an unsigned bundle already built, without rebuilding:
+
+```bash
+jarsigner -sigalg SHA256withRSA -digestalg SHA-256 \
+  -keystore /path/to/echo-release.keystore \
+  android/app/build/outputs/bundle/release/app-release.aab echo
+```
+
+`jarsigner` prompts for the store password. Do not put that password in the command line if the shell history is shared, and do not commit the signed or unsigned bundle.
+
+Store listing, Data safety answers, and the upload clicks are in [play-store-listing.md](play-store-listing.md). The privacy policy page is `public/privacy/index.html`.
+
+The signed APK, when credentials were present, is:
 
 ```text
 android/app/build/outputs/apk/release/app-release.apk
@@ -124,7 +164,7 @@ Sign every release with the **same** keystore. A new key cannot update an instal
 | Gitignored passwords | `android/keystore/keystore.properties` |
 | Example (no secrets) | `android/keystore/keystore.properties.example` |
 
-Passwords are not in git. PKCS12 keeps a single password; set `ECHO_KEYSTORE_PASSWORD` and `ECHO_KEY_PASSWORD` to that same value. Gradle reads the environment when those variables are set, otherwise `keystore.properties`:
+Passwords are not in git. PKCS12 keeps a single password; set `ECHO_KEYSTORE_PASSWORD` and `ECHO_KEY_PASSWORD` to that same value. Gradle signs a release when those variables are set, otherwise when `keystore.properties` has both passwords. If neither source has them, the release task finishes unsigned instead of failing:
 
 | Variable | Properties field |
 | --- | --- |
