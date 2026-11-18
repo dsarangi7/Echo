@@ -14,6 +14,19 @@ describe("privacy policy page", () => {
     expect(page).toContain("SCHEDULE_EXACT_ALARM");
     expect(page).toContain("allowBackup");
     expect(page).toContain("麦克风");
+    expect(page).toContain('href="../delete-data/"');
+    expect(page).toContain("https://dsarangi7.github.io/Echo/delete-data/");
+    const deletion = readFileSync("public/delete-data/index.html", "utf8");
+    expect(deletion).toContain('lang="zh-CN"');
+    expect(deletion).toContain("com.ayk.echo");
+    expect(deletion).toContain("Physicist_who_develops");
+    expect(deletion).toContain("mailto:dsarangi7@gmail.com");
+    expect(deletion).toContain("api.mymemory.translated.net");
+    expect(deletion).toContain("allowBackup");
+    expect(deletion).toContain("https://mymemory.translated.net/terms-and-conditions");
+    expect(deletion).toContain('href="../privacy/"');
+    expect(deletion).toContain("删除数据");
+    expect(deletion).not.toMatch(/\+\d{8,}/);
     expect(page).not.toContain("USE_EXACT_ALARM</code> is used");
     expect(page).not.toMatch(/\+\d{8,}/);
   });
@@ -25,6 +38,7 @@ describe("Play listing draft", () => {
     expect(listing).toContain("versionCode");
     expect(listing).toContain("1.0.5");
     expect(listing).toContain("https://dsarangi7.github.io/Echo/privacy/");
+    expect(listing).toContain("https://dsarangi7.github.io/Echo/delete-data/");
     expect(listing).toContain("12 testers");
     expect(listing).toContain("merchant profile");
     expect(listing).not.toMatch(/\+\d{8,}/);

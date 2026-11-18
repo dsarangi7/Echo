@@ -18,6 +18,7 @@ Package name stays `com.ayk.echo`. Version for this first upload, unless you bum
 | Tags | Pick what the console offers. Closest fits: language learning, education. Do not add a tag the form does not list. |
 | Contact email | dsarangi7@gmail.com |
 | Privacy policy | https://dsarangi7.github.io/Echo/privacy/ |
+| Delete data URL | https://dsarangi7.github.io/Echo/delete-data/ |
 | Store website | https://dsarangi7.github.io/Echo/ |
 | Developer name (already on the account) | Physicist_who_develops |
 | Developer site (already on the account) | https://dibya-portfolio-jet.vercel.app/ |
@@ -25,6 +26,8 @@ Package name stays `com.ayk.echo`. Version for this first upload, unless you bum
 The account phone is already on the Play Console account. This draft does not copy it into the public listing or the privacy policy.
 
 The privacy page is `public/privacy/index.html`. GitHub Pages publishes it only after this change is on `main` (the Pages workflow). The same file is also at https://echo-psi-ashen.vercel.app/privacy/ after Vercel deploys that commit. Paste a URL into Play only after it loads. Until then the page is in the repo at that path.
+
+Play’s Delete data URL is https://dsarangi7.github.io/Echo/delete-data/ (`public/delete-data/index.html`). After Vercel deploys the same commit it is also at https://echo-psi-ashen.vercel.app/delete-data/. Use the github.io URL in Play. A `mailto:` address is not a valid Delete data URL. Paste it only after the page loads.
 
 ## Short description
 
@@ -115,7 +118,7 @@ Does the app collect or share any of the required user data types? **Yes.** Tran
 
 Is all of the user data collected by your app encrypted in transit? **Yes.** Translate uses HTTPS. Android backup uses Google’s transport.
 
-Do you provide a way for users to request that their data is deleted? **Yes.** There is no account. Uninstalling, or clearing site data, deletes what the app stored. Email dsarangi7@gmail.com. Sentences already sent to MyMemory are not held by the developer; MyMemory’s terms describe their own retention.
+Do you provide a way for users to request that their data is deleted? **Yes.** Delete data URL: https://dsarangi7.github.io/Echo/delete-data/ (https page, not a mailto). There is no account. Uninstalling, or clearing site data, deletes what the app stored. The page also lists dsarangi7@gmail.com as a contact for help. Sentences already sent to MyMemory are not held by the developer; MyMemory’s terms describe their own retention.
 
 Do you want to add a privacy policy? **Yes.** URL above. The in-app link is Settings → Privacy.
 
@@ -276,7 +279,7 @@ Do these in Play Console yourself. This repository change does not call the Play
 5. **Ads**: No.
 6. **Content rating**: start the questionnaire and use the notes in this file. Save the email certificate Play gives you.
 7. **Target audience**: 18 and older, unless you choose otherwise. Not Designed for Families.
-8. **News**: No. **COVID-19 contact tracing** if still shown: No. **Data safety**: enter the answers in this file. **Government**: No. **Financial features**: No. **Health**: No if asked.
+8. **News**: No. **COVID-19 contact tracing** if still shown: No. **Data safety**: enter the answers in this file. Delete data URL: https://dsarangi7.github.io/Echo/delete-data/ . **Government**: No. **Financial features**: No. **Health**: No if asked.
 9. **Advertising ID**: No.
 10. **Store settings**: App, Education, email dsarangi7@gmail.com. Website https://dsarangi7.github.io/Echo/ .
 11. **Main store listing**: paste the name, short description, and full description. Upload `public/icons/icon-512.png`, `docs/play-store/feature-graphic-1024x500.png`, and the six phone screenshots. Add the zh-CN listing if you want it.
@@ -294,4 +297,4 @@ After upload, Play Console → the release → App bundle explorer should show p
 2. On the Play App Signing screen, upload the existing key as the app signing key, or accept a Google-generated key and lose in-place updates from the sideload APK?
 3. Target age: 18+ as written, or include younger learners?
 4. Default store language: English, or 中文?
-5. Confirm the privacy URL loads after merge before you paste it into Play.
+5. Confirm the privacy URL and https://dsarangi7.github.io/Echo/delete-data/ both load after merge before you paste them into Play.

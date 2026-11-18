@@ -60,6 +60,13 @@ export function HelpBlock({ ua, href }: Props) {
           Privacy policy
         </a>
       </p>
+      <p className="help-mail" id="help-delete-data">
+        <b>Delete data</b>
+        <small>删除数据</small>
+        <a id="delete-data" href={`${import.meta.env.BASE_URL}delete-data/`}>
+          Delete your data
+        </a>
+      </p>
     </section>
   );
 }
