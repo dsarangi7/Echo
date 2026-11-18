@@ -11,7 +11,8 @@
     "test": "vitest run",
     "pinyin": "node scripts/fill-pinyin.mjs",
     "build:android": "CAPACITOR=1 npm run build && npx cap sync android",
-    "android:release": "npm run build:android && cd android && ./gradlew assembleRelease"
+    "android:release": "npm run build:android && cd android && ./gradlew assembleRelease",
+    "android:bundle": "npm run build:android && cd android && ./gradlew bundleRelease"
   },
   "dependencies": {
     "@capacitor/android": "8.3.1",

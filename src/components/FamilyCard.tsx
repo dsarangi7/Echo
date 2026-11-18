@@ -1,5 +1,5 @@
 import { useEffect, useRef, type CSSProperties, type KeyboardEvent } from "react";
-import { anchorOf, familyTitle, type FamilyLesson } from "../practice/families";
+import { anchorOf, type FamilyLesson } from "../practice/families";
 
 type Props = {
   lesson: FamilyLesson;
@@ -13,7 +13,6 @@ type Props = {
 export function FamilyCard({ lesson }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const anchor = anchorOf(lesson);
-  const title = familyTitle(lesson);
   const style = { "--family-count": String(lesson.members.length) } as CSSProperties;
 
   useEffect(() => {

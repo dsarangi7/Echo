@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <application
         android:allowBackup="true"
@@ -42,10 +43,13 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <!-- Android 13+. Without this, scheduled notifications are dropped. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <!-- Android 12+. Exact alarms are denied by default on API 34+ unless granted. -->
+    <!-- Android 12+. The user grants this in Alarms & reminders. Exact alarms are
+         denied by default on API 34+ unless granted. USE_EXACT_ALARM is not declared:
+         Play allows that auto-granted permission only for alarm-clock and calendar apps. -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-    <!-- Auto-granted for a reminder app on API 33+. Sideload only; not a Play policy claim. -->
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" tools:node="remove" />
+    <!-- No ads. Drop the advertising ID if a dependency merges it in. -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />

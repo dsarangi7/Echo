@@ -239,6 +239,8 @@ describe("WeChat and WeCom help", () => {
     expect(html).toContain("https://dsarangi7.github.io/Echo/");
     expect(html).toContain("Copy link");
     expect(html).toContain('href="mailto:dsarangi7@gmail.com"');
+    expect(html).toContain('id="privacy-policy"');
+    expect(html).toContain("privacy/");
     expect(html).toContain("Feedback");
     expect(html).toContain("建议");
     expect(html).not.toContain("用 Safari 或 Chrome 最合适");

@@ -12,18 +12,28 @@ def echoStorePassword = System.getenv("ECHO_KEYSTORE_PASSWORD") ?: keystorePrope
 def echoKeyAlias = System.getenv("ECHO_KEY_ALIAS") ?: keystoreProperties.getProperty("keyAlias") ?: "echo"
 def echoKeyPassword = System.getenv("ECHO_KEY_PASSWORD") ?: keystoreProperties.getProperty("keyPassword")
 
+def echoSigningReady = echoStorePassword?.trim() && echoKeyPassword?.trim()
 def releaseRequested = gradle.startParameter.taskNames.any { name ->
-    name.toLowerCase().contains("release")
+    def task = name.toLowerCase()
+    task.contains("release")
 }
-if (releaseRequested && (!echoStorePassword || !echoKeyPassword)) {
-    throw new GradleException("Release signing needs ECHO_KEYSTORE_PASSWORD and ECHO_KEY_PASSWORD, or android/keystore/keystore.properties. See docs/android.md.")
+def resolvedStore = rootProject.file(echoStoreFile)
+
+// Missing passwords must not fail the build. Play upload still needs a signature,
+// applied later with the existing keystore (env vars or keystore.properties).
+// Never print those passwords.
+if (releaseRequested && !echoSigningReady) {
+    logger.warn("Release signing credentials are absent (ECHO_KEYSTORE_PASSWORD and ECHO_KEY_PASSWORD, or android/keystore/keystore.properties). assembleRelease and bundleRelease will be UNSIGNED. See docs/android.md.")
+}
+if (releaseRequested && echoSigningReady && !resolvedStore.isFile()) {
+    throw new GradleException("Release signing was requested but the keystore was not found at ${resolvedStore}. Set ECHO_KEYSTORE_FILE or storeFile. Do not commit the keystore.")
 }
 
 android {
     signingConfigs {
         release {
-            if (echoStorePassword && echoKeyPassword) {
-                storeFile rootProject.file(echoStoreFile)
+            if (echoSigningReady) {
+                storeFile resolvedStore
                 storePassword echoStorePassword
                 keyAlias echoKeyAlias
                 keyPassword echoKeyPassword
@@ -32,7 +42,7 @@ android {
     }
     buildTypes {
         release {
-            if (echoStorePassword && echoKeyPassword) {
+            if (echoSigningReady) {
                 signingConfig signingConfigs.release
             }
         }

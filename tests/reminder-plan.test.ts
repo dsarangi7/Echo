@@ -120,11 +120,13 @@ describe("Android reminder permission gate", () => {
 });
 
 describe("Android manifest for reminders", () => {
-  it("declares notification permission, exact alarms, and version 1.0.5", () => {
+  it("declares notification permission, user-granted exact alarms, and version 1.0.5", () => {
     const xml = readFileSync("android/app/src/main/AndroidManifest.xml", "utf8");
     expect(xml).toContain("android.permission.POST_NOTIFICATIONS");
     expect(xml).toContain("android.permission.SCHEDULE_EXACT_ALARM");
-    expect(xml).toContain("android.permission.USE_EXACT_ALARM");
+    // Play rejects USE_EXACT_ALARM except for alarm-clock and calendar apps.
+    expect(xml).toContain('android.permission.USE_EXACT_ALARM" tools:node="remove"');
+    expect(xml).not.toMatch(/<uses-permission android:name="android.permission.USE_EXACT_ALARM"\s*\/>/);
     const gradle = readFileSync("android/app/build.gradle", "utf8");
     expect(gradle).toContain("versionCode 6");
     expect(gradle).toContain('versionName "1.0.5"');

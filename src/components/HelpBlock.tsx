@@ -53,6 +53,13 @@ export function HelpBlock({ ua, href }: Props) {
           dsarangi7@gmail.com
         </a>
       </p>
+      <p className="help-mail" id="help-privacy">
+        <b>Privacy</b>
+        <small>隐私</small>
+        <a id="privacy-policy" href={`${import.meta.env.BASE_URL}privacy/`}>
+          Privacy policy
+        </a>
+      </p>
     </section>
   );
 }
