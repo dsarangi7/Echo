@@ -56,7 +56,6 @@ Hear it plays a recording of the sentence. Say it listens with the microphone an
 
 English cards are office lines: meetings, email, the factory, quality, and orders. Chinese cards are work lines, plus Meituan delivery, taxi rides, and class sets for a tea house, online shopping, a shop, and the supermarket. Chinese cards show tone-marked pinyin.
 
-Word decks sit in the top bar. English has an Office words deck: five words each Shanghai day, with the meaning, one example, Hear it, and Say it. Chinese has a 天 family timeline.
 
 Translate is optional and needs a network. The sentence you type, or the text of a line you speak, is sent to MyMemory for the translation. Practice itself does not send that sentence. There is no account.
 
@@ -76,7 +75,6 @@ Settings holds the reminder, light or dark theme, a microphone note, the feedbac
 
 英语卡片是办公室用语：会议、邮件、工厂、质量和订单。中文卡片是工作用语，加上美团外卖、打车，以及茶馆、网购、商店和超市的课堂句子。中文卡片显示带声调的拼音。
 
-单词卡在顶栏。英语有办公词汇：每个上海日五张，带中文意思、一个例句、听一听和说一说。中文有「天」字族时间线。
 
 翻译是可选的，需要网络。你打出的句子，或说完后转成的文字，会发给 MyMemory 做翻译。练习本身不发送这句话。没有账号。
 
@@ -128,7 +126,7 @@ Do you want to add a privacy policy? **Yes.** URL above. The in-app link is Sett
 
 - Collected: yes. Shared: yes, with MyMemory / Translated (`api.mymemory.translated.net`).
 - Processed ephemerally: no. Their terms say submitted segments can be stored long term. The app does not keep a copy.
-- Optional: yes. Practice and word decks never send it. The user can ignore Translate.
+- Optional: yes. Practice never sends it. The user can ignore Translate.
 - Purpose: App functionality only. Not advertising, not analytics, not tracking.
 - What is sent: the sentence (max 500 characters) and `langpair` (`en|zh-CN` or `zh-CN|en`). No cookies. No MyMemory account. The optional `de` developer email is not set in the current public website bundle or in the Android build.
 

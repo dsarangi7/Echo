@@ -224,7 +224,7 @@ describe("word practice wiring", () => {
     const practiceAt = nav.indexOf('id="mode-practice"');
     const wordsAt = nav.indexOf('id="mode-words"');
     expect(translateAt).toBeGreaterThan(-1);
-    expect(translateAt).toBeLessThan(practiceAt);
-    expect(practiceAt).toBeLessThan(wordsAt);
+    expect(practiceAt).toBeLessThan(translateAt);
+    expect(translateAt).toBeLessThan(wordsAt);
   });
 });

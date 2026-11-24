@@ -60,16 +60,6 @@ export function ModeNav({ mode, onChange, decks = [], deckId = null, onPickDeck 
       <div className={showDecks ? "mode-switch has-decks" : "mode-switch"} role="group" aria-label="Mode. 模式">
         <button
           type="button"
-          id="mode-translate"
-          className={mode === "translate" ? "on" : undefined}
-          aria-pressed={mode === "translate"}
-          onClick={() => pickMode("translate")}
-        >
-          <span>Translate</span>
-          <small>翻译</small>
-        </button>
-        <button
-          type="button"
           id="mode-practice"
           className={mode === "practice" ? "on" : undefined}
           aria-pressed={mode === "practice"}
@@ -77,6 +67,16 @@ export function ModeNav({ mode, onChange, decks = [], deckId = null, onPickDeck 
         >
           <span>Practice</span>
           <small>练习</small>
+        </button>
+        <button
+          type="button"
+          id="mode-translate"
+          className={mode === "translate" ? "on" : undefined}
+          aria-pressed={mode === "translate"}
+          onClick={() => pickMode("translate")}
+        >
+          <span>Translate</span>
+          <small>翻译</small>
         </button>
         {showDecks ? (
           <div className="mode-deck" ref={deckRef}>

@@ -27,6 +27,7 @@ en-US:
 ```text
 A new look: ink on rice paper, one red seal.
 • Echo the cat now reacts — listens, thinks, cheers, naps, and dresses up for the festivals.
+• Simpler top bar: Practice, then Translate.
 • A 很好 seal stamps the card when you say a line clearly.
 • Tone colors on pinyin (Settings).
 • Better Chinese scoring: traditional characters and sound-alikes now count.
@@ -38,6 +39,7 @@ zh-CN:
 ```text
 全新外观：宣纸、墨色和一枚红印章。
 • 课猫会听、会想、会欢呼、会打盹，节日还会换装。
+• 顶栏更简单：先练习，再翻译。
 • 说清楚一句，卡片上会盖一个「很好」章。
 • 拼音声调颜色（设置里可关）。
 • 中文评分更准：繁体字和同音字也算对。

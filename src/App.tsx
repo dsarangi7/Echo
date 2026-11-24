@@ -14,6 +14,8 @@ import { wordDecksFor } from "./practice/words";
 import { useTranslate } from "./translate/useTranslate";
 import { clearLandingDismissed, readAppMode, readLandingDismissed, writeAppMode, writeLandingDismissed } from "./ui/landing";
 
+const SHOW_WORD_DECKS = false;
+
 export function App() {
   const practice = usePractice();
   const translate = useTranslate();
@@ -22,7 +24,8 @@ export function App() {
   const [showLanding, setShowLanding] = useState(() => !readLandingDismissed(practiceLocalStorage()));
   const [mode, setMode] = useState<EchoMode>(() => readAppMode(practiceLocalStorage()));
   const [deckPick, setDeckPick] = useState<string | null>(null);
-  const decks = wordDecksFor(lang);
+  // Word decks are hidden for now: Practice first, Translate second.
+  const decks = SHOW_WORD_DECKS ? wordDecksFor(lang) : [];
   const activeDeck = decks.find((deck) => deck.id === deckPick) ?? decks[0] ?? null;
   const shownMode: EchoMode = mode === "words" && decks.length === 0 ? "practice" : mode;
 
