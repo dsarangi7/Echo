@@ -5,7 +5,7 @@ import { gradeTranscript, isShortZhLine, recognitionFailHeadline, type GradeOutc
 import { publishPracticeSnapshot } from "./reminder-runtime";
 import { applyOutcome, classifyLine, emptySession, readBrowserSession, writeBrowserSession, type AttemptOutcome, type SessionTally } from "./session";
 import { practiceLocalStorage, recordClearMatch } from "./streak";
-import { playVictory } from "../speech/victory";
+import { playEncourage, playVictory } from "../speech/victory";
 import { hearPaceRate, type HearPace } from "./pace";
 import { loadHearPaces, loadIndexes, loadLang, saveHearPaces, saveIndexes, saveLang } from "./storage";
 import { syncNativeReminders } from "../native/syncReminders";
@@ -28,6 +28,7 @@ import { ensureModel, setVoiceModelChoice, subscribeModel, transcribe, voiceMode
 import { hearFailCopy, setSpeakingRate, speakIntro, speakLine, speakPlain, stopSpeaking, type HearFailReason } from "../speech/tts";
 import type { CatMode, Lang, Sentence } from "./types";
 import { loadSoundOf } from "./zhSound";
+import { readPrefs } from "../ui/prefs";
 
 function micNote(kind: MicFailure): string {
   return micFailureMessage(kind, { secure: isSecurePage() });
@@ -116,6 +117,10 @@ export function usePractice() {
     if (outcome === "clear") {
       if (!ownStreakRef.current) recordClearMatch(practiceLocalStorage(), new Date());
       playVictory();
+    } else if (readPrefs().feedback) {
+      // Let the stamp / cat reaction land first, then a kind "try again" in the other language.
+      const learning = langRef.current;
+      window.setTimeout(() => playEncourage(learning), 450);
     }
     if (outcome === "clear" || outcome === "partial") {
       void publishPracticeSnapshot();

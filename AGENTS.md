@@ -83,6 +83,12 @@ node scripts/make-brand-art.cjs   # regenerate icons, splash, Play graphics (use
 - Top tabs are now **Practice first, Translate second**. Word decks are hidden with `SHOW_WORD_DECKS = false` in `src/App.tsx` (code kept; flip to `true` to restore). A saved "words" mode falls back to Practice.
 - Play screenshots/listing/release notes updated to match.
 
+### Commit 3 — AGENTS.md (`06b73b4`)
+
+### Commit 4 — "Try again" voice
+- Clear line → the existing success chime (`public/assets/victory.wav`, `playVictory`).
+- Partial / miss / unclear line → after 450 ms a spoken encouragement in the learner's **other** language (`playEncourage` in `src/speech/victory.ts`): English learners hear 中文 "没关系，我们再试一次。" (`public/audio/encourage/zh.mp3`); Chinese learners hear "Good try! Let's try again." (`public/audio/encourage/en.mp3`). Piper voices `zh_CN-huayan-medium` / `en_US-lessac-medium`, length scale 1.05. Muted when Settings → Sounds & vibration is off.
+
 ## Rules and gotchas
 
 - **Keep `npm test` green.** Many tests read source files as strings (e.g. element ids like `#cat-intro`, `#say`, `#hear`, `#landing-start`, attribute order in rendered HTML). Don't rename ids casually.

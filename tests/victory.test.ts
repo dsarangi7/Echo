@@ -36,3 +36,14 @@ describe("clear-match victory sound", () => {
     expect(() => playVictory(() => null)).not.toThrow();
   });
 });
+
+describe("try-again voice", () => {
+  it("speaks in the learner's other language", async () => {
+    const { encourageClipUrl } = await import("../src/speech/victory");
+    expect(encourageClipUrl("en", "/")).toBe("/audio/encourage/zh.mp3");
+    expect(encourageClipUrl("zh", "/Echo/")).toBe("/Echo/audio/encourage/en.mp3");
+    const { statSync } = await import("node:fs");
+    expect(statSync("public/audio/encourage/zh.mp3").size).toBeGreaterThan(2000);
+    expect(statSync("public/audio/encourage/en.mp3").size).toBeGreaterThan(2000);
+  });
+});
