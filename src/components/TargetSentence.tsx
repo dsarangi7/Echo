@@ -1,4 +1,4 @@
-import { pinyinPieces } from "../practice/pinyin";
+import { pinyinPieces, syllableTone } from "../practice/pinyin";
 import type { Lang } from "../practice/types";
 
 type Props = {
@@ -49,7 +49,7 @@ export function TargetSentence({ lang, text, marks, unrecognized = false }: Prop
           at += piece.marks;
           const mark = slice.length === 0 ? undefined : slice.every(Boolean);
           return (
-            <span key={i} className={toneClass(unrecognized, mark)}>
+            <span key={i} data-t={syllableTone(piece.text)} className={toneClass(unrecognized, mark)}>
               {piece.text}
             </span>
           );

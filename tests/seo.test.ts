@@ -19,7 +19,7 @@ describe("课猫 Echo page meta", () => {
     expect(html).not.toContain(SITE_DESCRIPTION_ZH);
     expect(html).toContain(`<link rel="canonical" href="${SITE_URL}" />`);
     expect(html).toContain('name="apple-mobile-web-app-title" content="课猫 Echo"');
-    expect(html).toContain('name="theme-color" content="#121212"');
+    expect(html).toContain('name="theme-color" content="#15130f"');
     expect(html).not.toMatch(/AI口语教练|ELSA/i);
   });
 

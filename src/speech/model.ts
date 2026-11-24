@@ -1,7 +1,48 @@
 import type { Lang } from "../practice/types";
 
-/** Hypothesis H1: Say it uses this on-device model, not Web Speech Recognition. */
+/** Hypothesis H1: Say it uses this on-device model, not Web Speech Recognition. The website ships only this one. */
 export const WHISPER_MODEL = "Xenova/whisper-tiny";
+
+/**
+ * Whisper base: about 2 points better on our Chinese and English clips, and about 1.5x slower.
+ * Only the Android app bundles it (~77 MB), so it never becomes a website download.
+ */
+export const WHISPER_ACCURATE_MODEL = "Xenova/whisper-base";
+
+export type VoiceModelChoice = "fast" | "accurate";
+
+export const VOICE_MODEL_STORAGE_KEY = "echo-voice-model";
+
+/** True in the Capacitor build, which copies whisper-base into the app. */
+export function accurateModelBundled(): boolean {
+  try {
+    return import.meta.env.VITE_ECHO_ACCURATE === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function voiceModelId(choice: VoiceModelChoice, bundled = accurateModelBundled()): string {
+  return choice === "accurate" && bundled ? WHISPER_ACCURATE_MODEL : WHISPER_MODEL;
+}
+
+/** Saved choice. The app defaults to Accurate because it ships the weights; the website is always Fast. */
+export function readVoiceModel(storage: Pick<Storage, "getItem"> | null, bundled = accurateModelBundled()): VoiceModelChoice {
+  if (!bundled) return "fast";
+  try {
+    return storage?.getItem(VOICE_MODEL_STORAGE_KEY) === "fast" ? "fast" : "accurate";
+  } catch {
+    return "accurate";
+  }
+}
+
+export function saveVoiceModel(storage: Pick<Storage, "setItem"> | null, choice: VoiceModelChoice): void {
+  try {
+    storage?.setItem(VOICE_MODEL_STORAGE_KEY, choice);
+  } catch {
+    /* private mode */
+  }
+}
 
 /** Quantized encoder (~10 MB) + merged decoder (~29 MB) + tokenizer (~2.8 MB), vendored with the site. */
 export const WHISPER_WEIGHT_NOTE = "about 44 MB";
@@ -42,10 +83,10 @@ export function localModelPath(origin: string, base: string): string {
   return new URL(`${root}models/`, origin).href;
 }
 
-export function whisperAssetUrl(origin: string, base: string, file: string): string {
+export function whisperAssetUrl(origin: string, base: string, file: string, model = WHISPER_MODEL): string {
   const root = localModelPath(origin, base);
   const prefix = root.endsWith("/") ? root : `${root}/`;
-  return `${prefix}${WHISPER_MODEL}/${file}`;
+  return `${prefix}${model}/${file}`;
 }
 
 /**

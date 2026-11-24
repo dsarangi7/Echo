@@ -2,7 +2,7 @@
 
 Draft for the owner to paste into Play Console. Nothing in this file was submitted. Do not create a merchant profile from this draft.
 
-Package name stays `com.ayk.echo`. This release is `versionCode` **7**, `versionName` **1.0.6**. It installs over sideload 1.0.5 (`versionCode` 6, tag `android-1.0.5`) when Play signs with the same `echo` certificate. Play has not hosted this package before.
+Package name stays `com.ayk.echo`. This release is `versionCode` **8**, `versionName` **1.1.0** (the redesign: ink-and-paper look, the living cat, seal stamps, Whisper base). It installs over sideload 1.0.6 (`versionCode` 7) and 1.0.5 when Play signs with the same `echo` certificate. Play has not hosted this package before.
 
 ## App identity
 
@@ -204,7 +204,7 @@ A personal Play Console account created after 13 November 2023 must run a closed
 Suggested setup when you are ready:
 
 1. Testing → Closed testing → create a track (for example Alpha).
-2. Create a release and upload the **signed** AAB. Release name `1.0.6 (7)`.
+2. Create a release and upload the **signed** AAB. Release name `1.1.0 (8)`.
 3. Add a tester list or a Google Group you control. Testers must opt in from the link and install from Play, not only sideload the old APK.
 4. Roll out the closed release. Leave it running until 12 testers have stayed opted in for 14 days.
 5. Only then use “Apply for production”.
@@ -264,7 +264,7 @@ Confirm `applicationId` after a build:
 ./android/gradlew -p android :app:properties | grep -E 'applicationId|versionCode|versionName'
 ```
 
-The Gradle file sets `applicationId "com.ayk.echo"`, `versionCode 7`, `versionName "1.0.6"`.
+The Gradle file sets `applicationId "com.ayk.echo"`, `versionCode 8`, `versionName "1.1.0"`.
 
 More signing notes: [android.md](android.md).
 
@@ -284,16 +284,16 @@ Do these in Play Console yourself. This repository change does not call the Play
 10. **Store settings**: App, Education, email dsarangi7@gmail.com. Website https://dsarangi7.github.io/Echo/ .
 11. **Main store listing**: paste the name, short description, and full description. Upload `public/icons/icon-512.png`, `docs/play-store/feature-graphic-1024x500.png`, and the six phone screenshots. Add the zh-CN listing if you want it.
 12. **App signing**: enroll in Play App Signing. New apps must. Prefer uploading the **existing** `echo` key so Play’s app signing certificate stays `9E:AA:B4:7F:…` and sideload installs can update later. Letting Google generate a new app signing key means everyone who installed the sideload APK must uninstall before they can install from Play. Do not create a second keystore for this.
-13. **Closed testing** → Create track → Create release → Upload the **signed** AAB. Release name `1.0.6 (7)`. Add release notes if you want. Save. Review the release. Start rollout to the closed track only.
+13. **Closed testing** → Create track → Create release → Upload the **signed** AAB. Release name `1.1.0 (8)`. Add release notes if you want. Save. Review the release. Start rollout to the closed track only.
 14. Invite testers. For a personal account created after 13 November 2023, keep at least 12 testers opted in for 14 continuous days before you apply for production.
 15. Do not open Production and do not submit the app for production review in this pass.
 16. Do not create a merchant profile.
 
-After upload, Play Console → the release → App bundle explorer should show package `com.ayk.echo`, version code 7, version name 1.0.6.
+After upload, Play Console → the release → App bundle explorer should show package `com.ayk.echo`, version code 8, version name 1.1.0.
 
 ## Questions for the owner
 
-1. This tree is `versionCode` 7 / `versionName` 1.0.6 so a sideload 1.0.5 install can upgrade, if Play uses the same certificate.
+1. This tree is `versionCode` 8 / `versionName` 1.1.0 so a sideload 1.0.6 or 1.0.5 install can upgrade, if Play uses the same certificate.
 2. On the Play App Signing screen, upload the existing key as the app signing key, or accept a Google-generated key and lose in-place updates from the sideload APK?
 3. Target age: 18+ as written, or include younger learners?
 4. Default store language: English, or 中文?

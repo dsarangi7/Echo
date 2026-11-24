@@ -6,7 +6,11 @@ import {
   READY_LABEL,
   downloadTotals,
   formatDownloadProgress,
+  readVoiceModel,
+  saveVoiceModel,
+  voiceModelId,
   whisperLanguage,
+  type VoiceModelChoice,
   type FileProgress,
 } from "./model";
 
@@ -44,6 +48,33 @@ export type ModelDownload = {
 
 const downloadListeners = new Set<(next: ModelDownload) => void>();
 let downloadState: ModelDownload = { phase: "loading", loaded: 0, total: 0, pct: null };
+
+function voiceStorage(): Storage | null {
+  try {
+    return typeof localStorage === "undefined" ? null : localStorage;
+  } catch {
+    return null;
+  }
+}
+
+let choice: VoiceModelChoice = readVoiceModel(voiceStorage());
+
+export function voiceModelChoice(): VoiceModelChoice {
+  return choice;
+}
+
+/** Switch Fast / Accurate. The running worker is dropped and the next Say it loads the other model. */
+export function setVoiceModelChoice(next: VoiceModelChoice): void {
+  saveVoiceModel(voiceStorage(), next);
+  if (next === choice) return;
+  choice = next;
+  worker?.terminate();
+  worker = null;
+  ready = null;
+  for (const [, entry] of pending) entry.reject(new Error("Voice model changed."));
+  pending.clear();
+  void ensureModel().catch(() => undefined);
+}
 
 function publish(next: string) {
   note = next;
@@ -134,7 +165,7 @@ function spawn(): Promise<void> {
       }
     };
     next.onerror = () => fail(new Error("The on-device voice model could not start."));
-    next.postMessage({ type: "load" });
+    next.postMessage({ type: "load", model: voiceModelId(choice) });
   });
 }
 

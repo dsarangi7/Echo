@@ -1,7 +1,7 @@
 {
   "name": "kemao-echo",
   "private": true,
-  "version": "1.0.6",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
     "predev": "node scripts/copy-onnx.mjs",
@@ -12,14 +12,19 @@
     "pinyin": "node scripts/fill-pinyin.mjs",
     "build:android": "CAPACITOR=1 npm run build && npx cap sync android",
     "android:release": "npm run build:android && cd android && ./gradlew assembleRelease",
-    "android:bundle": "npm run build:android && cd android && ./gradlew bundleRelease"
+    "android:bundle": "npm run build:android && cd android && ./gradlew bundleRelease",
+    "fonts": "node scripts/build-fonts.mjs"
   },
   "dependencies": {
     "@capacitor/android": "8.3.1",
     "@capacitor/core": "8.3.1",
+    "@capacitor/haptics": "^8.0.2",
     "@capacitor/local-notifications": "8.3.1",
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource/noto-serif-sc": "^5.3.1",
     "@xenova/transformers": "^2.17.2",
     "framer-motion": "^12.23.22",
+    "pinyin-pro": "^3.29.5",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
@@ -28,7 +33,6 @@
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.3",
-    "pinyin-pro": "^3.29.5",
     "typescript": "^5.9.2",
     "vite": "^7.1.7",
     "vite-plugin-pwa": "^2.0.0",

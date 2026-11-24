@@ -4,7 +4,7 @@ import { env, pipeline } from "@xenova/transformers";
 import { WHISPER_MODEL, configureLocalWhisper, type LocalTransformerEnv } from "./model";
 import { stripPromptPrefixFromOutput, whisperInitialPromptIds, type WhisperPromptLanguage } from "./whisper-prompt";
 
-type LoadMsg = { type: "load" };
+type LoadMsg = { type: "load"; model?: string };
 type TranscribeMsg = {
   type: "transcribe";
   id: number;
@@ -98,7 +98,7 @@ function installInitialPromptStrip(model: { generate: Generate }) {
 self.onmessage = (event: MessageEvent<InMsg>) => {
   const data = event.data;
   if (data.type === "load") {
-    void pipeline("automatic-speech-recognition", WHISPER_MODEL, {
+    void pipeline("automatic-speech-recognition", data.model || WHISPER_MODEL, {
       quantized: true,
       progress_callback: (update: ProgressEvent) => {
         post({

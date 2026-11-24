@@ -120,7 +120,7 @@ describe("Android reminder permission gate", () => {
 });
 
 describe("Android manifest for reminders", () => {
-  it("declares notification permission, user-granted exact alarms, and version 1.0.6", () => {
+  it("declares notification permission, user-granted exact alarms, and version 1.1.0", () => {
     const xml = readFileSync("android/app/src/main/AndroidManifest.xml", "utf8");
     expect(xml).toContain("android.permission.POST_NOTIFICATIONS");
     expect(xml).toContain("android.permission.SCHEDULE_EXACT_ALARM");
@@ -128,8 +128,8 @@ describe("Android manifest for reminders", () => {
     expect(xml).toContain('android.permission.USE_EXACT_ALARM" tools:node="remove"');
     expect(xml).not.toMatch(/<uses-permission android:name="android.permission.USE_EXACT_ALARM"\s*\/>/);
     const gradle = readFileSync("android/app/build.gradle", "utf8");
-    expect(gradle).toContain("versionCode 7");
-    expect(gradle).toContain('versionName "1.0.6"');
+    expect(gradle).toContain("versionCode 8");
+    expect(gradle).toContain('versionName "1.1.0"');
     expect(existsSync("android/app/src/main/res/raw/echo_meow.wav")).toBe(true);
   });
 });

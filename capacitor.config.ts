@@ -10,7 +10,7 @@ const config: CapacitorConfig = {
   plugins: {
     LocalNotifications: {
       smallIcon: "ic_stat_echo",
-      iconColor: "#C8FF3D",
+      iconColor: "#C8372D",
       sound: "echo_meow.wav",
     },
   },

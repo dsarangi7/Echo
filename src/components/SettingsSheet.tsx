@@ -14,6 +14,9 @@ import { practiceLocalStorage } from "../practice/streak";
 import { useReminderSettings } from "../practice/usePracticeSignals";
 import { openReminderNote } from "../ui/streakCopy";
 import { useTheme } from "../ui/theme";
+import { setPrefs, usePrefs } from "../ui/prefs";
+import { accurateModelBundled, type VoiceModelChoice } from "../speech/model";
+import { setVoiceModelChoice, voiceModelChoice } from "../speech/stt";
 import { HelpBlock } from "./HelpBlock";
 import { ReminderControl } from "./ReminderControl";
 
@@ -38,6 +41,12 @@ function alertCopy(result: SyncResult | null): { en: string; zh: string } | null
 export function SettingsSheet({ open, onClose, onShowLanding }: Props) {
   const reminder = useReminderSettings();
   const { theme, setTheme } = useTheme();
+  const prefs = usePrefs();
+  const [voice, setVoice] = useState<VoiceModelChoice>(() => voiceModelChoice());
+  const pickVoice = (next: VoiceModelChoice) => {
+    setVoice(next);
+    setVoiceModelChoice(next);
+  };
   const panelRef = useRef<HTMLElement>(null);
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
@@ -177,6 +186,52 @@ export function SettingsSheet({ open, onClose, onShowLanding }: Props) {
             </button>
           </div>
         </section>
+        <PrefSwitch
+          id="tones"
+          en="Tone colors"
+          zh="声调颜色"
+          hint="Pinyin tones: 1 red · 2 amber · 3 jade · 4 indigo"
+          on={prefs.toneColors}
+          onChange={(toneColors) => setPrefs({ toneColors })}
+        />
+        <PrefSwitch
+          id="feedback"
+          en="Sounds & vibration"
+          zh="声音和振动"
+          hint="Stamp, page flip, and a light buzz"
+          on={prefs.feedback}
+          onChange={(feedback) => setPrefs({ feedback })}
+        />
+        {accurateModelBundled() ? (
+          <section className="theme-block" id="voice-model" aria-labelledby="voice-model-label">
+            <p className="theme-label" id="voice-model-label">
+              <b>Voice model</b>
+              <small>识别模型 · on this phone</small>
+            </p>
+            <div className="theme-switch" role="group" aria-labelledby="voice-model-label">
+              <button
+                type="button"
+                id="voice-accurate"
+                className={voice === "accurate" ? "on" : undefined}
+                aria-pressed={voice === "accurate"}
+                onClick={() => pickVoice("accurate")}
+              >
+                <span>Accurate</span>
+                <small>准确 · base</small>
+              </button>
+              <button
+                type="button"
+                id="voice-fast"
+                className={voice === "fast" ? "on" : undefined}
+                aria-pressed={voice === "fast"}
+                onClick={() => pickVoice("fast")}
+              >
+                <span>Fast</span>
+                <small>快速 · tiny</small>
+              </button>
+            </div>
+          </section>
+        ) : null}
         {onShowLanding ? (
           <section className="theme-block" id="landing-replay" aria-labelledby="landing-replay-label">
             <p className="theme-label" id="landing-replay-label">
@@ -192,5 +247,43 @@ export function SettingsSheet({ open, onClose, onShowLanding }: Props) {
         <HelpBlock />
       </section>
     </div>
+  );
+}
+
+function PrefSwitch({
+  id,
+  en,
+  zh,
+  hint,
+  on,
+  onChange,
+}: {
+  id: string;
+  en: string;
+  zh: string;
+  hint: string;
+  on: boolean;
+  onChange: (next: boolean) => void;
+}) {
+  return (
+    <section className="theme-block pref-block" id={`pref-${id}`}>
+      <p className="theme-label" id={`pref-${id}-label`}>
+        <b>{en}</b>
+        <small>
+          {zh} · {hint}
+        </small>
+      </p>
+      <button
+        type="button"
+        role="switch"
+        className={on ? "pref-switch on" : "pref-switch"}
+        id={`pref-${id}-switch`}
+        aria-checked={on}
+        aria-labelledby={`pref-${id}-label`}
+        onClick={() => onChange(!on)}
+      >
+        <i aria-hidden="true" />
+      </button>
+    </section>
   );
 }

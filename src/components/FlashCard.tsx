@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from "react";
 import { cardTone, directionWithin, swipeDecision } from "../practice/cards";
 import type { Lang } from "../practice/types";
+import { buzz, flipSound } from "../ui/feedback";
+import { SealStamp, type StampKind } from "./SealStamp";
 import { TargetSentence } from "./TargetSentence";
 
 type Props = {
@@ -18,6 +20,10 @@ type Props = {
   marks: boolean[] | null;
   unrecognized: boolean;
   onJump: (delta: -1 | 1) => void;
+  /** Red seal pressed onto this card after a Clear or Partial Say it. */
+  stamp?: StampKind | null;
+  /** The cat peeking over the top edge of the card. Stays put while the card moves. */
+  buddy?: ReactNode;
 };
 
 function Chevron({ dir }: { dir: "left" | "right" }) {
@@ -44,6 +50,8 @@ export function FlashCard({
   marks,
   unrecognized,
   onJump,
+  stamp = null,
+  buddy = null,
 }: Props) {
   const wellRef = useRef<HTMLDivElement>(null);
   const onJumpRef = useRef(onJump);
@@ -71,6 +79,8 @@ export function FlashCard({
     if (setCount < 2) return;
     drag.current = null;
     intent.current = dir;
+    flipSound();
+    buzz("tick");
     onJumpRef.current(dir);
   }
 
@@ -142,7 +152,8 @@ export function FlashCard({
     .join(" ");
 
   return (
-    <div className="deck-stage">
+    <div className={buddy ? "deck-stage has-buddy" : "deck-stage"}>
+      {buddy}
       <div
         className="deck-well"
         ref={wellRef}
@@ -185,6 +196,7 @@ export function FlashCard({
           <p className="card-pos">
             {setPos} / {setCount}
           </p>
+          {stamp ? <SealStamp key={`${index}-${stamp}`} kind={stamp} /> : null}
         </article>
       </div>
       <div className="deck-arrows">

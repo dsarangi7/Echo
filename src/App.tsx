@@ -83,7 +83,18 @@ export function App() {
     ) : null}
     <div className="wrap" inert={showLanding ? true : undefined}>
       <header className="hello">
-        <h1>课猫 Echo</h1>
+        <h1 className="brand">
+          <span className="brand-seal" aria-hidden="true">
+            <svg viewBox="0 0 40 40" width="34" height="34">
+              <rect x="1.5" y="1.5" width="37" height="37" rx="6" fill="var(--seal)" />
+              <text x="20" y="18" textAnchor="middle" fontSize="13" fontWeight="700" fill="#FFF6EA" fontFamily="'Echo Serif SC', serif">课</text>
+              <text x="20" y="33" textAnchor="middle" fontSize="13" fontWeight="700" fill="#FFF6EA" fontFamily="'Echo Serif SC', serif">猫</text>
+            </svg>
+          </span>
+          <span className="brand-word">
+            <span className="sr-only">课猫 </span>Echo
+          </span>
+        </h1>
         <div className="top-actions">
           <div className="lang-switch" role="group" aria-label="Language to practice">
             <button
@@ -178,6 +189,21 @@ export function App() {
         {practice.kicker === "Note" && practice.heard ? (
           <p className="notice-line" id="notice-heard" role="status">
             {practice.heard}
+          </p>
+        ) : null}
+        {practice.slowHint ? (
+          <p className="slow-hint" id="slow-hint" role="status">
+            <span>
+              Say it is slow on this phone. Switch to the Fast voice model? 这台手机识别有点慢，换成快速模型吗？
+            </span>
+            <button type="button" className="act primary" onClick={practice.useFastModel}>
+              <b>Use Fast</b>
+              <small>换成快速</small>
+            </button>
+            <button type="button" className="act ghost" onClick={practice.dismissSlowHint}>
+              <b>Keep</b>
+              <small>不用了</small>
+            </button>
           </p>
         ) : null}
         <ModelInterstitial onHearFirst={practice.hear} />
