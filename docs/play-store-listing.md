@@ -2,7 +2,7 @@
 
 Draft for the owner to paste into Play Console. Nothing in this file was submitted. Do not create a merchant profile from this draft.
 
-Package name stays `com.ayk.echo`. This release is `versionCode` **7**, `versionName` **1.0.6**. It installs over sideload 1.0.5 (`versionCode` 6, tag `android-1.0.5`) when Play signs with the same `echo` certificate. Play has not hosted this package before.
+Package name stays `com.ayk.echo`. This release is `versionCode` **8**, `versionName` **1.1.0** (the redesign: ink-and-paper look, the living cat, seal stamps, Whisper base). It installs over sideload 1.0.6 (`versionCode` 7) and 1.0.5 when Play signs with the same `echo` certificate. Play has not hosted this package before.
 
 ## App identity
 
@@ -56,7 +56,6 @@ Hear it plays a recording of the sentence. Say it listens with the microphone an
 
 English cards are office lines: meetings, email, the factory, quality, and orders. Chinese cards are work lines, plus Meituan delivery, taxi rides, and class sets for a tea house, online shopping, a shop, and the supermarket. Chinese cards show tone-marked pinyin.
 
-Word decks sit in the top bar. English has an Office words deck: five words each Shanghai day, with the meaning, one example, Hear it, and Say it. Chinese has a 天 family timeline.
 
 Translate is optional and needs a network. The sentence you type, or the text of a line you speak, is sent to MyMemory for the translation. Practice itself does not send that sentence. There is no account.
 
@@ -76,7 +75,6 @@ Settings holds the reminder, light or dark theme, a microphone note, the feedbac
 
 英语卡片是办公室用语：会议、邮件、工厂、质量和订单。中文卡片是工作用语，加上美团外卖、打车，以及茶馆、网购、商店和超市的课堂句子。中文卡片显示带声调的拼音。
 
-单词卡在顶栏。英语有办公词汇：每个上海日五张，带中文意思、一个例句、听一听和说一说。中文有「天」字族时间线。
 
 翻译是可选的，需要网络。你打出的句子，或说完后转成的文字，会发给 MyMemory 做翻译。练习本身不发送这句话。没有账号。
 
@@ -128,7 +126,7 @@ Do you want to add a privacy policy? **Yes.** URL above. The in-app link is Sett
 
 - Collected: yes. Shared: yes, with MyMemory / Translated (`api.mymemory.translated.net`).
 - Processed ephemerally: no. Their terms say submitted segments can be stored long term. The app does not keep a copy.
-- Optional: yes. Practice and word decks never send it. The user can ignore Translate.
+- Optional: yes. Practice never sends it. The user can ignore Translate.
 - Purpose: App functionality only. Not advertising, not analytics, not tracking.
 - What is sent: the sentence (max 500 characters) and `langpair` (`en|zh-CN` or `zh-CN|en`). No cookies. No MyMemory account. The optional `de` developer email is not set in the current public website bundle or in the Android build.
 
@@ -204,7 +202,7 @@ A personal Play Console account created after 13 November 2023 must run a closed
 Suggested setup when you are ready:
 
 1. Testing → Closed testing → create a track (for example Alpha).
-2. Create a release and upload the **signed** AAB. Release name `1.0.6 (7)`.
+2. Create a release and upload the **signed** AAB. Release name `1.1.0 (8)`.
 3. Add a tester list or a Google Group you control. Testers must opt in from the link and install from Play, not only sideload the old APK.
 4. Roll out the closed release. Leave it running until 12 testers have stayed opted in for 14 days.
 5. Only then use “Apply for production”.
@@ -264,7 +262,7 @@ Confirm `applicationId` after a build:
 ./android/gradlew -p android :app:properties | grep -E 'applicationId|versionCode|versionName'
 ```
 
-The Gradle file sets `applicationId "com.ayk.echo"`, `versionCode 7`, `versionName "1.0.6"`.
+The Gradle file sets `applicationId "com.ayk.echo"`, `versionCode 8`, `versionName "1.1.0"`.
 
 More signing notes: [android.md](android.md).
 
@@ -284,16 +282,16 @@ Do these in Play Console yourself. This repository change does not call the Play
 10. **Store settings**: App, Education, email dsarangi7@gmail.com. Website https://dsarangi7.github.io/Echo/ .
 11. **Main store listing**: paste the name, short description, and full description. Upload `public/icons/icon-512.png`, `docs/play-store/feature-graphic-1024x500.png`, and the six phone screenshots. Add the zh-CN listing if you want it.
 12. **App signing**: enroll in Play App Signing. New apps must. Prefer uploading the **existing** `echo` key so Play’s app signing certificate stays `9E:AA:B4:7F:…` and sideload installs can update later. Letting Google generate a new app signing key means everyone who installed the sideload APK must uninstall before they can install from Play. Do not create a second keystore for this.
-13. **Closed testing** → Create track → Create release → Upload the **signed** AAB. Release name `1.0.6 (7)`. Add release notes if you want. Save. Review the release. Start rollout to the closed track only.
+13. **Closed testing** → Create track → Create release → Upload the **signed** AAB. Release name `1.1.0 (8)`. Add release notes if you want. Save. Review the release. Start rollout to the closed track only.
 14. Invite testers. For a personal account created after 13 November 2023, keep at least 12 testers opted in for 14 continuous days before you apply for production.
 15. Do not open Production and do not submit the app for production review in this pass.
 16. Do not create a merchant profile.
 
-After upload, Play Console → the release → App bundle explorer should show package `com.ayk.echo`, version code 7, version name 1.0.6.
+After upload, Play Console → the release → App bundle explorer should show package `com.ayk.echo`, version code 8, version name 1.1.0.
 
 ## Questions for the owner
 
-1. This tree is `versionCode` 7 / `versionName` 1.0.6 so a sideload 1.0.5 install can upgrade, if Play uses the same certificate.
+1. This tree is `versionCode` 8 / `versionName` 1.1.0 so a sideload 1.0.6 or 1.0.5 install can upgrade, if Play uses the same certificate.
 2. On the Play App Signing screen, upload the existing key as the app signing key, or accept a Google-generated key and lose in-place updates from the sideload APK?
 3. Target age: 18+ as written, or include younger learners?
 4. Default store language: English, or 中文?

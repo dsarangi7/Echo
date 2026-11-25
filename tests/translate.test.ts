@@ -215,9 +215,9 @@ describe("Translate screen", () => {
     expect(html).toContain('disabled=""');
   });
 
-  it("puts Translate before Practice and leaves Settings as the gear", () => {
+  it("puts Practice before Translate and leaves Settings as the gear", () => {
     const nav = renderToStaticMarkup(createElement(ModeNav, { mode: "practice", onChange: () => undefined }));
-    expect(nav.indexOf('id="mode-translate"')).toBeLessThan(nav.indexOf('id="mode-practice"'));
+    expect(nav.indexOf('id="mode-practice"')).toBeLessThan(nav.indexOf('id="mode-translate"'));
     expect(nav).not.toContain('id="mode-words"');
     expect(nav).toContain(">Practice<");
     expect(nav).toContain(">练习<");
@@ -249,5 +249,12 @@ describe("Translate screen", () => {
     expect(hook).not.toContain("api.openai.com");
     expect(readFileSync("src/translate/engine.ts", "utf8")).not.toMatch(/sk-[A-Za-z0-9]/);
     expect(readFileSync("src/speech/tts.ts", "utf8")).toContain("export function speakPlain");
+  });
+});
+
+describe("top tabs", () => {
+  it("hides Word decks in the app for now", () => {
+    const app = readFileSync("src/App.tsx", "utf8");
+    expect(app).toContain("const SHOW_WORD_DECKS = false;");
   });
 });

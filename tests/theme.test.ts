@@ -60,7 +60,7 @@ describe("theme preference", () => {
     const theme = readFileSync(new URL("../src/ui/theme.ts", import.meta.url), "utf8");
     expect(html).toContain(`var key = "${THEME_STORAGE_KEY}"`);
     expect(html).toContain('matchMedia("(prefers-color-scheme: light)")');
-    expect(html).toContain('name="theme-color" content="#121212"');
+    expect(html).toContain('name="theme-color" content="#15130f"');
     expect(theme).toContain("prefers-color-scheme: light");
     expect(theme).not.toContain("echo-practice-reminder");
     expect(theme).not.toContain("echo-practice-streak");

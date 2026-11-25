@@ -1,0 +1,523 @@
+/*
+ * 课猫 Echo — "Notebook of a city life".
+ * Ink on rice paper, one red seal. This layer sits on top of index.css and
+ * re-points its tokens, so older rules pick up the new palette.
+ *
+ *   --neon      the primary control color (ink on paper, paper on ink)
+ *   --ink       text on a primary control
+ *   --seal      the brand red: stamps, the logo, a live mic
+ *   --jade      matched syllables / words
+ */
+
+:root {
+  --font-display: "Fraunces Variable", "Echo Serif SC", Georgia, "Songti SC", serif;
+  --font-serif-zh: "Echo Serif SC", "Songti SC", "Noto Serif CJK SC", "SimSun", serif;
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+  --ease-spring: cubic-bezier(0.22, 1.2, 0.36, 1);
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --r-lg: 26px;
+  --r-md: 16px;
+
+  /* Night: ink-stone desk, paper text. */
+  --bg: #15130f;
+  --card: #1d1a15;
+  --line: #2f2a22;
+  --text: #f1e9da;
+  --muted: #b9ad98;
+  --faint: #8f8472;
+  --edge: #3b342a;
+  --chip: #1a1712;
+  --inset: #191611;
+  --field: #120f0c;
+  --well: #110f0b;
+  --toggle: #221e18;
+  --neon: #efe4cf;
+  --ink: #1a1612;
+  --neon-ink: #4c4334;
+  --seal: #e0503d;
+  --seal-soft: rgba(224, 80, 61, 0.16);
+  --jade: #5fbf92;
+  --jade-ink: #0d2419;
+  --bad: #e0503d;
+  --pack: #1c1914;
+  --pack-edge: #3a3329;
+  --result: #1b1813;
+  --meaning: #d8ccb7;
+  --session: #1a1712;
+  --streak: #1a1712;
+  --model: #1a1813;
+  --model-line: #4a4232;
+  --meter: #2c271f;
+  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 18px 40px rgba(0, 0, 0, 0.45);
+  --shadow-lift: 0 10px 24px rgba(0, 0, 0, 0.35);
+  --dock-glow: inset 0 1px 0 rgba(239, 228, 207, 0.08);
+  --dock-shadow: 0 -14px 30px rgba(0, 0, 0, 0.5);
+  --paper-grain: 0.05;
+  --tone-1: #ff7a66;
+  --tone-2: #f2b84b;
+  --tone-3: #6fd3a2;
+  --tone-4: #8fb2ff;
+  font-family: var(--font-ui);
+}
+
+html[data-theme="light"] {
+  /* Day: rice paper, sumi ink. */
+  --bg: #f4eee2;
+  --card: #fbf7ef;
+  --line: #e4dccb;
+  --text: #1f1b16;
+  --muted: #5f564a;
+  --faint: #7a705f;
+  --edge: #d6ccb8;
+  --chip: #fbf7ef;
+  --inset: #f6f0e4;
+  --field: #fffdf8;
+  --well: #e9e1d0;
+  --toggle: #ebe3d3;
+  --neon: #1f1b16;
+  --ink: #fbf7ef;
+  --neon-ink: #cfc5b2;
+  --seal: #c8372d;
+  --seal-soft: rgba(200, 55, 45, 0.1);
+  --jade: #2f7d5b;
+  --jade-ink: #f3faf6;
+  --bad: #c8372d;
+  --pack: #fbf7ef;
+  --pack-edge: #dcd2bf;
+  --result: #fbf7ef;
+  --meaning: #4a4238;
+  --session: #fbf7ef;
+  --streak: #fbf7ef;
+  --model: #f7f2e7;
+  --model-line: #d9ceb7;
+  --meter: #e6ddcb;
+  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 16px 34px rgba(70, 52, 24, 0.14);
+  --shadow-lift: 0 8px 20px rgba(70, 52, 24, 0.12);
+  --dock-glow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --dock-shadow: 0 -12px 28px rgba(70, 52, 24, 0.1);
+  --paper-grain: 0.07;
+  --tone-1: #c8372d;
+  --tone-2: #b7790f;
+  --tone-3: #2f7d5b;
+  --tone-4: #2f55a8;
+}
+
+/* ---------- Paper ---------- */
+
+body,
+html[data-theme="light"] body {
+  font-family: var(--font-ui);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(900px 480px at 10% -12%, var(--seal-soft), transparent 60%),
+    radial-gradient(700px 420px at 100% 0%, rgba(255, 255, 255, 0.05), transparent 55%);
+  background-attachment: fixed;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: var(--paper-grain);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.3  0 0 0 0 0.25  0 0 0 0 0.18  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>");
+  mix-blend-mode: multiply;
+}
+
+#root { position: relative; z-index: 1; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Brand ---------- */
+
+.hello h1.brand,
+h1.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 640;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+  font-variation-settings: "SOFT" 60, "opsz" 72;
+}
+
+.brand-seal {
+  display: inline-grid;
+  transform: rotate(-4deg);
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.12));
+}
+
+.brand-word { line-height: 1; }
+
+/* ---------- Surfaces ---------- */
+
+.card {
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lift);
+}
+
+.lang-switch,
+.mode-switch,
+.pace-switch,
+.theme-switch {
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.lang-switch button,
+.mode-switch button,
+.pace-switch button,
+.theme-switch button {
+  transition: background-color 220ms var(--ease-out), color 220ms var(--ease-out), transform 160ms var(--ease-spring);
+}
+
+.lang-switch button:active,
+.mode-switch button:active,
+.pace-switch button:active,
+.theme-switch button:active { transform: scale(0.96); }
+
+/* Primary controls: a solid ink block, like a chop on paper. */
+button.primary {
+  background: var(--neon);
+  border-color: var(--neon);
+  color: var(--ink);
+  border-radius: 18px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18), var(--shadow-lift);
+  transition: transform 160ms var(--ease-spring), box-shadow 160ms var(--ease-out), background-color 200ms;
+}
+
+button.primary:active { transform: translateY(1px) scale(0.98); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.18); }
+button.primary small { color: inherit; opacity: 0.7; }
+button.act b { font-family: var(--font-display); font-weight: 650; font-size: 17px; letter-spacing: -0.01em; }
+
+/* Say it while the mic is live turns seal red and breathes. */
+button.primary.live,
+#say.live {
+  background: var(--seal);
+  border-color: var(--seal);
+  color: #fff8ef;
+  box-shadow: 0 0 0 0 rgba(200, 55, 45, 0.45);
+  animation: mic-breathe 1.4s ease-in-out infinite;
+}
+
+@keyframes mic-breathe {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200, 55, 45, 0.45); }
+  50% { box-shadow: 0 0 0 10px rgba(200, 55, 45, 0); }
+}
+
+#say::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--seal);
+  vertical-align: 2px;
+  float: left;
+  margin-top: 8px;
+}
+
+#say.live::before { background: #fff8ef; }
+
+button.ghost:hover { border-color: var(--text); color: var(--text); }
+
+/* ---------- Flash card ---------- */
+
+.deck-stage.has-buddy { padding-top: 66px; }
+
+.deck-well {
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-card);
+  background: var(--well);
+}
+
+.flash-card {
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+/* Fibre and a ruled margin, like a notebook page. */
+.flash-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image:
+    linear-gradient(90deg, transparent 38px, rgba(200, 55, 45, 0.22) 38px, rgba(200, 55, 45, 0.22) 39px, transparent 39px),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='2'/><feColorMatrix values='0 0 0 0 0.35  0 0 0 0 0.28  0 0 0 0 0.2  0 0 0 0.35 0'/></filter><rect width='100%' height='100%' filter='url(%23p)'/></svg>");
+  mix-blend-mode: multiply;
+}
+
+.flash-card > * { position: relative; }
+
+.flash-card.enter-next { animation: card-enter-next 320ms var(--ease-spring) both; }
+.flash-card.enter-prev { animation: card-enter-prev 320ms var(--ease-spring) both; }
+
+@keyframes card-enter-next {
+  from { transform: translate3d(70%, 0, 0) rotate(4deg); opacity: 0.2; }
+  to { transform: translate3d(0, 0, 0) rotate(0); opacity: 1; }
+}
+
+@keyframes card-enter-prev {
+  from { transform: translate3d(-70%, 0, 0) rotate(-4deg); opacity: 0.2; }
+  to { transform: translate3d(0, 0, 0) rotate(0); opacity: 1; }
+}
+
+.flash-card.is-drag { transition: none; }
+
+.card-kicker {
+  font-family: var(--font-serif-zh);
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.sentence {
+  font-family: var(--font-display);
+  font-weight: 560;
+  font-variation-settings: "SOFT" 40, "opsz" 96;
+  letter-spacing: -0.01em;
+  line-height: 1.32;
+}
+
+.sentence[lang="zh-CN"] { font-family: var(--font-serif-zh); font-weight: 600; }
+
+.meaning {
+  font-family: var(--font-serif-zh);
+  color: var(--card-soft, var(--meaning));
+  border-top: 1px dashed color-mix(in srgb, currentColor 30%, transparent);
+  padding-top: 12px;
+}
+
+.sentence .ok,
+.sentence .bad {
+  background: none;
+  color: inherit;
+  border-radius: 0;
+  padding: 0;
+  text-decoration-line: underline;
+  text-decoration-thickness: 0.14em;
+  text-underline-offset: 0.18em;
+  text-decoration-skip-ink: none;
+  animation: ink-in 420ms var(--ease-out) both;
+}
+
+.sentence .ok { text-decoration-color: #2f7d5b; }
+.sentence .bad { text-decoration-color: #c8372d; text-decoration-style: wavy; text-decoration-thickness: 0.08em; }
+
+@keyframes ink-in {
+  from { text-decoration-color: transparent; }
+}
+
+/* Optional tone colors on pinyin (Settings → Tone colors). Marks still underline. */
+html[data-tones="on"] .sentence.pinyin [data-t="1"] { color: #b4271f; }
+html[data-tones="on"] .sentence.pinyin [data-t="2"] { color: #9a6408; }
+html[data-tones="on"] .sentence.pinyin [data-t="3"] { color: #23704f; }
+html[data-tones="on"] .sentence.pinyin [data-t="4"] { color: #2a4d9c; }
+
+.deck-arrow {
+  width: 40px;
+  height: 40px;
+  background: rgba(31, 27, 22, 0.55);
+  border-color: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(6px);
+  transition: transform 160ms var(--ease-spring), background-color 200ms;
+}
+
+.deck-arrow:active { transform: scale(0.9); }
+
+/* ---------- The cat on the card ---------- */
+
+.cat-peek {
+  position: absolute;
+  top: 4px;
+  right: 18px;
+  z-index: 3;
+  width: 92px;
+  height: 90px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 220ms var(--ease-spring);
+}
+
+.cat-peek svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.18)); }
+.cat-peek:active { transform: scale(0.94) rotate(-3deg); }
+.cat-peek:focus-visible { outline: 2px solid var(--neon); outline-offset: 4px; border-radius: 20px; }
+
+.sw.ok { background: #2f7d5b; }
+.sw.bad { background: #c8372d; }
+
+/* ---------- Seal stamp ---------- */
+
+.seal-stamp {
+  position: absolute !important;
+  right: 18px;
+  bottom: 14px;
+  width: 68px;
+  height: 68px;
+  color: #c8372d;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  z-index: 2;
+}
+
+.seal-stamp.partial { width: 64px; height: 64px; opacity: 0.92; }
+.seal-stamp svg { width: 100%; height: 100%; display: block; }
+
+/* ---------- Landing ---------- */
+
+.landing,
+html[data-theme="light"] .landing {
+  background:
+    radial-gradient(700px 420px at 50% -10%, var(--seal-soft), transparent 60%),
+    var(--bg);
+}
+
+.landing-copy h1 {
+  font-family: var(--font-display);
+  font-weight: 640;
+  letter-spacing: -0.02em;
+}
+
+.landing .cat-card { background: transparent; border: 0; box-shadow: none; }
+.landing .stage-light { background: radial-gradient(circle, rgba(239, 228, 207, 0.12), transparent 68%); }
+html[data-theme="light"] .landing .stage-light { background: radial-gradient(circle, rgba(255, 255, 255, 0.9), transparent 68%); }
+
+.cat-card.listen,
+.cat-card.talk { box-shadow: none; }
+
+.nameplate {
+  background: transparent;
+  color: var(--text);
+  border: 1.5px solid var(--edge);
+  border-radius: 999px;
+  width: auto;
+  min-width: 220px;
+  margin-top: 6px;
+}
+
+.nameplate strong { font-family: var(--font-display); font-weight: 640; }
+.nameplate span { color: var(--seal); }
+
+.landing-start { min-height: 72px; }
+
+/* ---------- Packs ---------- */
+
+.pack-step-title { font-family: var(--font-display); font-weight: 640; }
+
+.pack-tile {
+  border-radius: 20px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 6px 14px rgba(0, 0, 0, 0.1);
+  transition: transform 200ms var(--ease-spring), box-shadow 200ms;
+  position: relative;
+  overflow: hidden;
+}
+
+.pack-tile:active { transform: scale(0.97); }
+.pack-tile b { font-family: var(--font-serif-zh); }
+.pack-tile.on::after {
+  content: "在练";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #c8372d;
+  color: #fff6ea;
+  font-family: var(--font-serif-zh);
+  font-size: 11px;
+  font-weight: 700;
+  transform: rotate(6deg);
+}
+
+/* ---------- Settings switches ---------- */
+
+.pref-block {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.pref-block .theme-label { margin: 0; }
+
+.pref-switch {
+  flex: 0 0 auto;
+  width: 52px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid var(--edge);
+  background: var(--toggle);
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 200ms var(--ease-out);
+}
+
+.pref-switch i {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--card);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: transform 240ms var(--ease-spring);
+}
+
+.pref-switch.on { background: var(--seal); border-color: var(--seal); }
+.pref-switch.on i { transform: translateX(22px); background: #fff8ef; }
+.pref-switch:focus-visible { outline: 2px solid var(--neon); outline-offset: 2px; }
+
+/* ---------- Motion safety ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .flash-card.enter-next,
+  .flash-card.enter-prev,
+  #say.live,
+  .sentence .ok,
+  .sentence .bad { animation: none; }
+}
+
+/* One-time hint when Accurate is slow on this phone. */
+.slow-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--edge);
+  background: var(--card);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.4;
+}
+.slow-hint span { flex: 1 1 220px; }
+.slow-hint button.act { flex: 0 0 auto; }
+
+/* Short phones: a smaller cat so the card stays above the thumb dock. */
+@media (max-height: 760px) {
+  .deck-stage.has-buddy { padding-top: 40px; }
+  .cat-peek { width: 62px; height: 60px; top: 0; right: 14px; }
+  .flash-card { min-height: 220px; padding-top: 22px; padding-bottom: 18px; }
+  .deck-well { min-height: 220px; }
+}

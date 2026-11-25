@@ -41,3 +41,22 @@ export function readingText(lang: Lang, item: Pick<Sentence, "en" | "zh" | "py">
   const py = item.py?.trim();
   return py || item.zh;
 }
+
+const TONE_MARKS: Record<string, 1 | 2 | 3 | 4> = {};
+for (const [tone, chars] of [
+  [1, "āēīōūǖĀĒĪŌŪǕ"],
+  [2, "áéíóúǘÁÉÍÓÚǗńŃ"],
+  [3, "ǎěǐǒǔǚǍĚǏǑǓǙňŇ"],
+  [4, "àèìòùǜÀÈÌÒÙǛǹǸ"],
+] as const) {
+  for (const ch of chars) TONE_MARKS[ch] = tone;
+}
+
+/** Tone of one pinyin syllable from its mark. 0 is the neutral tone. Erhua (`zhèr`) keeps the first mark. */
+export function syllableTone(syllable: string): 0 | 1 | 2 | 3 | 4 {
+  for (const ch of syllable.normalize("NFC")) {
+    const tone = TONE_MARKS[ch];
+    if (tone) return tone;
+  }
+  return 0;
+}

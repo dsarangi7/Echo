@@ -147,8 +147,8 @@ describe("office word card", () => {
         onPickDeck: () => undefined,
       }),
     );
-    expect(open.indexOf('id="mode-translate"')).toBeLessThan(open.indexOf('id="mode-practice"'));
-    expect(open.indexOf('id="mode-practice"')).toBeLessThan(open.indexOf('id="mode-words"'));
+    expect(open.indexOf('id="mode-practice"')).toBeLessThan(open.indexOf('id="mode-translate"'));
+    expect(open.indexOf('id="mode-translate"')).toBeLessThan(open.indexOf('id="mode-words"'));
     expect(open).toContain(">Word decks<");
     expect(open).toContain(">单词卡<");
     expect(open).toContain('aria-haspopup="menu"');
@@ -168,8 +168,8 @@ describe("office word card", () => {
         onPickDeck: () => undefined,
       }),
     );
-    expect(chinese.indexOf('id="mode-translate"')).toBeLessThan(chinese.indexOf('id="mode-practice"'));
-    expect(chinese.indexOf('id="mode-practice"')).toBeLessThan(chinese.indexOf('id="mode-words"'));
+    expect(chinese.indexOf('id="mode-practice"')).toBeLessThan(chinese.indexOf('id="mode-translate"'));
+    expect(chinese.indexOf('id="mode-translate"')).toBeLessThan(chinese.indexOf('id="mode-words"'));
     expect(chinese).toContain('id="mode-words"');
     expect(chinese).toContain(`id="word-deck-${TIAN_DECK_ID}"`);
     expect(chinese).toContain(TIAN_DECK_NAME);

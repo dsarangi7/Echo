@@ -5,7 +5,7 @@ import { gradeTranscript, isShortZhLine, recognitionFailHeadline, type GradeOutc
 import { publishPracticeSnapshot } from "./reminder-runtime";
 import { applyOutcome, classifyLine, emptySession, readBrowserSession, writeBrowserSession, type AttemptOutcome, type SessionTally } from "./session";
 import { practiceLocalStorage, recordClearMatch } from "./streak";
-import { playVictory } from "../speech/victory";
+import { playEncourage, playVictory } from "../speech/victory";
 import { hearPaceRate, type HearPace } from "./pace";
 import { loadHearPaces, loadIndexes, loadLang, saveHearPaces, saveIndexes, saveLang } from "./storage";
 import { syncNativeReminders } from "../native/syncReminders";
@@ -24,9 +24,11 @@ import {
 import { resampleTo16k } from "../speech/resample";
 import { introLine } from "../speech/intro";
 import { DOWNLOAD_LABEL } from "../speech/model";
-import { ensureModel, subscribeModel, transcribe } from "../speech/stt";
+import { ensureModel, setVoiceModelChoice, subscribeModel, transcribe, voiceModelChoice } from "../speech/stt";
 import { hearFailCopy, setSpeakingRate, speakIntro, speakLine, speakPlain, stopSpeaking, type HearFailReason } from "../speech/tts";
 import type { CatMode, Lang, Sentence } from "./types";
+import { loadSoundOf } from "./zhSound";
+import { readPrefs } from "../ui/prefs";
 
 function micNote(kind: MicFailure): string {
   return micFailureMessage(kind, { secure: isSecurePage() });
@@ -63,6 +65,7 @@ export function usePractice() {
   const [runtimeError, setRuntimeError] = useState("");
   const [session, setSession] = useState<SessionTally>(readBrowserSession);
   const [lineOutcome, setLineOutcome] = useState<AttemptOutcome | null>(null);
+  const [slowHint, setSlowHint] = useState(false);
   const [gradedText, setGradedText] = useState("");
   const [gradedPlain, setGradedPlain] = useState(false);
 
@@ -114,6 +117,10 @@ export function usePractice() {
     if (outcome === "clear") {
       if (!ownStreakRef.current) recordClearMatch(practiceLocalStorage(), new Date());
       playVictory();
+    } else if (readPrefs().feedback) {
+      // Let the stamp / cat reaction land first, then a kind "try again" in the other language.
+      const learning = langRef.current;
+      window.setTimeout(() => playEncourage(learning), 450);
     }
     if (outcome === "clear" || outcome === "partial") {
       void publishPracticeSnapshot();
@@ -417,7 +424,16 @@ export function usePractice() {
       setHeard(targetLang === "en" ? "Transcribing on this device…" : "正在这台设备上识别…");
       try {
         const pcm = resampleTo16k(recorded.samples, recorded.sampleRate);
-        const spoken = (await transcribe(pcm, targetLang, targetLine)).trim();
+        const started = Date.now();
+        const [heardText] = await Promise.all([
+          transcribe(pcm, targetLang, targetLine),
+          targetLang === "zh" ? loadSoundOf() : Promise.resolve(),
+        ]);
+        const spoken = heardText.trim();
+        if (Date.now() - started > SLOW_TRANSCRIBE_MS && voiceModelChoice() === "accurate" && !slowHintSeen()) {
+          markSlowHintSeen();
+          setSlowHint(true);
+        }
         if (token !== tokenRef.current) return;
         const graded = gradeTranscript(targetLang, targetLine, spoken);
         const attempt = classifyLine(graded, spoken);
@@ -500,5 +516,31 @@ export function usePractice() {
     session,
     lineOutcome,
     resetSession,
+    slowHint,
+    useFastModel: () => {
+      setVoiceModelChoice("fast");
+      setSlowHint(false);
+    },
+    dismissSlowHint: () => setSlowHint(false),
   };
+}
+
+/** Accurate (Whisper base) slower than this on one line → offer Fast once. */
+const SLOW_TRANSCRIBE_MS = 8000;
+const SLOW_HINT_KEY = "echo-slow-hint-seen";
+
+function slowHintSeen(): boolean {
+  try {
+    return localStorage.getItem(SLOW_HINT_KEY) === "1";
+  } catch {
+    return true;
+  }
+}
+
+function markSlowHintSeen(): void {
+  try {
+    localStorage.setItem(SLOW_HINT_KEY, "1");
+  } catch {
+    /* private mode */
+  }
 }

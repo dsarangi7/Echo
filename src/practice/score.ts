@@ -1,4 +1,8 @@
 import type { Lang } from "./types";
+import { sameSound, toSimplified } from "./zhSound";
+
+type Same = (a: string, b: string) => boolean;
+const exact: Same = (a, b) => a === b;
 
 /** Soft-fail when unique token overlap is below this, unless the line is a short Chinese target. */
 export const OVERLAP_FAIL_RATIO = 0.15;
@@ -65,13 +69,13 @@ export function charsOf(s: string): string[] {
 }
 
 /** Prefer in-order matches, then any leftover word or character. */
-export function matchSeq(target: string[], heard: string[]): boolean[] {
+export function matchSeq(target: string[], heard: string[], same: Same = exact): boolean[] {
   const used = heard.map(() => false);
   const marks = target.map(() => false);
   let h = 0;
   for (let i = 0; i < target.length; i++) {
     let j = h;
-    while (j < heard.length && heard[j] !== target[i]) j++;
+    while (j < heard.length && !same(heard[j]!, target[i]!)) j++;
     if (j < heard.length) {
       marks[i] = true;
       used[j] = true;
@@ -80,7 +84,7 @@ export function matchSeq(target: string[], heard: string[]): boolean[] {
   }
   for (let i = 0; i < target.length; i++) {
     if (marks[i]) continue;
-    const j = heard.findIndex((c, idx) => !used[idx] && c === target[i]);
+    const j = heard.findIndex((c, idx) => !used[idx] && same(c, target[i]!));
     if (j >= 0) {
       marks[i] = true;
       used[j] = true;
@@ -90,7 +94,7 @@ export function matchSeq(target: string[], heard: string[]): boolean[] {
 }
 
 /** Unique-token overlap: |target set ∩ heard set| / |target set|. */
-export function overlapRatio(target: string[], heard: string[]): number {
+export function overlapRatio(target: string[], heard: string[], same: Same = exact): number {
   if (target.length === 0) return 0;
   const heardSet = new Set(heard);
   const targetSet = new Set<string>();
@@ -98,7 +102,7 @@ export function overlapRatio(target: string[], heard: string[]): number {
   for (const token of target) {
     if (targetSet.has(token)) continue;
     targetSet.add(token);
-    if (heardSet.has(token)) hit += 1;
+    if (heardSet.has(token) || (same !== exact && heard.some((h) => same(h, token)))) hit += 1;
   }
   return hit / targetSet.size;
 }
@@ -145,17 +149,19 @@ function recognitionFail(total: number, heardPreview: string, ratio: number, goo
 }
 
 export function gradeTranscript(lang: Lang, targetText: string, transcript: string): Grade {
-  const target = lang === "en" ? wordsOf(targetText) : charsOf(targetText);
-  const heard = lang === "en" ? wordsOf(transcript) : charsOf(transcript);
-  const heardPreview = transcript.trim();
-  const ratio = overlapRatio(target, heard);
+  const target = lang === "en" ? wordsOf(targetText) : charsOf(toSimplified(targetText));
+  const heard = lang === "en" ? wordsOf(transcript) : charsOf(toSimplified(transcript));
+  const heardPreview = lang === "en" ? transcript.trim() : toSimplified(transcript.trim());
+  // Chinese compares sounds: a homophone Whisper picked (才 for 采) still matches the syllable.
+  const same: Same = lang === "zh" ? sameSound : exact;
+  const ratio = overlapRatio(target, heard, same);
   const unit = lang === "en" ? "words" : "字";
 
   if (preScoreReject(lang, target, heard, transcript)) {
     return recognitionFail(target.length, heardPreview, ratio);
   }
 
-  const marks = matchSeq(target, heard);
+  const marks = matchSeq(target, heard, same);
   const good = marks.filter(Boolean).length;
   const shortZh = isShortZhTarget(lang, target);
   const threshold = shortZh ? SHORT_ZH_OVERLAP_FAIL_RATIO : OVERLAP_FAIL_RATIO;

@@ -1,3 +1,4 @@
+import { rmSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { build as esbuildBuild } from "esbuild";
@@ -32,6 +33,24 @@ function bundleEchoSync(): Plugin {
   };
 }
 
+/**
+ * The website ships Whisper tiny only. The Android app also ships Whisper base
+ * (Settings → Voice model → Accurate). Drop the model a build does not use.
+ */
+function pruneModels(capacitor: boolean): Plugin {
+  let outDir = "dist";
+  return {
+    name: "echo-prune-models",
+    apply: "build",
+    configResolved(config) {
+      outDir = resolve(config.root, config.build.outDir);
+    },
+    closeBundle() {
+      if (!capacitor) rmSync(resolve(outDir, "models/Xenova/whisper-base"), { recursive: true, force: true });
+    },
+  };
+}
+
 const shim = (name: string) => fileURLToPath(new URL(`./src/speech/shims/${name}.ts`, import.meta.url));
 
 // /Echo/ on GitHub Pages. / on Vercel and in the Capacitor Android shell.
@@ -39,8 +58,12 @@ const base = resolveAppBase();
 const capacitorBuild = Boolean(process.env.CAPACITOR || process.env.VITE_CAPACITOR);
 
 export default defineConfig(({ command }) => ({
+  define: {
+    "import.meta.env.VITE_ECHO_ACCURATE": JSON.stringify(capacitorBuild ? "1" : ""),
+  },
   plugins: [
     react(),
+    pruneModels(capacitorBuild),
     // A service worker fights the Capacitor WebView (stale shell, broken navigation).
     ...(capacitorBuild
       ? []
@@ -54,8 +77,8 @@ export default defineConfig(({ command }) => ({
               short_name: "课猫 Echo",
               description:
                 "Practice English and Chinese out loud with Hear it and Say it. Office and everyday phrases. Free PWA — works on this device.",
-              theme_color: "#121212",
-              background_color: "#121212",
+              theme_color: "#15130f",
+              background_color: "#15130f",
               display: "standalone",
               start_url: base,
               scope: base,
@@ -70,7 +93,7 @@ export default defineConfig(({ command }) => ({
               // The Whisper onnx files are ~10 MB and ~29 MB. Leave them out of the
               // precache (the cap is 12 MB). Say it fetches them from this origin and
               // Transformers.js stores them in the Cache API.
-              globPatterns: ["**/*.{js,css,html,svg,png,webmanifest,mp3,wav,wasm}"],
+              globPatterns: ["**/*.{js,css,html,svg,png,webmanifest,mp3,wav,wasm,woff2}"],
               globIgnores: ["**/models/**"],
               navigateFallback: "index.html",
               maximumFileSizeToCacheInBytes: 12 * 1024 * 1024,

@@ -11,7 +11,10 @@ import { useWordDeck } from "../practice/useWordDeck";
 import type { usePractice } from "../practice/usePractice";
 import { DAILY_WORD_COUNT, WORD_PACK_NAME, WORD_PACK_ZH, meaningChoices, officeWords, practicePacks, spokenOf, wordDeckById } from "../practice/words";
 import { MATCH_TIP_MS, readMatchTipSeen, writeMatchTipSeen } from "../ui/matchTip";
+import { buzz, stampSound } from "../ui/feedback";
+import { CatFigure, type CatMood } from "./CatFigure";
 import { DayTask } from "./DayTask";
+import type { StampKind } from "./SealStamp";
 import { FeedbackLines } from "./FeedbackLines";
 import { FlashCard } from "./FlashCard";
 import { PackPicker } from "./PackPicker";
@@ -76,6 +79,60 @@ export function PracticePanel(practice: Practice & { active?: boolean; wordDeck?
     tipIndex.current = index;
     dismissTip();
   }, [dismissTip, index]);
+
+  // The cat's mood follows the line: listening, thinking, then a short reaction.
+  const [reaction, setReaction] = useState<CatMood | null>(null);
+  const [stamp, setStamp] = useState<StampKind | null>(null);
+  useEffect(() => {
+    if (!lineOutcome) {
+      setReaction(null);
+      setStamp(null);
+      return;
+    }
+    const next: CatMood = lineOutcome === "clear" ? "happy" : lineOutcome === "partial" ? "idle" : "oops";
+    setReaction(next);
+    if (lineOutcome === "clear" || lineOutcome === "partial") {
+      setStamp(lineOutcome);
+      const land = window.setTimeout(() => {
+        stampSound();
+        buzz("stamp");
+      }, 110);
+      const calm = window.setTimeout(() => setReaction(null), 3400);
+      return () => {
+        window.clearTimeout(land);
+        window.clearTimeout(calm);
+      };
+    }
+    setStamp(null);
+    buzz("soft");
+    const calm = window.setTimeout(() => setReaction(null), 3400);
+    return () => window.clearTimeout(calm);
+  }, [lineOutcome]);
+  useEffect(() => {
+    setStamp(null);
+  }, [index]);
+  const catMood: CatMood = listening
+    ? "listen"
+    : kicker === "Transcribing"
+      ? "think"
+      : practice.catMode === "talk"
+        ? "talk"
+        : (reaction ?? "idle");
+  const buddy = (
+    <button
+      type="button"
+      className={`cat-peek mood-${catMood}`}
+      id="cat-peek"
+      aria-label="Echo the cat. Tap to hear the line. 课猫：点一下听这句。"
+      onClick={() => {
+        dismissTip();
+        buzz("tick");
+        hear();
+      }}
+    >
+      <CatFigure variant="peek" mood={catMood} level={listening || practice.catMode === "talk" ? practice.mouth : 0} />
+    </button>
+  );
 
   const wordMode = words.wordMode && !familyLesson;
   const showPacks = picking && !wordDeck;
@@ -261,6 +318,8 @@ export function PracticePanel(practice: Practice & { active?: boolean; wordDeck?
           marks={marks}
           unrecognized={outcome === "recognition_fail"}
           onJump={move}
+          stamp={stamp}
+          buddy={buddy}
         />
       )}
 

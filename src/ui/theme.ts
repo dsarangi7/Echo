@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 /** Saved appearance. Missing key follows the system, then the dark default. */
 export const THEME_STORAGE_KEY = "echo-color-theme";
 
-export const DARK_THEME_COLOR = "#121212";
-export const LIGHT_THEME_COLOR = "#f4f2ea";
+export const DARK_THEME_COLOR = "#15130f";
+export const LIGHT_THEME_COLOR = "#f4eee2";
 
 export type ThemeChoice = "dark" | "light";
 
